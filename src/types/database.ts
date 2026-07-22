@@ -17,6 +17,9 @@ export interface Database {
           owner_id: string | null
           whatsapp_phone_number_id: string | null
           whatsapp_business_account_id: string | null
+          whatsapp_provider: 'meta_cloud' | 'twilio'
+          twilio_whatsapp_from: string | null
+          twilio_content_sid_new_lead: string | null
           whatsapp_phone: string | null
           whatsapp_token: string | null
           plan: string
@@ -39,6 +42,9 @@ export interface Database {
           owner_id?: string | null
           whatsapp_phone_number_id?: string | null
           whatsapp_business_account_id?: string | null
+          whatsapp_provider?: 'meta_cloud' | 'twilio'
+          twilio_whatsapp_from?: string | null
+          twilio_content_sid_new_lead?: string | null
           whatsapp_phone?: string | null
           whatsapp_token?: string | null
           plan?: string
@@ -61,6 +67,9 @@ export interface Database {
           owner_id?: string | null
           whatsapp_phone_number_id?: string | null
           whatsapp_business_account_id?: string | null
+          whatsapp_provider?: 'meta_cloud' | 'twilio'
+          twilio_whatsapp_from?: string | null
+          twilio_content_sid_new_lead?: string | null
           whatsapp_phone?: string | null
           whatsapp_token?: string | null
           plan?: string
@@ -325,6 +334,7 @@ export interface Database {
           workspace_id: string
           contact_id: string | null
           whatsapp_message_id: string | null
+          provider: 'meta_cloud' | 'twilio'
           direction: string
           content: string | null
           media_url: string | null
@@ -337,6 +347,7 @@ export interface Database {
           workspace_id: string
           contact_id?: string | null
           whatsapp_message_id?: string | null
+          provider?: 'meta_cloud' | 'twilio'
           direction: string
           content?: string | null
           media_url?: string | null
@@ -349,6 +360,7 @@ export interface Database {
           workspace_id?: string
           contact_id?: string | null
           whatsapp_message_id?: string | null
+          provider?: 'meta_cloud' | 'twilio'
           direction?: string
           content?: string | null
           media_url?: string | null
@@ -557,6 +569,106 @@ export interface Database {
           last_attempt_at?: string | null
           created_at?: string
           processed_at?: string | null
+        }
+      }
+      whatsapp_dispatches: {
+        Row: {
+          id: string
+          workspace_id: string
+          automation_queue_id: string | null
+          event_key: string
+          contact_id: string | null
+          provider: 'meta_cloud' | 'twilio'
+          operation: string
+          status: 'prepared' | 'sending' | 'accepted' | 'failed' | 'delivery_unknown'
+          provider_message_id: string | null
+          request_fingerprint: string
+          attempts: number
+          locked_at: string | null
+          locked_by: string | null
+          last_error: string | null
+          created_at: string
+          updated_at: string
+          accepted_at: string | null
+          delivery_unknown_at: string | null
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          automation_queue_id?: string | null
+          event_key: string
+          contact_id?: string | null
+          provider: 'meta_cloud' | 'twilio'
+          operation: string
+          status?: 'prepared' | 'sending' | 'accepted' | 'failed' | 'delivery_unknown'
+          provider_message_id?: string | null
+          request_fingerprint: string
+          attempts?: number
+          locked_at?: string | null
+          locked_by?: string | null
+          last_error?: string | null
+          created_at?: string
+          updated_at?: string
+          accepted_at?: string | null
+          delivery_unknown_at?: string | null
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          automation_queue_id?: string | null
+          event_key?: string
+          contact_id?: string | null
+          provider?: 'meta_cloud' | 'twilio'
+          operation?: string
+          status?: 'prepared' | 'sending' | 'accepted' | 'failed' | 'delivery_unknown'
+          provider_message_id?: string | null
+          request_fingerprint?: string
+          attempts?: number
+          locked_at?: string | null
+          locked_by?: string | null
+          last_error?: string | null
+          created_at?: string
+          updated_at?: string
+          accepted_at?: string | null
+          delivery_unknown_at?: string | null
+        }
+      }
+      whatsapp_message_events: {
+        Row: {
+          id: string
+          workspace_id: string
+          message_id: string | null
+          provider: 'meta_cloud' | 'twilio'
+          provider_message_id: string
+          status: string
+          error_code: string | null
+          error_message: string | null
+          occurred_at: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          message_id?: string | null
+          provider: 'meta_cloud' | 'twilio'
+          provider_message_id: string
+          status: string
+          error_code?: string | null
+          error_message?: string | null
+          occurred_at?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          message_id?: string | null
+          provider?: 'meta_cloud' | 'twilio'
+          provider_message_id?: string
+          status?: string
+          error_code?: string | null
+          error_message?: string | null
+          occurred_at?: string
+          created_at?: string
         }
       }
     }

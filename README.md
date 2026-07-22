@@ -62,6 +62,7 @@ npm run test:whatsapp-window
 npm run test:automation-migration
 npm run test:automation-queue
 npm run test:automation-concurrency
+npm run test:twilio-unit
 ```
 
 ## Automacoes - fila duravel
@@ -102,9 +103,9 @@ Classificacao de erros:
 Limitacoes conhecidas:
 
 - rollback da idempotencia: `DROP INDEX IF EXISTS automation_queue_event_key_unique;` e `ALTER TABLE automation_queue DROP COLUMN IF EXISTS event_key;`.
-- nao ha garantia exactly-once apos chamar APIs externas: se o provedor aceitar a mensagem e a funcao cair antes de persistir a resposta, um retry pode gerar duplicidade externa.
+- nao ha garantia exactly-once universal apos chamar APIs externas. Para Twilio, `whatsapp_dispatches` reduz o risco: se o SID foi aceito, retries reutilizam o mesmo dispatch; se o aceite ficou incerto, o dispatch vira `delivery_unknown` e nao e reenviado automaticamente.
 - `task_overdue` existe em tipos/UI, mas ainda nao possui produtor de evento.
-- proximo passo: adaptador Twilio e webhooks Twilio sem misturar com a fila.
+- proximo passo: ampliar classificacao fina de erros Twilio e rotinas operacionais de revisao manual.
 
 Variaveis server-side da fila:
 
@@ -124,6 +125,65 @@ npx vercel env add AUTOMATION_JOB_LEASE_SECONDS production
 ```
 
 ## WhatsApp - arquitetura
+
+O Cremona suporta dois provedores por workspace:
+
+- `meta_cloud`: integracao direta existente com a Meta Cloud API.
+- `twilio`: provedor oficial Twilio para WhatsApp Business Platform.
+
+O restante do CRM resolve o provedor via `lib/whatsapp/providers`. Inbox e automacoes chamam `sendText`, `sendTemplate` ou `sendMedia`; o adaptador escolhido decide se usa Meta ou Twilio. As credenciais Twilio sao globais server-side na Vercel. O workspace guarda apenas `whatsapp_provider`, `twilio_whatsapp_from` e `twilio_content_sid_new_lead`.
+
+Twilio usa:
+
+- envio de texto com `client.messages.create({ from, to, body, statusCallback })`;
+- templates com `contentSid` e `contentVariables`;
+- midia com `mediaUrl` publico HTTPS;
+- inbound em `POST /api/webhooks/twilio/whatsapp`;
+- status callback em `POST /api/webhooks/twilio/status`;
+- validacao oficial `X-Twilio-Signature` com `TWILIO_AUTH_TOKEN` e URL canonica configurada.
+
+Dispatch e idempotencia:
+
+- `whatsapp_dispatches` possui chave unica por `provider + event_key`.
+- estados: `prepared`, `sending`, `accepted`, `failed`, `delivery_unknown`.
+- se uma mensagem Twilio ja foi `accepted`, retry nao chama a Twilio de novo.
+- timeout/conexao interrompida sem resposta vira `delivery_unknown`, falha definitiva para a fila e exige conferir Messaging Logs da Twilio.
+- webhooks inbound deduplicam por `messages.whatsapp_message_id`, usando o Twilio `MessageSid`.
+- status callbacks nao regressam `read -> delivered -> sent`.
+
+Variaveis Twilio server-side:
+
+```env
+TWILIO_ACCOUNT_SID=
+TWILIO_API_KEY_SID=
+TWILIO_API_KEY_SECRET=
+TWILIO_AUTH_TOKEN=
+TWILIO_WHATSAPP_FROM=
+TWILIO_CONTENT_SID_NEW_LEAD=
+TWILIO_INBOUND_WEBHOOK_URL=https://SEU-DOMINIO/api/webhooks/twilio/whatsapp
+TWILIO_STATUS_CALLBACK_URL=https://SEU-DOMINIO/api/webhooks/twilio/status
+```
+
+Teste unitario sem chamadas externas:
+
+```bash
+npm run test:twilio-unit
+```
+
+Teste live opt-in:
+
+```bash
+TWILIO_TEST_TO=whatsapp:+55... npm run test:twilio
+TWILIO_TEST_TO=whatsapp:+55... TWILIO_CONFIRM_SEND=yes npm run test:twilio
+```
+
+Rollback temporario de workspace para Meta:
+
+```sql
+UPDATE workspaces
+SET whatsapp_provider = 'meta_cloud'
+WHERE id = '<WORKSPACE_ID>';
+```
 
 Fluxo atual:
 

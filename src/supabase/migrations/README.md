@@ -32,6 +32,8 @@ Execute no Supabase SQL Editor, nesta ordem:
     event_key e indice unico parcial para idempotencia da fila
 16. 016_automation_queue_retries_and_lease.sql
     Lease, retries com backoff e recuperacao de processing abandonado
+17. 017_twilio_whatsapp_provider.sql
+    Provider WhatsApp por workspace, dispatch idempotente Twilio e eventos de status
 
 ## Como verificar se todas foram aplicadas
 
@@ -53,5 +55,7 @@ Tabelas esperadas apos todas as migrations:
 - sales
 - tasks
 - whatsapp_templates
+- whatsapp_dispatches
+- whatsapp_message_events
 - workspace_members
 - workspaces

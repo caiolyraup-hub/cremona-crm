@@ -2010,4 +2010,60 @@ As variaveis Twilio foram apenas preparadas em `.env.local.example` com placehol
 
 ### Risco restante
 
+## Sessao Integracao Twilio WhatsApp Provider - 2026-07-22
+
+### Objetivo
+
+Integrar Twilio como provedor oficial de WhatsApp sem substituir a integracao direta Meta Cloud API e preservando `automation_queue`, `event_key`, claim seguro, lease, backoff e `max_attempts`.
+
+### Arquitetura implementada
+
+- `lib/whatsapp/providers/*` centraliza `meta_cloud` e `twilio`.
+- `workspaces.whatsapp_provider` escolhe o provedor por workspace.
+- Credenciais Twilio ficam apenas em env vars server-side; workspace guarda somente `twilio_whatsapp_from` e `twilio_content_sid_new_lead`.
+- Inbox e automacoes usam o provider resolver, sem chamar Meta diretamente no fluxo de envio principal.
+- `whatsapp_dispatches` cria uma protecao interna de dispatch por `provider + event_key`.
+- `delivery_unknown` e terminal para retry automatico, para evitar duplicidade quando a Twilio pode ter aceitado a mensagem.
+
+### Migration
+
+- `src/supabase/migrations/017_twilio_whatsapp_provider.sql`
+- Adiciona em `workspaces`: `whatsapp_provider`, `twilio_whatsapp_from`, `twilio_content_sid_new_lead`.
+- Adiciona `messages.provider`.
+- Cria `whatsapp_dispatches`.
+- Cria `whatsapp_message_events` para callbacks e erros sanitizados.
+
+### Webhooks Twilio
+
+- Inbound: `POST /api/webhooks/twilio/whatsapp`.
+- Status: `POST /api/webhooks/twilio/status`.
+- Ambos validam `X-Twilio-Signature` com SDK oficial e URL canonica configurada.
+- `AccountSid` deve bater com `TWILIO_ACCOUNT_SID`.
+- Workspace e resolvido por `To = workspaces.twilio_whatsapp_from`.
+- Inbound deduplica por `MessageSid`, cria contato quando necessario e nao dispara automaticamente `contact_created`.
+- Status callback mapeia `accepted/queued/sending/sent/delivered/read/undelivered/failed` para estados internos sem regredir `read`.
+
+### Variaveis
+
+```env
+TWILIO_ACCOUNT_SID=
+TWILIO_API_KEY_SID=
+TWILIO_API_KEY_SECRET=
+TWILIO_AUTH_TOKEN=
+TWILIO_WHATSAPP_FROM=
+TWILIO_CONTENT_SID_NEW_LEAD=
+TWILIO_INBOUND_WEBHOOK_URL=
+TWILIO_STATUS_CALLBACK_URL=
+```
+
+### Testes adicionados
+
+- `npm run test:twilio-unit`: cobre payloads de texto/template, janela fechada, dispatch aceito, concorrencia, delivery_unknown, assinatura valida/invalida, webhook duplicado, status callback, status fora de ordem, isolamento por sender e Meta preservada.
+- `npm run test:twilio`: script live opt-in; faz dry-run por padrao e so envia com `TWILIO_CONFIRM_SEND=yes`.
+
+### Riscos restantes
+
+- Twilio nao fornece garantia exactly-once para a operacao de envio usada; se houver queda apos aceite externo e antes de persistir SID, o dispatch reduz duplicidade quando o SID foi salvo, mas `delivery_unknown` ainda exige revisao manual nos Messaging Logs.
+- Midia Twilio exige URL publica HTTPS; URLs privadas ou temporarias invalidas retornam erro non-retryable.
+
 Nao ha garantia exactly-once para APIs externas. Se o provedor aceitar uma mensagem e a Vercel Function cair antes de persistir o resultado no CRM, o retry pode reenviar a mesma mensagem. A idempotencia atual garante um unico job por `event_key`, mas nao confirma deduplicacao no provedor externo.

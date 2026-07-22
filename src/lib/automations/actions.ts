@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAdminClient } from '@/lib/supabase/admin'
-import { sendMetaWhatsAppMediaMessage, sendMetaWhatsAppTextMessage } from '@/lib/whatsapp/meta-api'
-import { sendWhatsAppTemplate } from '@/lib/whatsapp/templates'
 import { normalizeWhatsAppPhone, summarizeWhatsAppContent } from '@/lib/whatsapp/format'
 import { isWithinWhatsApp24hWindow } from '@/lib/whatsapp/conversation-window'
+import { getWhatsAppProviderForWorkspace } from '@/lib/whatsapp/providers'
+import type { SendWhatsAppResult, WhatsAppSendContext } from '@/lib/whatsapp/providers'
+import { buildRequestFingerprint, sendWithDispatch } from '@/lib/whatsapp/dispatches'
+import { persistWhatsAppMessage } from '@/lib/whatsapp/messages'
 import { isLikelyRetryableError, sanitizeAutomationError } from './retry'
 import type { Automation } from '@/types/app'
 import type { Tables } from '@/types/database'
@@ -14,6 +16,7 @@ export type AutomationActionResult = {
   success: boolean
   skipped?: boolean
   retryable?: boolean
+  deliveryUnknown?: boolean
   error?: string
 }
 
@@ -27,19 +30,35 @@ function buildProviderFailure(error: string | null | undefined, fallback: string
 
   if (
     value.includes('token invalido') ||
-    value.includes('token inválido') ||
+    value.includes('token inv') ||
     value.includes('phone number id invalido') ||
-    value.includes('phone number id inválido') ||
+    value.includes('phone number id inv') ||
     value.includes('numero do destinatario invalido') ||
-    value.includes('número do destinatário inválido') ||
     value.includes('permissao insuficiente') ||
-    value.includes('permissão insuficiente') ||
-    value.includes('janela de 24 horas')
+    value.includes('janela de 24 horas') ||
+    value.includes('content sid') ||
+    value.includes('credenciais twilio') ||
+    value.includes('sender twilio')
   ) {
     return { success: false, retryable: false, error: sanitized }
   }
 
   return { success: false, error: sanitized }
+}
+
+function toAutomationResult(result: SendWhatsAppResult, fallback: string): AutomationActionResult {
+  if (result.success) return { success: true, skipped: result.skipped }
+  if (result.retryable !== undefined || result.skipped || result.deliveryUnknown) {
+    return {
+      success: false,
+      skipped: result.skipped,
+      retryable: result.deliveryUnknown ? false : result.retryable,
+      deliveryUnknown: result.deliveryUnknown,
+      error: sanitizeAutomationError(result.error ?? fallback),
+    }
+  }
+
+  return buildProviderFailure(result.error, fallback)
 }
 
 export function interpolateVars(template: string, contact: Contact): string {
@@ -50,16 +69,6 @@ export function interpolateVars(template: string, contact: Contact): string {
     contact_email: contact.email ?? '',
   }
   return template.replace(/\{\{(\w+)\}\}/g, (_, key: string) => map[key] ?? `{{${key}}}`)
-}
-
-async function fetchWorkspaceWhatsApp(workspaceId: string) {
-  const supabase = createAdminClient()
-  const { data } = await (supabase as any)
-    .from('workspaces')
-    .select('whatsapp_phone_number_id, whatsapp_token')
-    .eq('id', workspaceId)
-    .maybeSingle()
-  return data as { whatsapp_phone_number_id: string | null; whatsapp_token: string | null } | null
 }
 
 async function fetchLastInboundAt(workspaceId: string, contactId: string): Promise<string | null> {
@@ -76,18 +85,58 @@ async function fetchLastInboundAt(workspaceId: string, contactId: string): Promi
   return (data as { created_at: string } | null)?.created_at ?? null
 }
 
+function buildAutomationDispatchEventKey(
+  automation: Automation,
+  contact: Contact,
+  context: WhatsAppSendContext | undefined,
+  operation: string
+): string {
+  if (context?.eventKey) return context.eventKey
+  return `automation:${automation.id}:${contact.id}:${operation}`
+}
+
+function parseJsonObject(value: string | undefined): Record<string, string> {
+  if (!value) return {}
+  try {
+    const parsed = JSON.parse(value) as Record<string, string>
+    return parsed && typeof parsed === 'object' ? parsed : {}
+  } catch {
+    return {}
+  }
+}
+
+function buildTwilioTemplateVariables(config: Record<string, string>, contact: Contact) {
+  const variables = parseJsonObject(
+    config.variables ?? config.content_variables ?? config.variable_defaults
+  )
+  return Object.fromEntries(
+    Object.entries(variables).map(([key, value]) => [key, interpolateVars(String(value), contact)])
+  )
+}
+
+async function resolveProviderResult(workspaceId: string) {
+  const resolved = await getWhatsAppProviderForWorkspace(workspaceId)
+  if (!resolved.provider || !resolved.workspace) {
+    return {
+      resolved,
+      error: toAutomationResult(
+        resolved.error ?? { success: false, retryable: false, error: 'WhatsApp nao configurado' },
+        'WhatsApp nao configurado'
+      ),
+    }
+  }
+
+  return { resolved, error: null }
+}
+
 export async function executeWhatsAppTextAction(
   automation: Automation,
   contact: Contact,
-  workspaceId: string
+  workspaceId: string,
+  context?: WhatsAppSendContext
 ): Promise<AutomationActionResult> {
   if (!contact.phone) {
     return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
-  }
-
-  const workspace = await fetchWorkspaceWhatsApp(workspaceId)
-  if (!workspace?.whatsapp_phone_number_id || !workspace.whatsapp_token) {
-    return { success: false, skipped: true, retryable: false, error: 'WhatsApp nao configurado' }
   }
 
   const phone = normalizeWhatsAppPhone(contact.phone)
@@ -97,46 +146,44 @@ export async function executeWhatsAppTextAction(
 
   const lastInboundAt = await fetchLastInboundAt(workspaceId, contact.id)
   if (!isWithinWhatsApp24hWindow(lastInboundAt)) {
-    // TODO: fora da janela deveria usar template — limitação atual documentada
     return { success: false, skipped: true, retryable: false, error: 'Janela de 24h fechada' }
   }
 
+  const providerResult = await resolveProviderResult(workspaceId)
+  if (providerResult.error) return providerResult.error
+
+  const provider = providerResult.resolved.provider!
   const message = interpolateVars(automation.action_config.message ?? '', contact)
-  const result = await sendMetaWhatsAppTextMessage({
-    phoneNumberId: workspace.whatsapp_phone_number_id,
-    accessToken: workspace.whatsapp_token,
-    to: phone,
-    text: message,
+  const eventKey = buildAutomationDispatchEventKey(automation, contact, context, 'text')
+  const result = await sendWithDispatch({
+    workspaceId,
+    contactId: contact.id,
+    automationQueueId: context?.automationQueueId ?? null,
+    eventKey,
+    provider: provider.name,
+    operation: 'text',
+    requestFingerprint: buildRequestFingerprint({ to: phone, message }),
+    send: () => provider.sendText({ to: phone, text: message, context }),
   })
 
-  if (!result.success) {
-    return buildProviderFailure(result.error, 'Erro ao enviar mensagem')
-  }
+  if (!result.success) return toAutomationResult(result, 'Erro ao enviar mensagem')
 
-  const supabase = createAdminClient()
   const createdAt = new Date().toISOString()
-
-  await (supabase as any).from('messages').insert({
-    workspace_id: workspaceId,
-    contact_id: contact.id,
-    whatsapp_message_id: result.messageId ?? null,
+  const persisted = await persistWhatsAppMessage({
+    workspaceId,
+    contactId: contact.id,
+    provider: provider.name,
+    whatsappMessageId: result.messageId ?? null,
     direction: 'outbound',
     content: message,
-    media_url: null,
-    media_type: 'text',
+    mediaUrl: null,
+    mediaType: 'text',
     status: 'sent',
-    created_at: createdAt,
+    createdAt,
+    activityContent: `Automacao enviou mensagem via WhatsApp: ${summarizeWhatsAppContent(message)}`,
   })
 
-  await (supabase as any).from('activities').insert({
-    workspace_id: workspaceId,
-    contact_id: contact.id,
-    user_id: null,
-    type: 'whatsapp',
-    content: `Automação enviou mensagem via WhatsApp: ${summarizeWhatsAppContent(message)}`,
-    created_at: createdAt,
-  })
-
+  if (persisted.error) return { success: false, retryable: true, error: sanitizeAutomationError(persisted.error) }
   return { success: true }
 }
 
@@ -177,15 +224,11 @@ export async function executeCreateTaskAction(
 export async function executeWhatsAppTemplateAction(
   automation: Automation,
   contact: Contact,
-  workspaceId: string
+  workspaceId: string,
+  context?: WhatsAppSendContext
 ): Promise<AutomationActionResult> {
   if (!contact.phone) {
     return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
-  }
-
-  const workspace = await fetchWorkspaceWhatsApp(workspaceId)
-  if (!workspace?.whatsapp_phone_number_id || !workspace.whatsapp_token) {
-    return { success: false, skipped: true, retryable: false, error: 'WhatsApp nao configurado' }
   }
 
   const phone = normalizeWhatsAppPhone(contact.phone)
@@ -193,97 +236,97 @@ export async function executeWhatsAppTemplateAction(
     return { success: false, skipped: true, retryable: false, error: 'Telefone invalido para WhatsApp' }
   }
 
+  const providerResult = await resolveProviderResult(workspaceId)
+  if (providerResult.error) return providerResult.error
+
+  const provider = providerResult.resolved.provider!
+  const supabase = createAdminClient()
   const templateId = automation.action_config.template_id
-  if (!templateId) {
+  const contentSid = automation.action_config.content_sid ?? automation.action_config.twilio_content_sid
+
+  let templateRow: any = null
+  if (templateId) {
+    const { data } = await (supabase as any)
+      .from('whatsapp_templates')
+      .select('*')
+      .eq('id', templateId)
+      .eq('workspace_id', workspaceId)
+      .eq('status', 'approved')
+      .eq('active', true)
+      .maybeSingle()
+    templateRow = data
+
+    if (!templateRow && provider.name === 'meta_cloud') {
+      return { success: false, skipped: true, retryable: false, error: 'Template nao encontrado ou nao aprovado' }
+    }
+  } else if (provider.name === 'meta_cloud') {
     return { success: false, retryable: false, error: 'template_id nao configurado na automacao' }
   }
 
-  const supabase = createAdminClient()
-  const { data: templateRow } = await (supabase as any)
-    .from('whatsapp_templates')
-    .select('*')
-    .eq('id', templateId)
-    .eq('workspace_id', workspaceId)
-    .eq('status', 'approved')
-    .eq('active', true)
-    .maybeSingle()
-
-  if (!templateRow) {
-    return { success: false, skipped: true, retryable: false, error: 'Template nao encontrado ou nao aprovado' }
-  }
-
-  let variableDefaults: Record<string, string> = {}
-  try {
-    variableDefaults = JSON.parse(automation.action_config.variable_defaults ?? '{}')
-  } catch { /* ignored */ }
-
-  const vars: Array<{ index: number; label: string; default: string }> = templateRow.variables ?? []
-  const parameters = vars.map((v: { index: number; label: string; default: string }) => {
+  const variableDefaults = parseJsonObject(automation.action_config.variable_defaults)
+  const vars: Array<{ index: number; label: string; default: string }> = templateRow?.variables ?? []
+  const parameters = vars.map((v) => {
     let text = variableDefaults[String(v.index)] ?? v.default ?? ''
     text = interpolateVars(text, contact)
     return { type: 'text' as const, text }
   })
+  const metaTemplate = templateRow
+    ? {
+        name: templateRow.name,
+        language: templateRow.language ?? 'pt_BR',
+        components: parameters.length > 0 ? [{ type: 'body' as const, parameters }] : [],
+      }
+    : undefined
+  const contentVariables = buildTwilioTemplateVariables(automation.action_config, contact)
+  const eventKey = buildAutomationDispatchEventKey(automation, contact, context, 'template')
 
-  const result = await sendWhatsAppTemplate(
-    workspace.whatsapp_phone_number_id,
-    workspace.whatsapp_token,
-    phone,
-    {
-      name: templateRow.name,
-      language: templateRow.language ?? 'pt_BR',
-      components: parameters.length > 0 ? [{ type: 'body' as const, parameters }] : [],
-    }
-  )
+  const result = await sendWithDispatch({
+    workspaceId,
+    contactId: contact.id,
+    automationQueueId: context?.automationQueueId ?? null,
+    eventKey,
+    provider: provider.name,
+    operation: 'template',
+    requestFingerprint: buildRequestFingerprint({ to: phone, contentSid, contentVariables, metaTemplate }),
+    send: () => provider.sendTemplate({ to: phone, contentSid, contentVariables, metaTemplate, context }),
+  })
 
-  if (!result.success) {
-    return buildProviderFailure(result.error, 'Erro ao enviar template')
-  }
+  if (!result.success) return toAutomationResult(result, 'Erro ao enviar template')
 
-  const renderedContent = (templateRow.body_text as string).replace(
-    /\{\{(\d+)\}\}/g,
-    (_: string, n: string) => {
-      const raw = variableDefaults[n] ?? vars.find(v => v.index === Number(n))?.default ?? `{{${n}}}`
-      return interpolateVars(raw, contact)
-    }
-  )
+  const renderedContent = templateRow
+    ? (templateRow.body_text as string).replace(/\{\{(\d+)\}\}/g, (_: string, n: string) => {
+        const raw = variableDefaults[n] ?? vars.find(v => v.index === Number(n))?.default ?? `{{${n}}}`
+        return interpolateVars(raw, contact)
+      })
+    : 'Template enviado via WhatsApp'
 
   const createdAt = new Date().toISOString()
-  await (supabase as any).from('messages').insert({
-    workspace_id: workspaceId,
-    contact_id: contact.id,
-    whatsapp_message_id: result.messageId ?? null,
+  const persisted = await persistWhatsAppMessage({
+    workspaceId,
+    contactId: contact.id,
+    provider: provider.name,
+    whatsappMessageId: result.messageId ?? null,
     direction: 'outbound',
     content: renderedContent,
-    media_url: null,
-    media_type: 'text',
+    mediaUrl: null,
+    mediaType: 'text',
     status: 'sent',
-    created_at: createdAt,
+    createdAt,
+    activityContent: `Automacao enviou template "${templateRow?.display_name ?? contentSid ?? 'Twilio'}" via WhatsApp`,
   })
 
-  await (supabase as any).from('activities').insert({
-    workspace_id: workspaceId,
-    contact_id: contact.id,
-    user_id: null,
-    type: 'whatsapp',
-    content: `Automação enviou template "${templateRow.display_name}" via WhatsApp`,
-    created_at: createdAt,
-  })
-
+  if (persisted.error) return { success: false, retryable: true, error: sanitizeAutomationError(persisted.error) }
   return { success: true }
 }
 
 export async function executeWhatsAppMediaAction(
   automation: Automation,
   contact: Contact,
-  workspaceId: string
+  workspaceId: string,
+  context?: WhatsAppSendContext
 ): Promise<AutomationActionResult> {
   if (!contact.phone) {
     return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
-  }
-
-  const workspace = await fetchWorkspaceWhatsApp(workspaceId)
-  if (!workspace?.whatsapp_phone_number_id || !workspace.whatsapp_token) {
-    return { success: false, skipped: true, retryable: false, error: 'WhatsApp nao configurado' }
   }
 
   const phone = normalizeWhatsAppPhone(contact.phone)
@@ -318,44 +361,47 @@ export async function executeWhatsAppMediaAction(
     }
   }
 
-  const result = await sendMetaWhatsAppMediaMessage({
-    phoneNumberId: workspace.whatsapp_phone_number_id,
-    accessToken: workspace.whatsapp_token,
-    to: phone,
-    mediaUrl,
-    mediaType: mediaType as 'image' | 'document' | 'audio' | 'video',
-    filename,
-    caption,
+  const providerResult = await resolveProviderResult(workspaceId)
+  if (providerResult.error) return providerResult.error
+
+  const provider = providerResult.resolved.provider!
+  const eventKey = buildAutomationDispatchEventKey(automation, contact, context, 'media')
+  const result = await sendWithDispatch({
+    workspaceId,
+    contactId: contact.id,
+    automationQueueId: context?.automationQueueId ?? null,
+    eventKey,
+    provider: provider.name,
+    operation: 'media',
+    requestFingerprint: buildRequestFingerprint({ to: phone, mediaUrl, mediaType, filename, caption }),
+    send: () => provider.sendMedia({
+      to: phone,
+      mediaUrl,
+      mediaType: mediaType as 'image' | 'document' | 'audio' | 'video',
+      filename,
+      caption,
+      context,
+    }),
   })
 
-  if (!result.success) {
-    return buildProviderFailure(result.error, 'Erro ao enviar midia')
-  }
+  if (!result.success) return toAutomationResult(result, 'Erro ao enviar midia')
 
-  const supabase = createAdminClient()
   const createdAt = new Date().toISOString()
   const content = caption || filename || `[${mediaType}]`
-
-  await (supabase as any).from('messages').insert({
-    workspace_id: workspaceId,
-    contact_id: contact.id,
-    whatsapp_message_id: result.messageId ?? null,
+  const persisted = await persistWhatsAppMessage({
+    workspaceId,
+    contactId: contact.id,
+    provider: provider.name,
+    whatsappMessageId: result.messageId ?? null,
     direction: 'outbound',
     content,
-    media_url: mediaUrl,
-    media_type: mediaType,
+    mediaUrl,
+    mediaType,
     status: 'sent',
-    created_at: createdAt,
+    createdAt,
+    activityContent: `Automacao enviou midia via WhatsApp: ${summarizeWhatsAppContent(content)}`,
   })
 
-  await (supabase as any).from('activities').insert({
-    workspace_id: workspaceId,
-    contact_id: contact.id,
-    user_id: null,
-    type: 'whatsapp',
-    content: `Automacao enviou midia via WhatsApp: ${summarizeWhatsAppContent(content)}`,
-    created_at: createdAt,
-  })
-
+  if (persisted.error) return { success: false, retryable: true, error: sanitizeAutomationError(persisted.error) }
   return { success: true }
 }

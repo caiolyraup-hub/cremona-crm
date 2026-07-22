@@ -5,8 +5,8 @@ import { getWorkspaceByIdCompatible, getWorkspaceIdForUser } from '@/lib/workspa
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  // O webhook da Meta precisa ser publico e nao pode depender de auth, onboarding ou cookies.
-  if (pathname === '/api/whatsapp/webhook') {
+  // Webhooks de provedores precisam ser publicos e nao podem depender de auth, onboarding ou cookies.
+  if (pathname === '/api/whatsapp/webhook' || pathname.startsWith('/api/webhooks/twilio/')) {
     return NextResponse.next({ request })
   }
 

@@ -16,6 +16,9 @@ const WORKSPACE_CORE_SELECT = [
 const WORKSPACE_WHATSAPP_CONFIG_SELECT = [
   'whatsapp_phone_number_id',
   'whatsapp_business_account_id',
+  'whatsapp_provider',
+  'twilio_whatsapp_from',
+  'twilio_content_sid_new_lead',
 ].join(', ')
 
 const WORKSPACE_ONBOARDING_SELECT = [
@@ -60,6 +63,9 @@ const ONBOARDING_COLUMNS = [
 const WHATSAPP_CONFIG_COLUMNS = [
   'whatsapp_phone_number_id',
   'whatsapp_business_account_id',
+  'whatsapp_provider',
+  'twilio_whatsapp_from',
+  'twilio_content_sid_new_lead',
 ] as const
 
 const STRIPE_COLUMNS = [
@@ -94,7 +100,11 @@ type WorkspaceWithOnboardingRow = WorkspaceCoreRow &
 type WorkspaceWithWhatsappConfigRow = WorkspaceCoreRow &
   Pick<
     Tables<'workspaces'>,
-    'whatsapp_phone_number_id' | 'whatsapp_business_account_id'
+    | 'whatsapp_phone_number_id'
+    | 'whatsapp_business_account_id'
+    | 'whatsapp_provider'
+    | 'twilio_whatsapp_from'
+    | 'twilio_content_sid_new_lead'
   >
 
 export type WorkspaceCompatibilityResult = {
@@ -170,7 +180,14 @@ function withLegacyDefaults(
       >
     >
     whatsappConfig?: Partial<
-      Pick<Tables<'workspaces'>, 'whatsapp_phone_number_id' | 'whatsapp_business_account_id'>
+      Pick<
+        Tables<'workspaces'>,
+        | 'whatsapp_phone_number_id'
+        | 'whatsapp_business_account_id'
+        | 'whatsapp_provider'
+        | 'twilio_whatsapp_from'
+        | 'twilio_content_sid_new_lead'
+      >
     >
     stripe?: Partial<
       Pick<
@@ -189,6 +206,9 @@ function withLegacyDefaults(
     whatsapp_phone_number_id: options?.whatsappConfig?.whatsapp_phone_number_id ?? null,
     whatsapp_business_account_id:
       options?.whatsappConfig?.whatsapp_business_account_id ?? null,
+    whatsapp_provider: options?.whatsappConfig?.whatsapp_provider ?? 'meta_cloud',
+    twilio_whatsapp_from: options?.whatsappConfig?.twilio_whatsapp_from ?? null,
+    twilio_content_sid_new_lead: options?.whatsappConfig?.twilio_content_sid_new_lead ?? null,
     onboarding_completed: options?.onboarding?.onboarding_completed ?? true,
     business_name: options?.onboarding?.business_name ?? null,
     business_type: options?.onboarding?.business_type ?? null,
@@ -289,6 +309,9 @@ export async function getWorkspaceByIdCompatible(
             whatsapp_phone_number_id: whatsappConfigResult.data.whatsapp_phone_number_id,
             whatsapp_business_account_id:
               whatsappConfigResult.data.whatsapp_business_account_id,
+            whatsapp_provider: whatsappConfigResult.data.whatsapp_provider,
+            twilio_whatsapp_from: whatsappConfigResult.data.twilio_whatsapp_from,
+            twilio_content_sid_new_lead: whatsappConfigResult.data.twilio_content_sid_new_lead,
           },
         }),
         error: null,

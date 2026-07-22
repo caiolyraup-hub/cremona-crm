@@ -7,6 +7,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getWorkspaceByIdCompatible, isMissingOnboardingSchemaError } from '@/lib/workspace-compat'
 import { ensurePrimaryPipeline } from '@/lib/pipeline-defaults'
 import { testMetaWhatsAppConnection } from '@/lib/whatsapp/meta-api'
+import { normalizeTwilioWhatsAppAddress, validateTwilioProviderConfig } from '@/lib/whatsapp/providers'
+import type { WhatsAppProviderName } from '@/lib/whatsapp/providers'
 
 async function getAuthorizedWorkspaceId(
   supabase: Awaited<ReturnType<typeof createClient>>,
@@ -198,10 +200,13 @@ export async function updateSettingsPipelineStagesAction(
 export async function updateWhatsAppSettingsAction(
   workspaceId: string,
   data: {
+    whatsapp_provider?: WhatsAppProviderName
     whatsapp_phone_number_id: string
     whatsapp_business_account_id?: string
     whatsapp_phone: string
     whatsapp_token?: string
+    twilio_whatsapp_from?: string
+    twilio_content_sid_new_lead?: string
   }
 ): Promise<{ error: string | null }> {
   const { supabase, error: authError } = await requireAuthorizedUser(workspaceId)
@@ -218,17 +223,24 @@ export async function updateWhatsAppSettingsAction(
     }
   }
 
+  const provider = data.whatsapp_provider === 'twilio' ? 'twilio' : 'meta_cloud'
   const phoneNumberId = data.whatsapp_phone_number_id.trim()
   const businessAccountId = data.whatsapp_business_account_id?.trim() || null
   const whatsappPhone = data.whatsapp_phone.trim()
   const nextToken = data.whatsapp_token?.trim() || ''
+  const twilioFrom = normalizeTwilioWhatsAppAddress(data.twilio_whatsapp_from)
+  const twilioContentSid = data.twilio_content_sid_new_lead?.trim() || null
 
-  if (!phoneNumberId) {
+  if (provider === 'meta_cloud' && !phoneNumberId) {
     return { error: 'Informe o Phone Number ID do WhatsApp.' }
   }
 
-  if (!whatsappPhone) {
+  if (provider === 'meta_cloud' && !whatsappPhone) {
     return { error: 'Informe o numero do WhatsApp.' }
+  }
+
+  if (provider === 'twilio' && !twilioFrom) {
+    return { error: 'Informe o sender Twilio no formato whatsapp:+55...' }
   }
 
   const { data: workspace } = await (supabase as any)
@@ -243,14 +255,17 @@ export async function updateWhatsAppSettingsAction(
     return { error: 'Workspace nao encontrado.' }
   }
 
-  if (!workspace.whatsapp_token && !nextToken) {
+  if (provider === 'meta_cloud' && !workspace.whatsapp_token && !nextToken) {
     return { error: 'Informe o token de acesso para concluir a configuracao do WhatsApp.' }
   }
 
   const updatePayload: Record<string, string | null> = {
+    whatsapp_provider: provider,
     whatsapp_phone_number_id: phoneNumberId,
     whatsapp_business_account_id: businessAccountId,
     whatsapp_phone: whatsappPhone,
+    twilio_whatsapp_from: twilioFrom || null,
+    twilio_content_sid_new_lead: twilioContentSid,
   }
 
   if (nextToken) {
@@ -298,6 +313,9 @@ export async function disconnectWhatsAppAction(
       whatsapp_business_account_id: null,
       whatsapp_phone: null,
       whatsapp_token: null,
+      whatsapp_provider: 'meta_cloud',
+      twilio_whatsapp_from: null,
+      twilio_content_sid_new_lead: null,
     })
     .eq('id', workspaceId)
 
@@ -333,7 +351,29 @@ export async function testWhatsAppConnectionAction(
     }
   }
 
-  if (!workspace?.whatsapp_phone_number_id || !workspace.whatsapp_token) {
+  if (!workspace) {
+    return { success: false, error: 'Workspace nao encontrado.' }
+  }
+
+  if (workspace.whatsapp_provider === 'twilio') {
+    const result = validateTwilioProviderConfig({
+      id: workspace.id,
+      whatsapp_provider: workspace.whatsapp_provider,
+      whatsapp_phone_number_id: workspace.whatsapp_phone_number_id,
+      whatsapp_business_account_id: workspace.whatsapp_business_account_id,
+      whatsapp_phone: workspace.whatsapp_phone,
+      whatsapp_token: workspace.whatsapp_token,
+      twilio_whatsapp_from: workspace.twilio_whatsapp_from,
+      twilio_content_sid_new_lead: workspace.twilio_content_sid_new_lead,
+    })
+
+    return {
+      success: result.success,
+      error: result.success ? null : result.error ?? 'Configuracao Twilio incompleta.',
+    }
+  }
+
+  if (!workspace.whatsapp_phone_number_id || !workspace.whatsapp_token) {
     return {
       success: false,
       error: 'Preencha e salve o Phone Number ID e o token antes de testar a conexao.',

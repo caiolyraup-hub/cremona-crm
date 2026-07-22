@@ -14,6 +14,8 @@
     "test:automation-migration": "node --experimental-strip-types scripts/validate-automation-migration.ts",
     "test:automation-queue": "node --experimental-strip-types scripts/validate-automation-queue.ts",
     "test:automation-concurrency": "node --experimental-strip-types scripts/validate-automation-concurrency.ts",
+    "test:twilio-unit": "node --experimental-strip-types scripts/validate-twilio-provider.ts",
+    "test:twilio": "node --experimental-strip-types scripts/test-twilio-integration.ts",
     "test:whatsapp-sprint": "npx tsx scripts/test-whatsapp-sprint.ts",
     "check:stripe-env": "node --experimental-strip-types scripts/check-stripe-env.ts",
     "pre-deploy": "node --experimental-strip-types scripts/pre-deploy-check.ts",
@@ -46,7 +48,8 @@
     "sonner": "^2.0.7",
     "stripe": "^22.1.1",
     "tailwind-merge": "^3.5.0",
-    "tw-animate-css": "^1.4.0"
+    "tw-animate-css": "^1.4.0",
+    "twilio": "^6.0.2"
   },
   "devDependencies": {
     "@types/node": "^20",

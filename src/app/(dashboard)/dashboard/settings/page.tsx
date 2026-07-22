@@ -67,9 +67,12 @@ export default async function SettingsPage({
             <WhatsappSettings
               workspace={{
                 id: workspace.id,
+                whatsapp_provider: workspace.whatsapp_provider,
                 whatsapp_phone_number_id: workspace.whatsapp_phone_number_id,
                 whatsapp_business_account_id: workspace.whatsapp_business_account_id,
                 whatsapp_phone: workspace.whatsapp_phone,
+                twilio_whatsapp_from: workspace.twilio_whatsapp_from,
+                twilio_content_sid_new_lead: workspace.twilio_content_sid_new_lead,
                 has_whatsapp_token: Boolean(workspace.whatsapp_token),
               }}
               diagnostics={{

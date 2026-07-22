@@ -500,15 +500,24 @@ export async function GET(request: NextRequest) {
 
     let result: AutomationActionResult
     try {
+      const actionContext = {
+        automationQueueId: job.id,
+        eventKey: job.event_key,
+        attempt: job.attempts,
+        workspaceId: job.workspace_id,
+        contactId: job.contact_id,
+        automationId: job.automation_id,
+      }
+
       switch (automation.action_type) {
         case 'send_whatsapp_text':
-          result = await executeWhatsAppTextAction(automation, contact, job.workspace_id)
+          result = await executeWhatsAppTextAction(automation, contact, job.workspace_id, actionContext)
           break
         case 'send_whatsapp_template':
-          result = await executeWhatsAppTemplateAction(automation, contact, job.workspace_id)
+          result = await executeWhatsAppTemplateAction(automation, contact, job.workspace_id, actionContext)
           break
         case 'send_whatsapp_media':
-          result = await executeWhatsAppMediaAction(automation, contact, job.workspace_id)
+          result = await executeWhatsAppMediaAction(automation, contact, job.workspace_id, actionContext)
           break
         case 'create_task':
           result = await executeCreateTaskAction(automation, contact, job.workspace_id)

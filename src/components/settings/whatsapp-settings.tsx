@@ -26,9 +26,12 @@ import {
 interface WhatsappSettingsProps {
   workspace: {
     id: string
+    whatsapp_provider: 'meta_cloud' | 'twilio'
     whatsapp_phone_number_id: string | null
     whatsapp_business_account_id: string | null
     whatsapp_phone: string | null
+    twilio_whatsapp_from: string | null
+    twilio_content_sid_new_lead: string | null
     has_whatsapp_token: boolean
   }
   diagnostics: {
@@ -46,33 +49,48 @@ type ConnectionFeedback =
 
 export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsProps) {
   const router = useRouter()
+  const [provider, setProvider] = useState<'meta_cloud' | 'twilio'>(
+    workspace.whatsapp_provider ?? 'meta_cloud'
+  )
   const [phoneNumberId, setPhoneNumberId] = useState(workspace.whatsapp_phone_number_id ?? '')
   const [businessAccountId, setBusinessAccountId] = useState(
     workspace.whatsapp_business_account_id ?? ''
   )
   const [whatsAppPhone, setWhatsAppPhone] = useState(workspace.whatsapp_phone ?? '')
+  const [twilioFrom, setTwilioFrom] = useState(workspace.twilio_whatsapp_from ?? '')
+  const [twilioContentSid, setTwilioContentSid] = useState(
+    workspace.twilio_content_sid_new_lead ?? ''
+  )
   const [token, setToken] = useState('')
   const [connectionFeedback, setConnectionFeedback] = useState<ConnectionFeedback>(null)
   const [isSaving, startSaving] = useTransition()
   const [isTesting, startTesting] = useTransition()
   const [isDisconnecting, startDisconnecting] = useTransition()
 
-  const hasExistingMinimumConfig = Boolean(
-    workspace.whatsapp_phone_number_id && workspace.whatsapp_phone && workspace.has_whatsapp_token
-  )
-  const hasMinimumConfig = Boolean(
-    phoneNumberId.trim() && whatsAppPhone.trim() && (token.trim() || workspace.has_whatsapp_token)
-  )
+  const hasExistingMinimumConfig =
+    provider === 'twilio'
+      ? Boolean(workspace.twilio_whatsapp_from)
+      : Boolean(
+          workspace.whatsapp_phone_number_id && workspace.whatsapp_phone && workspace.has_whatsapp_token
+        )
+  const hasMinimumConfig =
+    provider === 'twilio'
+      ? Boolean(twilioFrom.trim())
+      : Boolean(
+          phoneNumberId.trim() &&
+            whatsAppPhone.trim() &&
+            (token.trim() || workspace.has_whatsapp_token)
+        )
   const hasPartialConfig = !hasExistingMinimumConfig && Boolean(
     phoneNumberId.trim() ||
       whatsAppPhone.trim() ||
       businessAccountId.trim() ||
+      twilioFrom.trim() ||
+      twilioContentSid.trim() ||
       token.trim() ||
       workspace.has_whatsapp_token
   )
-  const isConnected = Boolean(
-    workspace.whatsapp_phone_number_id && workspace.whatsapp_phone && workspace.has_whatsapp_token
-  )
+  const isConnected = hasExistingMinimumConfig
   const statusTitle = isConnected
     ? 'WhatsApp configurado'
     : hasPartialConfig
@@ -83,10 +101,13 @@ export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsPro
     setConnectionFeedback(null)
 
     const result = await updateWhatsAppSettingsAction(workspace.id, {
+      whatsapp_provider: provider,
       whatsapp_phone_number_id: phoneNumberId,
       whatsapp_business_account_id: businessAccountId,
       whatsapp_phone: whatsAppPhone,
       whatsapp_token: token,
+      twilio_whatsapp_from: twilioFrom,
+      twilio_content_sid_new_lead: twilioContentSid,
     })
 
     if (result.error) {
@@ -108,7 +129,10 @@ export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsPro
 
       setConnectionFeedback({
         tone: 'success',
-        message: 'Conexao com a Meta validada com sucesso.',
+        message:
+          provider === 'twilio'
+            ? 'Configuracao Twilio validada sem chamada externa.'
+            : 'Conexao com a Meta validada com sucesso.',
       })
       toast.success('Conexao com WhatsApp validada com sucesso.')
     } else {
@@ -164,7 +188,11 @@ export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsPro
 
         {!hasMinimumConfig ? (
           <div className="mb-6 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-sm text-amber-900">
-            <p className="font-medium">Preencha Phone Number ID, numero e token para continuar.</p>
+            <p className="font-medium">
+              {provider === 'twilio'
+                ? 'Preencha o sender Twilio para continuar.'
+                : 'Preencha Phone Number ID, numero e token para continuar.'}
+            </p>
             <p className="mt-1 text-xs text-amber-800">
               O token pode ficar em branco apenas quando este workspace ja tiver um token salvo.
             </p>
@@ -175,24 +203,36 @@ export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsPro
           <div className="mb-6 grid gap-3 rounded-2xl border border-green-100 bg-green-50 p-4 text-sm text-green-900">
             <div>
               <p className="text-xs uppercase tracking-wide text-green-700">Numero configurado</p>
-              <p className="mt-1 font-medium">{workspace.whatsapp_phone}</p>
+              <p className="mt-1 font-medium">
+                {provider === 'twilio' ? workspace.twilio_whatsapp_from : workspace.whatsapp_phone}
+              </p>
             </div>
-            <div>
-              <p className="text-xs uppercase tracking-wide text-green-700">Phone Number ID</p>
-              <p className="mt-1 font-medium">{workspace.whatsapp_phone_number_id}</p>
-            </div>
-            {workspace.whatsapp_business_account_id ? (
+            {provider === 'meta_cloud' ? (
               <div>
                 <p className="text-xs uppercase tracking-wide text-green-700">
-                  WhatsApp Business Account ID
+                  Phone Number ID
                 </p>
-                <p className="mt-1 font-medium">{workspace.whatsapp_business_account_id}</p>
+                <p className="mt-1 font-medium">{workspace.whatsapp_phone_number_id}</p>
               </div>
             ) : null}
           </div>
         ) : null}
 
         <div className="grid gap-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Provedor</label>
+            <select
+              value={provider}
+              onChange={(event) => setProvider(event.target.value as 'meta_cloud' | 'twilio')}
+              className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition-colors focus:border-green-400 focus:ring-2 focus:ring-green-100"
+            >
+              <option value="meta_cloud">Meta Cloud API</option>
+              <option value="twilio">Twilio</option>
+            </select>
+          </div>
+
+          {provider === 'meta_cloud' ? (
+            <>
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700">Phone Number ID</label>
             <input
@@ -248,12 +288,51 @@ export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsPro
               O token nunca e exibido completo depois de salvo e nao vai para o frontend.
             </p>
           </div>
+            </>
+          ) : (
+            <>
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Sender Twilio WhatsApp
+                </label>
+                <input
+                  type="text"
+                  value={twilioFrom}
+                  onChange={(event) => setTwilioFrom(event.target.value)}
+                  placeholder="whatsapp:+5582999999999"
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition-colors focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                />
+              </div>
+
+              <div>
+                <label className="mb-1 block text-sm font-medium text-gray-700">
+                  Content SID padrao de novo lead
+                </label>
+                <input
+                  type="text"
+                  value={twilioContentSid}
+                  onChange={(event) => setTwilioContentSid(event.target.value)}
+                  placeholder="HX..."
+                  className="w-full rounded-xl border border-gray-200 px-3 py-2.5 text-sm outline-none transition-colors focus:border-green-400 focus:ring-2 focus:ring-green-100"
+                />
+              </div>
+            </>
+          )}
         </div>
 
         <div className="mt-4 rounded-2xl border border-amber-100 bg-amber-50 p-4 text-xs text-amber-900">
-          <p>Use um System User Token permanente em producao.</p>
-          <p className="mt-1">Nunca use o token temporario de 24h em producao.</p>
-          <p className="mt-1">Depois de salvar, teste a conexao antes de ativar o webhook real.</p>
+          {provider === 'twilio' ? (
+            <>
+              <p>As credenciais Twilio ficam somente nas variaveis server-side da Vercel.</p>
+              <p className="mt-1">A Inbox nunca exibe API Key Secret, Auth Token ou Account SID.</p>
+            </>
+          ) : (
+            <>
+              <p>Use um System User Token permanente em producao.</p>
+              <p className="mt-1">Nunca use o token temporario de 24h em producao.</p>
+              <p className="mt-1">Depois de salvar, teste a conexao antes de ativar o webhook real.</p>
+            </>
+          )}
         </div>
 
         <div className="mt-4 rounded-2xl border border-gray-200 bg-gray-50 p-4">
@@ -276,17 +355,18 @@ export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsPro
               </span>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span>Phone Number ID</span>
-              <span className={phoneNumberId.trim() ? 'text-green-700' : 'text-amber-700'}>
-                {phoneNumberId.trim() ? 'Configurado' : 'Ausente'}
+              <span>{provider === 'twilio' ? 'TWILIO_STATUS_CALLBACK_URL' : 'Phone Number ID'}</span>
+              <span className={(provider === 'twilio' || phoneNumberId.trim()) ? 'text-green-700' : 'text-amber-700'}>
+                {provider === 'twilio' ? 'Server-side' : phoneNumberId.trim() ? 'Configurado' : 'Ausente'}
               </span>
             </div>
             <div className="flex items-center justify-between gap-3">
-              <span>Numero WhatsApp</span>
-              <span className={whatsAppPhone.trim() ? 'text-green-700' : 'text-amber-700'}>
-                {whatsAppPhone.trim() ? 'Configurado' : 'Ausente'}
+              <span>{provider === 'twilio' ? 'Sender Twilio' : 'Numero WhatsApp'}</span>
+              <span className={(provider === 'twilio' ? twilioFrom.trim() : whatsAppPhone.trim()) ? 'text-green-700' : 'text-amber-700'}>
+                {(provider === 'twilio' ? twilioFrom.trim() : whatsAppPhone.trim()) ? 'Configurado' : 'Ausente'}
               </span>
             </div>
+            {provider === 'meta_cloud' ? (
             <div className="flex items-center justify-between gap-3">
               <span>Token de acesso</span>
               <span
@@ -295,6 +375,7 @@ export function WhatsappSettings({ workspace, diagnostics }: WhatsappSettingsPro
                 {token.trim() || workspace.has_whatsapp_token ? 'Configurado' : 'Ausente'}
               </span>
             </div>
+            ) : null}
           </div>
 
           <div className="mt-4 rounded-xl border border-gray-200 bg-white p-3 text-xs text-gray-600">
