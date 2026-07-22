@@ -9,6 +9,17 @@ export type QueueableAutomation = Pick<
 
 export type AutomationQueueInsert = Insert<'automation_queue'>
 
+export function buildAutomationEventKey(
+  automation: Pick<QueueableAutomation, 'id'>,
+  event: AutomationEvent
+): string {
+  if (event.type === 'contact_created') {
+    return `contact_created:${event.contactId}:${automation.id}`
+  }
+
+  return `${event.type}:${event.contactId}:${event.stageId}:${automation.id}`
+}
+
 export function automationMatchesEvent(
   automation: QueueableAutomation,
   event: AutomationEvent
@@ -42,6 +53,7 @@ export function buildAutomationQueueRows(
         contact_id: event.contactId,
         scheduled_for: scheduledFor.toISOString(),
         status: 'pending',
+        event_key: buildAutomationEventKey(automation, event),
       }
     })
 }

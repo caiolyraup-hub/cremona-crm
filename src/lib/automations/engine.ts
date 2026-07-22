@@ -14,6 +14,11 @@ export class AutomationEnqueueError extends Error {
   }
 }
 
+export type AutomationEnqueueResult = {
+  enqueued: number
+  duplicates: number
+}
+
 function getEventContext(event: AutomationEvent) {
   return {
     event_type: event.type,
@@ -23,7 +28,19 @@ function getEventContext(event: AutomationEvent) {
   }
 }
 
-export async function runAutomationsForEvent(event: AutomationEvent): Promise<{ enqueued: number }> {
+function isDuplicateEventKeyError(error: { code?: string; message?: string }): boolean {
+  const message = error.message ?? ''
+
+  return (
+    error.code === '23505' &&
+    (
+      message.includes('automation_queue_event_key_unique') ||
+      message.includes('event_key')
+    )
+  )
+}
+
+export async function runAutomationsForEvent(event: AutomationEvent): Promise<AutomationEnqueueResult> {
   const supabase = createAdminClient()
 
   let query = (supabase as any)
@@ -51,21 +68,43 @@ export async function runAutomationsForEvent(event: AutomationEvent): Promise<{ 
   const queueRows = buildAutomationQueueRows(automations, event)
 
   if (queueRows.length === 0) {
-    return { enqueued: 0 }
+    return { enqueued: 0, duplicates: 0 }
   }
 
-  const { error: insertError } = await (supabase as any)
-    .from('automation_queue')
-    .insert(queueRows)
+  let enqueued = 0
+  let duplicates = 0
 
-  if (insertError) {
-    console.error('[automations] erro ao inserir jobs na fila.', {
+  for (const queueRow of queueRows) {
+    const { error: insertError } = await (supabase as any)
+      .from('automation_queue')
+      .insert(queueRow)
+
+    if (!insertError) {
+      enqueued++
+      continue
+    }
+
+    if (isDuplicateEventKeyError(insertError)) {
+      duplicates++
+      console.info('[automations] job duplicado ignorado.', {
+        ...getEventContext(event),
+        event_key: queueRow.event_key,
+        automation_id: queueRow.automation_id,
+        contact_id: queueRow.contact_id,
+        workspace_id: queueRow.workspace_id,
+        status: queueRow.status,
+      })
+      continue
+    }
+
+    console.error('[automations] erro ao inserir job na fila.', {
       ...getEventContext(event),
-      automation_ids: queueRows.map((row) => row.automation_id),
+      event_key: queueRow.event_key,
+      automation_id: queueRow.automation_id,
       error: insertError.message,
     })
     throw new AutomationEnqueueError('Nao foi possivel registrar automacoes na fila.')
   }
 
-  return { enqueued: queueRows.length }
+  return { enqueued, duplicates }
 }

@@ -1901,4 +1901,50 @@ Corrigir o motor de automacoes para ambiente serverless: nenhuma automacao deve 
 
 - `task_overdue` aparece em tipos/UI de automacoes, mas ainda nao ha produtor de evento.
 - Criacoes de contato por onboarding, importacao CSV client-side e webhook inbound nao disparam `contact_created` hoje; centralizacao da criacao de contatos fica para prompt futuro.
-- Ainda nao ha `event_key`, indice unico de idempotencia, claim seguro com `locked_at`/`locked_by`, nem exponential backoff.
+- Naquele momento ainda nao havia `event_key`, indice unico de idempotencia, claim seguro com `locked_at`/`locked_by`, nem exponential backoff; a sessao seguinte cobre idempotencia e claim seguro sem `locked_at`/`locked_by`.
+
+## Sessao Idempotencia da Fila de Automacoes - 2026-07-22
+
+### Objetivo
+
+Tornar `automation_queue` idempotente e segura contra concorrencia entre execucoes simultaneas do cron, sem criar novo cron, nova fila ou nova infraestrutura.
+
+### Arquivos alterados nesta sessao
+
+- `src/supabase/migrations/015_automation_queue_idempotency.sql` - adiciona `event_key text` e indice unico parcial `automation_queue_event_key_unique`.
+- `src/types/database.ts` - inclui `event_key` nos tipos da tabela `automation_queue`.
+- `src/lib/automations/queue.ts` - adiciona builder deterministico e testavel de `event_key`.
+- `src/lib/automations/engine.ts` - insere jobs de forma idempotente e trata duplicidade por `event_key` como resultado valido.
+- `src/app/api/cron/process-automation-queue/route.ts` - claim usa `UPDATE ... WHERE status = pending AND scheduled_for <= now RETURNING *`; a acao so executa apos confirmar `claimedJob`.
+- `scripts/validate-automation-migration.ts` - valida coluna, indice unico parcial e rollback documentado na migration.
+- `scripts/validate-automation-queue.ts` - valida chaves deterministicas, duplicidade logica e diferenca entre contatos/etapas.
+- `scripts/validate-automation-concurrency.ts` - simula claim concorrente, ausencia de execucao sem claim e isolamento por workspace.
+- `README.md` - documenta idempotencia, claim e limites restantes.
+
+### Formato da event_key
+
+- `contact_created:{contact_id}:{automation_id}`
+- `stage_enter:{contact_id}:{stage_id}:{automation_id}`
+- `stage_exit:{contact_id}:{stage_id}:{automation_id}`
+
+A chave nao inclui timestamp nem valor aleatorio. A mesma combinacao logica sempre gera a mesma `event_key`.
+
+### Comportamento atual
+
+- `delay_minutes = 0` e `delay_minutes > 0` continuam entrando em `automation_queue` com `status = pending`.
+- A coluna `event_key` e nullable para compatibilidade com jobs antigos, mas jobs criados pelo motor atual recebem chave.
+- O indice unico parcial impede dois jobs com a mesma `event_key` nao nula.
+- Duplicidade por `event_key` e ignorada como resultado idempotente, com log sanitizado contendo apenas ids e status.
+- O worker seleciona apenas `status = pending` e `scheduled_for <= now`.
+- O worker so chama `executeWhatsAppTextAction`, `executeWhatsAppTemplateAction`, `executeWhatsAppMediaAction` ou `executeCreateTaskAction` depois de receber a linha em `claimedJob`.
+- A execucao usa os dados de `claimedJob` para `attempts`, `max_attempts`, `workspace_id`, `automation_id`, `contact_id`, `status` e `event_key`.
+- Antes de qualquer acao externa, o worker valida que automacao e contato pertencem ao mesmo `workspace_id` do job; inconsistencias falham de forma segura.
+
+### Limitacoes restantes
+
+- Nao ha exponential backoff.
+- Nao ha recuperacao automatica de jobs presos em `processing`.
+- Ainda nao existem `locked_at` e `locked_by`.
+- O claim ainda mantem o filtro historico `attempts < 3`; o respeito integral a `max_attempts` fica para o Prompt 03.
+- Nao ha dead letter queue, alerta ou retry manual.
+- Rollback da migration: `DROP INDEX IF EXISTS automation_queue_event_key_unique;` e `ALTER TABLE automation_queue DROP COLUMN IF EXISTS event_key;`.

@@ -59,7 +59,9 @@ npm run build
 npm run check:whatsapp-env
 npm run test:webhook
 npm run test:whatsapp-window
+npm run test:automation-migration
 npm run test:automation-queue
+npm run test:automation-concurrency
 ```
 
 ## Automacoes - fila duravel
@@ -72,15 +74,24 @@ Regras atuais:
 
 - `delay_minutes = 0` tambem cria job `pending`, com `scheduled_for` no momento atual.
 - `delay_minutes > 0` cria job `pending`, com `scheduled_for = agora + delay`.
+- cada job recebe uma `event_key` deterministica:
+  `contact_created:{contact_id}:{automation_id}`,
+  `stage_enter:{contact_id}:{stage_id}:{automation_id}` ou
+  `stage_exit:{contact_id}:{stage_id}:{automation_id}`.
+- `automation_queue_event_key_unique` impede duplicidade quando `event_key` nao e nula; duplicatas sao ignoradas como resultado idempotente.
 - o cron existente em `/api/cron/process-automation-queue` e o unico responsavel por executar a acao.
+- o worker adquire um job com `UPDATE ... WHERE status = pending AND scheduled_for <= now RETURNING *`; ele so executa WhatsApp/tarefas quando a linha adquirida e retornada.
+- antes de executar, o worker valida que job, automacao e contato pertencem ao mesmo `workspace_id`.
 - nenhuma automacao ativa e resultado valido: nenhum job e criado e a operacao principal continua.
 - erro ao buscar automacoes ou inserir jobs na fila e tratado como falha de registro duravel; a Server Action retorna erro ao usuario e registra contexto seguro (`event_type`, `workspace_id`, `contact_id`, `stage_id`, ids de automacao quando houver).
 
 Limitacoes conhecidas:
 
-- nao ha idempotencia por `event_key`; repetir a acao pode criar jobs duplicados.
-- o claim do worker ainda e defensivo por `status = pending`, mas nao possui `locked_at`/`locked_by`.
-- retry ainda e simples por tentativas, sem exponential backoff.
+- rollback da idempotencia: `DROP INDEX IF EXISTS automation_queue_event_key_unique;` e `ALTER TABLE automation_queue DROP COLUMN IF EXISTS event_key;`.
+- retry ainda e simples, sem exponential backoff.
+- nao ha recuperacao automatica de jobs presos em `processing`.
+- ainda nao existem `locked_at` e `locked_by`.
+- o respeito integral a `max_attempts` no claim fica para o proximo prompt.
 - `task_overdue` existe em tipos/UI, mas ainda nao possui produtor de evento.
 
 ## WhatsApp - arquitetura

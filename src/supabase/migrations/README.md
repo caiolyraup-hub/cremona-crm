@@ -26,6 +26,10 @@ Execute no Supabase SQL Editor, nesta ordem:
     Fila para automacoes com delay
 13. 013_whatsapp_indexes.sql
     Indices de performance para analytics
+14. 014_pipelines.sql
+    Ajustes de pipeline
+15. 015_automation_queue_idempotency.sql
+    event_key e indice unico parcial para idempotencia da fila
 
 ## Como verificar se todas foram aplicadas
 

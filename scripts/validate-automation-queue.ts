@@ -1,5 +1,9 @@
 import assert from 'node:assert/strict'
-import { buildAutomationQueueRows, type QueueableAutomation } from '../src/lib/automations/queue.ts'
+import {
+  buildAutomationEventKey,
+  buildAutomationQueueRows,
+  type QueueableAutomation,
+} from '../src/lib/automations/queue.ts'
 import type { AutomationEvent } from '../src/lib/automations/engine.ts'
 
 const workspaceId = 'workspace-1'
@@ -79,5 +83,44 @@ const stageExitRows = buildAutomationQueueRows([
 }, nowMs)
 
 assert.deepEqual(stageExitRows.map((row) => row.automation_id), ['exit-a'])
+
+const duplicateKeyA = buildAutomationEventKey(
+  automation({ id: 'duplicate-contact' }),
+  contactCreated
+)
+const duplicateKeyB = buildAutomationEventKey(
+  automation({ id: 'duplicate-contact' }),
+  contactCreated
+)
+
+assert.equal(duplicateKeyA, 'contact_created:contact-1:duplicate-contact')
+assert.equal(duplicateKeyA, duplicateKeyB, 'same logical event should produce same event_key')
+assert.equal(new Set([duplicateKeyA, duplicateKeyB]).size, 1)
+
+const contactAKey = buildAutomationEventKey(
+  automation({ id: 'contact-event' }),
+  { type: 'contact_created', workspaceId, contactId: 'contact-a' }
+)
+const contactBKey = buildAutomationEventKey(
+  automation({ id: 'contact-event' }),
+  { type: 'contact_created', workspaceId, contactId: 'contact-b' }
+)
+
+assert.notEqual(contactAKey, contactBKey, 'different contacts should produce different event_keys')
+
+const stageAKey = buildAutomationEventKey(
+  automation({ id: 'stage-event', trigger_type: 'stage_enter', trigger_config: { stage_id: stageA } }),
+  { type: 'stage_enter', workspaceId, contactId, stageId: stageA }
+)
+const stageBKey = buildAutomationEventKey(
+  automation({ id: 'stage-event', trigger_type: 'stage_enter', trigger_config: { stage_id: stageB } }),
+  { type: 'stage_enter', workspaceId, contactId, stageId: stageB }
+)
+
+assert.equal(stageAKey, 'stage_enter:contact-1:stage-a:stage-event')
+assert.notEqual(stageAKey, stageBKey, 'different stages should produce different event_keys')
+
+assert.equal(immediateRows[0].event_key, 'contact_created:contact-1:immediate')
+assert.equal(delayedRows[0].event_key, 'contact_created:contact-1:delayed')
 
 console.log('OK automation queue validation')

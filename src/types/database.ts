@@ -517,6 +517,7 @@ export interface Database {
           attempts: number
           max_attempts: number
           error_message: string | null
+          event_key: string | null
           created_at: string
           processed_at: string | null
         }
@@ -530,6 +531,7 @@ export interface Database {
           attempts?: number
           max_attempts?: number
           error_message?: string | null
+          event_key?: string | null
           created_at?: string
           processed_at?: string | null
         }
@@ -543,6 +545,7 @@ export interface Database {
           attempts?: number
           max_attempts?: number
           error_message?: string | null
+          event_key?: string | null
           created_at?: string
           processed_at?: string | null
         }
