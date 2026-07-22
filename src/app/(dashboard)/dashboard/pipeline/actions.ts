@@ -177,22 +177,33 @@ export async function moveContactStageAction(
     content: activityContent,
   })
 
-  // 6. Disparar automações em background
-  if (newStageId) {
-    void runAutomationsForEvent({
-      type: 'stage_enter',
-      workspaceId,
-      contactId,
-      stageId: newStageId,
+  // 6. Registrar eventos de automacao de forma duravel antes de concluir.
+  try {
+    if (previousStageId) {
+      await runAutomationsForEvent({
+        type: 'stage_exit',
+        workspaceId,
+        contactId,
+        stageId: previousStageId,
+      })
+    }
+    if (newStageId) {
+      await runAutomationsForEvent({
+        type: 'stage_enter',
+        workspaceId,
+        contactId,
+        stageId: newStageId,
+      })
+    }
+  } catch (automationError) {
+    console.error('[pipeline] contato movido, mas automacoes nao foram enfileiradas.', {
+      workspace_id: workspaceId,
+      contact_id: contactId,
+      previous_stage_id: previousStageId,
+      new_stage_id: newStageId,
+      error: automationError instanceof Error ? automationError.message : String(automationError),
     })
-  }
-  if (previousStageId) {
-    void runAutomationsForEvent({
-      type: 'stage_exit',
-      workspaceId,
-      contactId,
-      stageId: previousStageId,
-    })
+    return { error: 'Contato movido, mas nao foi possivel registrar as automacoes. Tente novamente.' }
   }
 
   return { error: null }

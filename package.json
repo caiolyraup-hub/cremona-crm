@@ -11,6 +11,7 @@
     "check:whatsapp-env": "node --experimental-strip-types scripts/check-whatsapp-env.ts",
     "test:whatsapp-window": "node --experimental-strip-types scripts/test-whatsapp-window.ts",
     "test:automations": "node --experimental-strip-types scripts/test-automations.ts",
+    "test:automation-queue": "node --experimental-strip-types scripts/validate-automation-queue.ts",
     "test:whatsapp-sprint": "npx tsx scripts/test-whatsapp-sprint.ts",
     "check:stripe-env": "node --experimental-strip-types scripts/check-stripe-env.ts",
     "pre-deploy": "node --experimental-strip-types scripts/pre-deploy-check.ts",

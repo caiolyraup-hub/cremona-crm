@@ -1864,3 +1864,41 @@ Sprint 4: IA no CRM
 - Resumo semanal automatico com Claude
 - Classificacao automatica de leads
 - Analise de sentimento nas conversas
+
+## Sessao Automacoes Duraveis - 2026-07-22
+
+### Objetivo
+
+Corrigir o motor de automacoes para ambiente serverless: nenhuma automacao deve depender de Promise solta apos a resposta HTTP. Todas as execucoes agora passam por `automation_queue`, inclusive `delay_minutes = 0`.
+
+### Arquivos alterados nesta sessao
+
+- `src/lib/automations/engine.ts` - `runAutomationsForEvent` deixou de executar acoes diretamente e passou a inserir jobs duraveis na fila.
+- `src/lib/automations/queue.ts` - helper puro para casar automacoes com eventos e calcular `scheduled_for`.
+- `src/app/(dashboard)/dashboard/contacts/actions.ts` - `contact_created` agora aguarda o enfileiramento.
+- `src/app/(dashboard)/dashboard/pipeline/actions.ts` - `stage_exit` e `stage_enter` agora aguardam o enfileiramento.
+- `src/app/api/cron/process-automation-queue/route.ts` - worker existente passou a executar `send_whatsapp_media`, acao que ja existia no motor antigo.
+- `scripts/validate-automation-queue.ts` - validacao local sem Supabase para delay 0, delay 15, ausencia de automacoes e filtros por etapa.
+- `package.json` - script `test:automation-queue`.
+- `README.md` - documentacao breve da fila duravel.
+
+### Comportamento atual
+
+- `contact_created`, `stage_enter` e `stage_exit` continuam sendo os eventos produzidos por Server Actions.
+- A selecao continua respeitando `workspace_id`, `active = true`, `trigger_type` e `trigger_config.stage_id` para eventos de etapa.
+- `delay_minutes = 0` cria job `pending` com `scheduled_for` no momento atual.
+- `delay_minutes > 0` cria job `pending` com `scheduled_for = agora + delay`.
+- Nenhuma automacao ativa e resultado valido: nenhum job e criado e a operacao principal continua.
+- Erro ao buscar automacoes ou inserir jobs na fila e falha de registro duravel. O contato/movimento pode ja ter sido gravado, mas a Server Action retorna erro ao usuario e registra contexto seguro, sem tokens ou segredos.
+- O cron existente `/api/cron/process-automation-queue` continua sendo o unico executor das acoes.
+
+### Compatibilidade de acoes
+
+- Acoes suportadas pela UI/tipos/worker apos esta sessao: `send_whatsapp_text`, `send_whatsapp_template`, `send_whatsapp_media`, `create_task`.
+- Diferenca encontrada antes da correcao: o worker nao tratava `send_whatsapp_media`, embora o motor direto e a UI ja suportassem. Foi corrigido como ajuste minimo para evitar regressao ao remover execucao direta do motor.
+
+### Limitacoes restantes
+
+- `task_overdue` aparece em tipos/UI de automacoes, mas ainda nao ha produtor de evento.
+- Criacoes de contato por onboarding, importacao CSV client-side e webhook inbound nao disparam `contact_created` hoje; centralizacao da criacao de contatos fica para prompt futuro.
+- Ainda nao ha `event_key`, indice unico de idempotencia, claim seguro com `locked_at`/`locked_by`, nem exponential backoff.

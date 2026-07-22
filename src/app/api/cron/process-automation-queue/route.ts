@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createAdminClient } from '@/lib/supabase/admin'
 import {
+  executeWhatsAppMediaAction,
   executeWhatsAppTextAction,
   executeWhatsAppTemplateAction,
   executeCreateTaskAction,
@@ -80,6 +81,9 @@ export async function GET(request: NextRequest) {
           break
         case 'send_whatsapp_template':
           result = await executeWhatsAppTemplateAction(automation, contact, item.workspace_id)
+          break
+        case 'send_whatsapp_media':
+          result = await executeWhatsAppMediaAction(automation, contact, item.workspace_id)
           break
         case 'create_task':
           result = await executeCreateTaskAction(automation, contact, item.workspace_id)

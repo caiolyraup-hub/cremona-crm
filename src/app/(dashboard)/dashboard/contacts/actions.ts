@@ -49,11 +49,20 @@ export async function createContactAction(
 
   const newContactId = data?.[0]?.id
   if (newContactId) {
-    void runAutomationsForEvent({
-      type: 'contact_created',
-      workspaceId,
-      contactId: newContactId,
-    })
+    try {
+      await runAutomationsForEvent({
+        type: 'contact_created',
+        workspaceId,
+        contactId: newContactId,
+      })
+    } catch (automationError) {
+      console.error('[contacts] contato criado, mas automacoes nao foram enfileiradas.', {
+        workspace_id: workspaceId,
+        contact_id: newContactId,
+        error: automationError instanceof Error ? automationError.message : String(automationError),
+      })
+      return { error: 'Contato criado, mas nao foi possivel registrar as automacoes. Tente novamente.' }
+    }
   }
 
   revalidatePath('/dashboard/contacts')

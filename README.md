@@ -59,7 +59,29 @@ npm run build
 npm run check:whatsapp-env
 npm run test:webhook
 npm run test:whatsapp-window
+npm run test:automation-queue
 ```
+
+## Automacoes - fila duravel
+
+Todas as automacoes disparadas por `contact_created`, `stage_enter` e `stage_exit`
+sao registradas em `automation_queue`. O motor `lib/automations/engine.ts`
+nao executa mais chamadas externas diretamente.
+
+Regras atuais:
+
+- `delay_minutes = 0` tambem cria job `pending`, com `scheduled_for` no momento atual.
+- `delay_minutes > 0` cria job `pending`, com `scheduled_for = agora + delay`.
+- o cron existente em `/api/cron/process-automation-queue` e o unico responsavel por executar a acao.
+- nenhuma automacao ativa e resultado valido: nenhum job e criado e a operacao principal continua.
+- erro ao buscar automacoes ou inserir jobs na fila e tratado como falha de registro duravel; a Server Action retorna erro ao usuario e registra contexto seguro (`event_type`, `workspace_id`, `contact_id`, `stage_id`, ids de automacao quando houver).
+
+Limitacoes conhecidas:
+
+- nao ha idempotencia por `event_key`; repetir a acao pode criar jobs duplicados.
+- o claim do worker ainda e defensivo por `status = pending`, mas nao possui `locked_at`/`locked_by`.
+- retry ainda e simples por tentativas, sem exponential backoff.
+- `task_overdue` existe em tipos/UI, mas ainda nao possui produtor de evento.
 
 ## WhatsApp - arquitetura
 
