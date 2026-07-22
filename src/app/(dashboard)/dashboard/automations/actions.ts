@@ -155,11 +155,16 @@ async function validateWorkspaceAutomationConfig(
   if (data.action_type.startsWith('send_whatsapp_')) {
     const { data: workspace } = await (supabase as any)
       .from('workspaces')
-      .select('whatsapp_phone_number_id')
+      .select('whatsapp_provider, whatsapp_phone_number_id, twilio_whatsapp_from')
       .eq('id', workspaceId)
       .maybeSingle()
 
-    if (!workspace?.whatsapp_phone_number_id) {
+    const hasWhatsAppProvider =
+      workspace?.whatsapp_provider === 'twilio'
+        ? Boolean(workspace.twilio_whatsapp_from)
+        : Boolean(workspace?.whatsapp_phone_number_id)
+
+    if (!hasWhatsAppProvider) {
       return {
         error: null,
         warning:

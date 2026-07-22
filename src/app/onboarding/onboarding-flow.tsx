@@ -24,9 +24,11 @@ interface OnboardingFlowProps {
     business_name: string | null
     business_type: string | null
     logo_url: string | null
+    whatsapp_provider: 'meta_cloud' | 'twilio'
     whatsapp_phone_number_id: string | null
     whatsapp_business_account_id: string | null
     whatsapp_phone: string | null
+    twilio_whatsapp_from: string | null
     has_whatsapp_token: boolean
   }
   initialStages: Stage[]
@@ -46,11 +48,13 @@ export function OnboardingFlow({
   const [businessName, setBusinessName] = useState(workspace.business_name ?? workspace.name)
   const [contactsCount, setContactsCount] = useState(initialContactsCount)
   const [isWhatsAppConfigured, setIsWhatsAppConfigured] = useState(
-    Boolean(
-      workspace.whatsapp_phone_number_id &&
-      workspace.whatsapp_phone &&
-      workspace.has_whatsapp_token
-    )
+    workspace.whatsapp_provider === 'twilio'
+      ? Boolean(workspace.twilio_whatsapp_from)
+      : Boolean(
+          workspace.whatsapp_phone_number_id &&
+            workspace.whatsapp_phone &&
+            workspace.has_whatsapp_token
+        )
   )
 
   function goTo(next: number) {

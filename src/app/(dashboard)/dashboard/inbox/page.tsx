@@ -25,9 +25,14 @@ export default async function InboxPage() {
   )
   if (workspaceError) throw new Error(workspaceError.message)
 
-  const canSendMessages = Boolean(
-    workspace?.whatsapp_phone_number_id && workspace?.whatsapp_phone && workspace?.whatsapp_token
-  )
+  const canSendMessages =
+    workspace?.whatsapp_provider === 'twilio'
+      ? Boolean(workspace.twilio_whatsapp_from)
+      : Boolean(
+          workspace?.whatsapp_phone_number_id &&
+            workspace?.whatsapp_phone &&
+            workspace?.whatsapp_token
+        )
 
   return <InboxClient canSendMessages={canSendMessages} />
 }

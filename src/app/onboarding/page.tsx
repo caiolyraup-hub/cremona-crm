@@ -42,9 +42,11 @@ export default async function OnboardingPage() {
         business_name: workspace.business_name,
         business_type: workspace.business_type,
         logo_url: workspace.logo_url,
+        whatsapp_provider: workspace.whatsapp_provider,
         whatsapp_phone_number_id: workspace.whatsapp_phone_number_id,
         whatsapp_business_account_id: workspace.whatsapp_business_account_id,
         whatsapp_phone: workspace.whatsapp_phone,
+        twilio_whatsapp_from: workspace.twilio_whatsapp_from,
         has_whatsapp_token: Boolean(workspace.whatsapp_token),
       }}
       initialStages={stages ?? []}

@@ -12,9 +12,11 @@ import {
 interface StepWhatsappProps {
   workspace: {
     id: string
+    whatsapp_provider: 'meta_cloud' | 'twilio'
     whatsapp_phone_number_id: string | null
     whatsapp_business_account_id: string | null
     whatsapp_phone: string | null
+    twilio_whatsapp_from: string | null
     has_whatsapp_token: boolean
   }
   onNext: (configured: boolean) => void
@@ -23,9 +25,13 @@ interface StepWhatsappProps {
 
 export function StepWhatsapp({ workspace, onNext, onBack }: StepWhatsappProps) {
   const [isFormVisible, setIsFormVisible] = useState(
-    Boolean(
-      workspace.whatsapp_phone_number_id && workspace.whatsapp_phone && workspace.has_whatsapp_token
-    )
+    workspace.whatsapp_provider === 'twilio'
+      ? Boolean(workspace.twilio_whatsapp_from)
+      : Boolean(
+          workspace.whatsapp_phone_number_id &&
+            workspace.whatsapp_phone &&
+            workspace.has_whatsapp_token
+        )
   )
   const [phoneNumberId, setPhoneNumberId] = useState(workspace.whatsapp_phone_number_id ?? '')
   const [businessAccountId, setBusinessAccountId] = useState(
@@ -38,11 +44,13 @@ export function StepWhatsapp({ workspace, onNext, onBack }: StepWhatsappProps) {
 
   const isConfigured = useMemo(
     () =>
-      Boolean(
-        (workspace.has_whatsapp_token || token.trim()) &&
-        (phoneNumberId.trim() || workspace.whatsapp_phone_number_id) &&
-        (whatsAppPhone.trim() || workspace.whatsapp_phone)
-      ),
+      workspace.whatsapp_provider === 'twilio'
+        ? Boolean(workspace.twilio_whatsapp_from)
+        : Boolean(
+            (workspace.has_whatsapp_token || token.trim()) &&
+              (phoneNumberId.trim() || workspace.whatsapp_phone_number_id) &&
+              (whatsAppPhone.trim() || workspace.whatsapp_phone)
+          ),
     [
       phoneNumberId,
       token,
@@ -50,6 +58,8 @@ export function StepWhatsapp({ workspace, onNext, onBack }: StepWhatsappProps) {
       workspace.has_whatsapp_token,
       workspace.whatsapp_phone,
       workspace.whatsapp_phone_number_id,
+      workspace.twilio_whatsapp_from,
+      workspace.whatsapp_provider,
     ]
   )
 
