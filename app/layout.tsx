@@ -1,1 +1,23 @@
-aW1wb3J0IHR5cGUgeyBNZXRhZGF0YSB9IGZyb20gJ25leHQnCmltcG9ydCB7IEludGVyIH0gZnJvbSAnbmV4dC9mb250L2dvb2dsZScKaW1wb3J0ICcuL2dsb2JhbHMuY3NzJwoKY29uc3QgaW50ZXIgPSBJbnRlcih7IHN1YnNldHM6IFsnbGF0aW4nXSwgdmFyaWFibGU6ICctLWZvbnQtc2FucycgfSkKCmNvbnN0IEJBU0VfVVJMID0gcHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfQVBQX1VSTD8udHJpbSgpLnJlcGxhY2UoL1wvKyQvLCAnJykgPz8gJ2h0dHBzOi8vY3JlbW9uYS5hcHAnCgpleHBvcnQgY29uc3QgbWV0YWRhdGE6IE1ldGFkYXRhID0gewogIG1ldGFkYXRhQmFzZTogbmV3IFVSTChCQVNFX1VSTCksCiAgdGl0bGU6IHsKICAgIGRlZmF1bHQ6ICdDcmVtb25hIOKAlCBDUk0gdmlhIFdoYXRzQXBwIHBhcmEgcGVxdWVub3MgbmVnw7NjaW9zJywKICAgIHRlbXBsYXRlOiAnJXMgfCBDcmVtb25hJywKICB9LAogIGRlc2NyaXB0aW9uOgogICAgJ09yZ2FuaXplIHNldXMgY2xpZW50ZXMsIGZ1bmlsIGRlIHZlbmRhcyBlIGZvbGxvdy11cHMgZGlyZXRvIG5vIFdoYXRzQXBwLiBGZWl0byBwYXJhIHF1ZW0gdmVuZGUgdG9kbyBkaWEuIFRlc3RlIGdyw6F0aXMgcG9yIDE0IGRpYXMuJywKICBrZXl3b3JkczogWydDUk0nLCAnV2hhdHNBcHAnLCAnQ1JNIFdoYXRzQXBwJywgJ2dlc3TDo28gZGUgY2xpZW50ZXMnLCAnZnVuaWwgZGUgdmVuZGFzJywgJ2ZvbGxvdy11cCddLAogIG9wZW5HcmFwaDogewogICAgdHlwZTogJ3dlYnNpdGUnLAogICAgbG9jYWxlOiAncHRfQlInLAogICAgdXJsOiBCQVNFX1VSTCwKICAgIHNpdGVOYW1lOiAnQ3JlbW9uYScsCiAgICB0aXRsZTogJ0NyZW1vbmEg4oCUIENSTSB2aWEgV2hhdHNBcHAgcGFyYSBwZXF1ZW5vcyBuZWfDs2Npb3MnLAogICAgZGVzY3JpcHRpb246CiAgICAgICdPcmdhbml6ZSBzZXVzIGNsaWVudGVzLCBmdW5pbCBkZSB2ZW5kYXMgZSBmb2xsb3ctdXBzIGRpcmV0byBubyBXaGF0c0FwcC4gVGVzdGUgZ3LDoXRpcyBwb3IgMTQgZGlhcy4nLAogIH0sCiAgdHdpdHRlcjogewogICAgY2FyZDogJ3N1bW1hcnlfbGFyZ2VfaW1hZ2UnLAogICAgdGl0bGU6ICdDcmVtb25hIOKAlCBDUk0gdmlhIFdoYXRzQXBwJywKICAgIGRlc2NyaXB0aW9uOiAnT3JnYW5pemUgc2V1cyBjbGllbnRlcyBlIGF1bWVudGUgc3VhcyB2ZW5kYXMgcGVsbyBXaGF0c0FwcC4nLAogIH0sCiAgcm9ib3RzOiB7CiAgICBpbmRleDogdHJ1ZSwKICAgIGZvbGxvdzogdHJ1ZSwKICB9LAp9CgpleHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBSb290TGF5b3V0KHsgY2hpbGRyZW4gfTogeyBjaGlsZHJlbjogUmVhY3QuUmVhY3ROb2RlIH0pIHsKICByZXR1cm4gKAogICAgPGh0bWwgbGFuZz0icHQtQlIiIGNsYXNzTmFtZT17aW50ZXIudmFyaWFibGV9PgogICAgICA8Ym9keSBjbGFzc05hbWU9ImZvbnQtc2FucyBhbnRpYWxpYXNlZCI+CiAgICAgICAge2NoaWxkcmVufQogICAgICAgIDxzcGFuIGNsYXNzTmFtZT0iZml4ZWQgYm90dG9tLTMgcmlnaHQtNCB0ZXh0LVsxMHB4XSB0ZXh0LXNsYXRlLTMwMC80MCBzZWxlY3Qtbm9uZSBwb2ludGVyLWV2ZW50cy1ub25lIj4KICAgICAgICAgIEluIFBldHJhIEFuY29yYXR1cwogICAgICAgIDwvc3Bhbj4KICAgICAgPC9ib2R5PgogICAgPC9odG1sPgogICkKfQo=
+import type { Metadata } from 'next'
+import '../ui/styles.css'
+
+export const metadata: Metadata = {
+  title: 'Costta Sistema | Agenda operacional',
+  description: 'Painel operacional da Barbearia Costta',
+}
+
+export default function RootLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <html lang="pt-BR">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body>{children}</body>
+    </html>
+  )
+}
