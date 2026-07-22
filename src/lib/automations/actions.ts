@@ -4,10 +4,43 @@ import { sendMetaWhatsAppMediaMessage, sendMetaWhatsAppTextMessage } from '@/lib
 import { sendWhatsAppTemplate } from '@/lib/whatsapp/templates'
 import { normalizeWhatsAppPhone, summarizeWhatsAppContent } from '@/lib/whatsapp/format'
 import { isWithinWhatsApp24hWindow } from '@/lib/whatsapp/conversation-window'
+import { isLikelyRetryableError, sanitizeAutomationError } from './retry'
 import type { Automation } from '@/types/app'
 import type { Tables } from '@/types/database'
 
 type Contact = Tables<'contacts'>
+
+export type AutomationActionResult = {
+  success: boolean
+  skipped?: boolean
+  retryable?: boolean
+  error?: string
+}
+
+function buildProviderFailure(error: string | null | undefined, fallback: string): AutomationActionResult {
+  const sanitized = sanitizeAutomationError(error ?? fallback)
+  const value = sanitized.toLowerCase()
+
+  if (isLikelyRetryableError(sanitized)) {
+    return { success: false, retryable: true, error: sanitized }
+  }
+
+  if (
+    value.includes('token invalido') ||
+    value.includes('token inválido') ||
+    value.includes('phone number id invalido') ||
+    value.includes('phone number id inválido') ||
+    value.includes('numero do destinatario invalido') ||
+    value.includes('número do destinatário inválido') ||
+    value.includes('permissao insuficiente') ||
+    value.includes('permissão insuficiente') ||
+    value.includes('janela de 24 horas')
+  ) {
+    return { success: false, retryable: false, error: sanitized }
+  }
+
+  return { success: false, error: sanitized }
+}
 
 export function interpolateVars(template: string, contact: Contact): string {
   const map: Record<string, string> = {
@@ -47,25 +80,25 @@ export async function executeWhatsAppTextAction(
   automation: Automation,
   contact: Contact,
   workspaceId: string
-): Promise<{ success: boolean; skipped?: boolean; error?: string }> {
+): Promise<AutomationActionResult> {
   if (!contact.phone) {
-    return { success: false, skipped: true, error: 'Contato sem telefone' }
+    return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
   }
 
   const workspace = await fetchWorkspaceWhatsApp(workspaceId)
   if (!workspace?.whatsapp_phone_number_id || !workspace.whatsapp_token) {
-    return { success: false, skipped: true, error: 'WhatsApp nao configurado' }
+    return { success: false, skipped: true, retryable: false, error: 'WhatsApp nao configurado' }
   }
 
   const phone = normalizeWhatsAppPhone(contact.phone)
   if (!phone) {
-    return { success: false, skipped: true, error: 'Telefone invalido para WhatsApp' }
+    return { success: false, skipped: true, retryable: false, error: 'Telefone invalido para WhatsApp' }
   }
 
   const lastInboundAt = await fetchLastInboundAt(workspaceId, contact.id)
   if (!isWithinWhatsApp24hWindow(lastInboundAt)) {
     // TODO: fora da janela deveria usar template — limitação atual documentada
-    return { success: false, skipped: true, error: 'Janela de 24h fechada' }
+    return { success: false, skipped: true, retryable: false, error: 'Janela de 24h fechada' }
   }
 
   const message = interpolateVars(automation.action_config.message ?? '', contact)
@@ -77,7 +110,7 @@ export async function executeWhatsAppTextAction(
   })
 
   if (!result.success) {
-    return { success: false, error: result.error ?? 'Erro ao enviar mensagem' }
+    return buildProviderFailure(result.error, 'Erro ao enviar mensagem')
   }
 
   const supabase = createAdminClient()
@@ -111,7 +144,7 @@ export async function executeCreateTaskAction(
   automation: Automation,
   contact: Contact,
   workspaceId: string
-): Promise<{ success: boolean; skipped?: boolean; error?: string }> {
+): Promise<AutomationActionResult> {
   const rawTitle = automation.action_config.title ?? 'Follow-up'
   const title = interpolateVars(rawTitle, contact)
   const daysOffset = Number(automation.action_config.days_offset ?? 0)
@@ -131,7 +164,11 @@ export async function executeCreateTaskAction(
   })
 
   if (error) {
-    return { success: false, error: 'Erro ao criar tarefa: ' + error.message }
+    return {
+      success: false,
+      retryable: true,
+      error: sanitizeAutomationError('Erro ao criar tarefa: ' + error.message),
+    }
   }
 
   return { success: true }
@@ -141,24 +178,24 @@ export async function executeWhatsAppTemplateAction(
   automation: Automation,
   contact: Contact,
   workspaceId: string
-): Promise<{ success: boolean; skipped?: boolean; error?: string }> {
+): Promise<AutomationActionResult> {
   if (!contact.phone) {
-    return { success: false, skipped: true, error: 'Contato sem telefone' }
+    return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
   }
 
   const workspace = await fetchWorkspaceWhatsApp(workspaceId)
   if (!workspace?.whatsapp_phone_number_id || !workspace.whatsapp_token) {
-    return { success: false, skipped: true, error: 'WhatsApp nao configurado' }
+    return { success: false, skipped: true, retryable: false, error: 'WhatsApp nao configurado' }
   }
 
   const phone = normalizeWhatsAppPhone(contact.phone)
   if (!phone) {
-    return { success: false, skipped: true, error: 'Telefone invalido para WhatsApp' }
+    return { success: false, skipped: true, retryable: false, error: 'Telefone invalido para WhatsApp' }
   }
 
   const templateId = automation.action_config.template_id
   if (!templateId) {
-    return { success: false, error: 'template_id nao configurado na automacao' }
+    return { success: false, retryable: false, error: 'template_id nao configurado na automacao' }
   }
 
   const supabase = createAdminClient()
@@ -172,7 +209,7 @@ export async function executeWhatsAppTemplateAction(
     .maybeSingle()
 
   if (!templateRow) {
-    return { success: false, skipped: true, error: 'Template nao encontrado ou nao aprovado' }
+    return { success: false, skipped: true, retryable: false, error: 'Template nao encontrado ou nao aprovado' }
   }
 
   let variableDefaults: Record<string, string> = {}
@@ -199,7 +236,7 @@ export async function executeWhatsAppTemplateAction(
   )
 
   if (!result.success) {
-    return { success: false, error: result.error ?? 'Erro ao enviar template' }
+    return buildProviderFailure(result.error, 'Erro ao enviar template')
   }
 
   const renderedContent = (templateRow.body_text as string).replace(
@@ -239,19 +276,19 @@ export async function executeWhatsAppMediaAction(
   automation: Automation,
   contact: Contact,
   workspaceId: string
-): Promise<{ success: boolean; skipped?: boolean; error?: string }> {
+): Promise<AutomationActionResult> {
   if (!contact.phone) {
-    return { success: false, skipped: true, error: 'Contato sem telefone' }
+    return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
   }
 
   const workspace = await fetchWorkspaceWhatsApp(workspaceId)
   if (!workspace?.whatsapp_phone_number_id || !workspace.whatsapp_token) {
-    return { success: false, skipped: true, error: 'WhatsApp nao configurado' }
+    return { success: false, skipped: true, retryable: false, error: 'WhatsApp nao configurado' }
   }
 
   const phone = normalizeWhatsAppPhone(contact.phone)
   if (!phone) {
-    return { success: false, skipped: true, error: 'Telefone invalido para WhatsApp' }
+    return { success: false, skipped: true, retryable: false, error: 'Telefone invalido para WhatsApp' }
   }
 
   const mediaUrl = automation.action_config.media_url?.trim()
@@ -260,20 +297,23 @@ export async function executeWhatsAppMediaAction(
   const caption = interpolateVars(automation.action_config.caption ?? '', contact)
 
   if (!mediaUrl || !mediaType || !['image', 'document', 'audio', 'video'].includes(mediaType)) {
-    return { success: false, error: 'Midia nao configurada na automacao' }
+    return { success: false, retryable: false, error: 'Midia nao configurada na automacao' }
   }
 
   try {
     const head = await fetch(mediaUrl, { method: 'HEAD', cache: 'no-store' })
     if (head.status !== 200) {
+      const retryable = [429, 500, 502, 503, 504].includes(head.status)
       return {
         success: false,
+        retryable,
         error: 'Arquivo de midia inacessivel. Verifique se o arquivo ainda existe no Supabase Storage.',
       }
     }
   } catch {
     return {
       success: false,
+      retryable: true,
       error: 'Arquivo de midia inacessivel. Verifique se o arquivo ainda existe no Supabase Storage.',
     }
   }
@@ -289,7 +329,7 @@ export async function executeWhatsAppMediaAction(
   })
 
   if (!result.success) {
-    return { success: false, error: result.error ?? 'Erro ao enviar midia' }
+    return buildProviderFailure(result.error, 'Erro ao enviar midia')
   }
 
   const supabase = createAdminClient()

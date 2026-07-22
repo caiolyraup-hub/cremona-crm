@@ -30,6 +30,8 @@ Execute no Supabase SQL Editor, nesta ordem:
     Ajustes de pipeline
 15. 015_automation_queue_idempotency.sql
     event_key e indice unico parcial para idempotencia da fila
+16. 016_automation_queue_retries_and_lease.sql
+    Lease, retries com backoff e recuperacao de processing abandonado
 
 ## Como verificar se todas foram aplicadas
 

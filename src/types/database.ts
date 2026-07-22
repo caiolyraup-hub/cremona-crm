@@ -518,6 +518,9 @@ export interface Database {
           max_attempts: number
           error_message: string | null
           event_key: string | null
+          locked_at: string | null
+          locked_by: string | null
+          last_attempt_at: string | null
           created_at: string
           processed_at: string | null
         }
@@ -532,6 +535,9 @@ export interface Database {
           max_attempts?: number
           error_message?: string | null
           event_key?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
+          last_attempt_at?: string | null
           created_at?: string
           processed_at?: string | null
         }
@@ -546,6 +552,9 @@ export interface Database {
           max_attempts?: number
           error_message?: string | null
           event_key?: string | null
+          locked_at?: string | null
+          locked_by?: string | null
+          last_attempt_at?: string | null
           created_at?: string
           processed_at?: string | null
         }

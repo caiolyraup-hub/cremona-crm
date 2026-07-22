@@ -1945,6 +1945,69 @@ A chave nao inclui timestamp nem valor aleatorio. A mesma combinacao logica semp
 - Nao ha exponential backoff.
 - Nao ha recuperacao automatica de jobs presos em `processing`.
 - Ainda nao existem `locked_at` e `locked_by`.
-- O claim ainda mantem o filtro historico `attempts < 3`; o respeito integral a `max_attempts` fica para o Prompt 03.
+- O claim ainda mantinha um filtro historico por valor fixo; o respeito integral a `max_attempts` fica para o Prompt 03.
 - Nao ha dead letter queue, alerta ou retry manual.
 - Rollback da migration: `DROP INDEX IF EXISTS automation_queue_event_key_unique;` e `ALTER TABLE automation_queue DROP COLUMN IF EXISTS event_key;`.
+
+## Sessao Resiliencia da Fila de Automacoes - 2026-07-22
+
+### Objetivo
+
+Tornar `automation_queue` resiliente a falhas transitorias, rate limits, interrupcoes da Vercel Function e jobs abandonados em `processing`, preservando a fila, o cron e a idempotencia por `event_key` existentes.
+
+### Arquivos alterados nesta sessao
+
+- `src/supabase/migrations/016_automation_queue_retries_and_lease.sql` - adiciona `locked_at`, `locked_by` e `last_attempt_at` com migration nao destrutiva.
+- `src/types/database.ts` - inclui as novas colunas nos tipos de `automation_queue`.
+- `src/lib/automations/retry.ts` - helper puro para backoff, lease, sanitizacao e classificacao basica de erro transitorio.
+- `src/lib/automations/actions.ts` - contrato `AutomationActionResult` com `retryable`.
+- `src/app/api/cron/process-automation-queue/route.ts` - worker com `workerId`, lease, claim seguro, retry com backoff e recuperacao de jobs abandonados.
+- `scripts/validate-automation-concurrency.ts` - cobre sucesso, falha transitoria, backoff, erro permanente, `max_attempts`, lease expirado, job ativo, `locked_by` e idempotencia.
+- `scripts/validate-automation-migration.ts` - valida migrations 015 e 016.
+- `.env.local.example`, `README.md` e `CONTEXT.md` - documentam variaveis e politica da fila.
+
+### Politica implementada
+
+- Cada execucao do cron gera `workerId = crypto.randomUUID()`.
+- Claim registra `status = processing`, `locked_at`, `locked_by`, `last_attempt_at` e incrementa `attempts`.
+- Toda finalizacao exige `id`, `status = processing` e `locked_by = workerId`.
+- O claim usa `attempts < max_attempts`; o worker nao possui limite hardcoded de 3.
+- Backoff: `min(baseSeconds * 2 ** max(0, attempt - 1), maxSeconds)`.
+- Defaults seguros: `AUTOMATION_RETRY_BASE_SECONDS=60`, `AUTOMATION_RETRY_MAX_SECONDS=1800`, `AUTOMATION_JOB_LEASE_SECONDS=300`.
+- Retry volta para `pending`, limpa lease, deixa `processed_at = null` e agenda a proxima tentativa em `scheduled_for`.
+- Sucesso marca `done`, preenche `processed_at`, limpa lease e grava um log de sucesso.
+- Falha definitiva marca `failed`, preenche `processed_at`, limpa lease e grava erro sanitizado.
+- Jobs `processing` com `locked_at` expirado voltam para `pending` se ainda houver tentativas; se `attempts >= max_attempts`, viram `failed`.
+- Jobs antigos em `processing` com `locked_at` nulo usam regra conservadora por `created_at` e `scheduled_for`, para nao recuperar jobs recentes.
+
+### Classificacao
+
+- `skipped = true` e nao retryable.
+- Contato sem telefone, telefone invalido, workspace sem provedor, automacao ausente, acao desconhecida, configuracao/template invalidos, conflito de workspace e janela de 24h fechada encerram o job.
+- Timeout, falha de conexao, HTTP 429 e HTTP 500/502/503/504 podem ser reagendados ate `max_attempts`.
+- Erros inesperados sem `retryable` explicito sao tratados como retryable ate esgotar `max_attempts`.
+
+### Variaveis e Vercel
+
+Adicionar em ambientes server-side:
+
+```env
+AUTOMATION_RETRY_BASE_SECONDS=60
+AUTOMATION_RETRY_MAX_SECONDS=1800
+AUTOMATION_JOB_LEASE_SECONDS=300
+```
+
+Comandos manuais para o proprietario:
+
+```bash
+npx vercel link
+npx vercel env add AUTOMATION_RETRY_BASE_SECONDS production
+npx vercel env add AUTOMATION_RETRY_MAX_SECONDS production
+npx vercel env add AUTOMATION_JOB_LEASE_SECONDS production
+```
+
+As variaveis Twilio foram apenas preparadas em `.env.local.example` com placeholders. Nenhum SDK, webhook ou adaptador Twilio foi implementado nesta sessao.
+
+### Risco restante
+
+Nao ha garantia exactly-once para APIs externas. Se o provedor aceitar uma mensagem e a Vercel Function cair antes de persistir o resultado no CRM, o retry pode reenviar a mesma mensagem. A idempotencia atual garante um unico job por `event_key`, mas nao confirma deduplicacao no provedor externo.

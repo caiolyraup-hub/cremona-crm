@@ -80,19 +80,48 @@ Regras atuais:
   `stage_exit:{contact_id}:{stage_id}:{automation_id}`.
 - `automation_queue_event_key_unique` impede duplicidade quando `event_key` nao e nula; duplicatas sao ignoradas como resultado idempotente.
 - o cron existente em `/api/cron/process-automation-queue` e o unico responsavel por executar a acao.
-- o worker adquire um job com `UPDATE ... WHERE status = pending AND scheduled_for <= now RETURNING *`; ele so executa WhatsApp/tarefas quando a linha adquirida e retornada.
+- o worker adquire um job com `UPDATE ... WHERE status = pending AND scheduled_for <= now AND attempts < max_attempts RETURNING *`; ele so executa WhatsApp/tarefas quando a linha adquirida e retornada.
+- cada execucao do cron gera um `workerId` unico e grava `locked_at`, `locked_by` e `last_attempt_at` ao fazer claim.
+- sucesso, falha definitiva e retry so atualizam jobs ainda em `status = processing` e `locked_by = workerId`.
 - antes de executar, o worker valida que job, automacao e contato pertencem ao mesmo `workspace_id`.
+- falhas transitorias voltam para `pending` com exponential backoff em `scheduled_for`; falhas permanentes encerram o job como `failed`.
+- backoff padrao: `min(baseSeconds * 2 ** max(0, attempt - 1), maxSeconds)`, com defaults `60s` e `1800s`.
+- o lease padrao e `300s`; jobs `processing` com `locked_at` expirado sao recuperados antes de novos claims.
+- jobs antigos em `processing` sem `locked_at` so sao recuperados por regra conservadora de antiguidade, para evitar tocar jobs recentes.
+- `max_attempts` do proprio job e a unica fonte de verdade; nao ha limite hardcoded de 3 no worker.
 - nenhuma automacao ativa e resultado valido: nenhum job e criado e a operacao principal continua.
 - erro ao buscar automacoes ou inserir jobs na fila e tratado como falha de registro duravel; a Server Action retorna erro ao usuario e registra contexto seguro (`event_type`, `workspace_id`, `contact_id`, `stage_id`, ids de automacao quando houver).
+
+Classificacao de erros:
+
+- `skipped = true` e tratado como nao retryable.
+- erros de validacao/configuracao, contato sem telefone, telefone invalido, workspace sem provedor, template ausente, automacao inexistente, acao desconhecida, conflito de workspace e janela de 24h fechada encerram o job sem retry.
+- timeouts, falha de conexao, HTTP 429 e HTTP 500/502/503/504 podem ser reagendados ate `max_attempts`.
+- quando a acao nao informa `retryable`, erros inesperados sao tratados como retryable ate esgotar `max_attempts`.
 
 Limitacoes conhecidas:
 
 - rollback da idempotencia: `DROP INDEX IF EXISTS automation_queue_event_key_unique;` e `ALTER TABLE automation_queue DROP COLUMN IF EXISTS event_key;`.
-- retry ainda e simples, sem exponential backoff.
-- nao ha recuperacao automatica de jobs presos em `processing`.
-- ainda nao existem `locked_at` e `locked_by`.
-- o respeito integral a `max_attempts` no claim fica para o proximo prompt.
+- nao ha garantia exactly-once apos chamar APIs externas: se o provedor aceitar a mensagem e a funcao cair antes de persistir a resposta, um retry pode gerar duplicidade externa.
 - `task_overdue` existe em tipos/UI, mas ainda nao possui produtor de evento.
+- proximo passo: adaptador Twilio e webhooks Twilio sem misturar com a fila.
+
+Variaveis server-side da fila:
+
+```env
+AUTOMATION_RETRY_BASE_SECONDS=60
+AUTOMATION_RETRY_MAX_SECONDS=1800
+AUTOMATION_JOB_LEASE_SECONDS=300
+```
+
+Comandos Vercel para o proprietario executar manualmente:
+
+```bash
+npx vercel link
+npx vercel env add AUTOMATION_RETRY_BASE_SECONDS production
+npx vercel env add AUTOMATION_RETRY_MAX_SECONDS production
+npx vercel env add AUTOMATION_JOB_LEASE_SECONDS production
+```
 
 ## WhatsApp - arquitetura
 

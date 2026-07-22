@@ -6,7 +6,14 @@ import {
   executeWhatsAppTextAction,
   executeWhatsAppTemplateAction,
   executeCreateTaskAction,
+  type AutomationActionResult,
 } from '@/lib/automations/actions'
+import {
+  calculateRetryDelaySeconds,
+  getAutomationJobLeaseSeconds,
+  isLikelyRetryableError,
+  sanitizeAutomationError,
+} from '@/lib/automations/retry'
 import type { Automation } from '@/types/app'
 import type { Tables } from '@/types/database'
 
@@ -15,63 +22,325 @@ export const maxDuration = 10
 
 type QueueRow = Tables<'automation_queue'>
 
-function getJobContext(job: QueueRow) {
+type CronSummary = {
+  recovered: number
+  claimed: number
+  succeeded: number
+  rescheduled: number
+  failed: number
+  skipped: number
+  duration_ms: number
+}
+
+function getJobContext(job: QueueRow, workerId: string) {
   return {
     job_id: job.id,
     event_key: job.event_key,
+    worker_id: workerId,
     automation_id: job.automation_id,
     contact_id: job.contact_id,
     workspace_id: job.workspace_id,
     status: job.status,
+    attempts: job.attempts,
+    max_attempts: job.max_attempts,
   }
 }
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : String(error)
+function addSeconds(date: Date, seconds: number): string {
+  return new Date(date.getTime() + seconds * 1000).toISOString()
 }
 
-async function markClaimedJobFailed(
+function classifyRetryable(result: AutomationActionResult): boolean {
+  if (typeof result.retryable === 'boolean') return result.retryable
+  if (result.skipped) return false
+
+  const error = result.error ?? ''
+  if (!error) return true
+
+  return isLikelyRetryableError(error) || !result.skipped
+}
+
+function isAbandonedProcessingJob(job: QueueRow, now: Date, leaseSeconds: number): boolean {
+  const leaseCutoffMs = now.getTime() - leaseSeconds * 1000
+
+  if (job.locked_at) {
+    return new Date(job.locked_at).getTime() < leaseCutoffMs
+  }
+
+  const conservativeSeconds = Math.max(leaseSeconds * 2, 3600)
+  const conservativeCutoffMs = now.getTime() - conservativeSeconds * 1000
+  const timestamps = [job.created_at, job.scheduled_for, job.last_attempt_at]
+    .filter(Boolean)
+    .map((value) => new Date(value as string).getTime())
+
+  return timestamps.length > 0 && timestamps.every((value) => value < conservativeCutoffMs)
+}
+
+async function insertAutomationLog(
   supabase: any,
   job: QueueRow,
-  message: string,
-  now = new Date().toISOString()
+  status: 'success' | 'failed' | 'skipped',
+  errorMessage?: string | null
 ) {
-  await supabase
-    .from('automation_queue')
-    .update({
-      status: 'failed',
-      processed_at: now,
-      error_message: message,
-    })
-    .eq('id', job.id)
-}
-
-async function recordActionFailure(
-  supabase: any,
-  job: QueueRow,
-  message: string,
-  now = new Date().toISOString()
-): Promise<'failed' | 'retrying'> {
-  const isFinal = job.attempts >= job.max_attempts
-
-  await supabase
-    .from('automation_queue')
-    .update({
-      status: isFinal ? 'failed' : 'pending',
-      processed_at: isFinal ? now : null,
-      error_message: message,
-    })
-    .eq('id', job.id)
-
   await supabase.from('automation_logs').insert({
     workspace_id: job.workspace_id,
     automation_id: job.automation_id,
     contact_id: job.contact_id,
+    status,
+    error_message: errorMessage ?? null,
+  })
+}
+
+async function updateClaimedJob(
+  supabase: any,
+  job: QueueRow,
+  workerId: string,
+  values: Record<string, unknown>
+): Promise<boolean> {
+  const { data, error } = await supabase
+    .from('automation_queue')
+    .update(values)
+    .eq('id', job.id)
+    .eq('status', 'processing')
+    .eq('locked_by', workerId)
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    console.error('[cron] erro ao atualizar job adquirido.', {
+      ...getJobContext(job, workerId),
+      error: sanitizeAutomationError(error.message),
+    })
+    return false
+  }
+
+  return Boolean(data)
+}
+
+async function failPendingJob(
+  supabase: any,
+  job: QueueRow,
+  message: string,
+  nowIso: string
+): Promise<boolean> {
+  const sanitized = sanitizeAutomationError(message)
+  const { data, error } = await supabase
+    .from('automation_queue')
+    .update({
+      status: 'failed',
+      processed_at: nowIso,
+      locked_at: null,
+      locked_by: null,
+      error_message: sanitized,
+    })
+    .eq('id', job.id)
+    .eq('status', 'pending')
+    .select('id')
+    .maybeSingle()
+
+  if (error) {
+    console.error('[cron] erro ao falhar job pending esgotado.', {
+      job_id: job.id,
+      event_key: job.event_key,
+      error: sanitizeAutomationError(error.message),
+    })
+  }
+
+  if (data) {
+    await insertAutomationLog(supabase, job, 'failed', sanitized)
+  }
+
+  return Boolean(data)
+}
+
+async function recoverAbandonedJobs(
+  supabase: any,
+  workerId: string,
+  now: Date,
+  leaseSeconds: number
+): Promise<{ recovered: number; failed: number }> {
+  const { data, error } = await supabase
+    .from('automation_queue')
+    .select('*')
+    .eq('status', 'processing')
+    .order('scheduled_for', { ascending: true })
+    .limit(50)
+
+  if (error) {
+    console.error('[cron] erro ao buscar jobs abandonados.', {
+      worker_id: workerId,
+      error: sanitizeAutomationError(error.message),
+    })
+    return { recovered: 0, failed: 0 }
+  }
+
+  let recovered = 0
+  let failed = 0
+  const nowIso = now.toISOString()
+
+  for (const job of (data ?? []) as QueueRow[]) {
+    if (!isAbandonedProcessingJob(job, now, leaseSeconds)) continue
+
+    const exhausted = job.attempts >= job.max_attempts
+    const message = exhausted
+      ? 'Lease expirado; max_attempts esgotado.'
+      : 'Lease expirado; job recuperado para nova tentativa.'
+
+    const { data: updated, error: updateError } = await supabase
+      .from('automation_queue')
+      .update({
+        status: exhausted ? 'failed' : 'pending',
+        scheduled_for: exhausted ? job.scheduled_for : nowIso,
+        processed_at: exhausted ? nowIso : null,
+        locked_at: null,
+        locked_by: null,
+        error_message: sanitizeAutomationError(message),
+      })
+      .eq('id', job.id)
+      .eq('status', 'processing')
+      .select('id')
+      .maybeSingle()
+
+    if (updateError) {
+      console.error('[cron] erro ao recuperar job abandonado.', {
+        ...getJobContext(job, workerId),
+        error: sanitizeAutomationError(updateError.message),
+      })
+      continue
+    }
+
+    if (!updated) continue
+
+    if (exhausted) {
+      await insertAutomationLog(supabase, job, 'failed', sanitizeAutomationError(message))
+      failed++
+    } else {
+      recovered++
+    }
+
+    console.info('[cron] job processing recuperado.', {
+      ...getJobContext(job, workerId),
+      recovered_status: exhausted ? 'failed' : 'pending',
+    })
+  }
+
+  return { recovered, failed }
+}
+
+async function failExhaustedPendingJobs(
+  supabase: any,
+  workerId: string,
+  nowIso: string
+): Promise<number> {
+  const { data, error } = await supabase
+    .from('automation_queue')
+    .select('*')
+    .eq('status', 'pending')
+    .lte('scheduled_for', nowIso)
+    .order('scheduled_for', { ascending: true })
+    .limit(50)
+
+  if (error) {
+    console.error('[cron] erro ao buscar jobs pending esgotados.', {
+      worker_id: workerId,
+      error: sanitizeAutomationError(error.message),
+    })
+    return 0
+  }
+
+  let failed = 0
+  for (const job of ((data ?? []) as QueueRow[]).filter((row) => row.attempts >= row.max_attempts)) {
+    const updated = await failPendingJob(
+      supabase,
+      job,
+      'max_attempts esgotado antes de novo claim.',
+      nowIso
+    )
+    if (updated) failed++
+  }
+
+  return failed
+}
+
+async function finalizeSuccess(
+  supabase: any,
+  job: QueueRow,
+  automation: Automation,
+  workerId: string,
+  finishedAt: string
+): Promise<boolean> {
+  const updated = await updateClaimedJob(supabase, job, workerId, {
+    status: 'done',
+    processed_at: finishedAt,
+    locked_at: null,
+    locked_by: null,
+    error_message: null,
+  })
+
+  if (!updated) return false
+
+  await insertAutomationLog(supabase, job, 'success')
+  await supabase
+    .from('automations')
+    .update({ run_count: (automation.run_count ?? 0) + 1, last_run_at: finishedAt })
+    .eq('id', automation.id)
+
+  return true
+}
+
+async function finalizeFailure(
+  supabase: any,
+  job: QueueRow,
+  workerId: string,
+  result: AutomationActionResult,
+  finishedAt: Date
+): Promise<'failed' | 'rescheduled' | 'skipped' | 'lost'> {
+  const message = sanitizeAutomationError(result.error ?? 'Erro desconhecido')
+  const retryable = classifyRetryable(result)
+  const canRetry = retryable && job.attempts < job.max_attempts
+
+  if (canRetry) {
+    const delaySeconds = calculateRetryDelaySeconds(job.attempts)
+    const nextScheduledFor = addSeconds(finishedAt, delaySeconds)
+    const updated = await updateClaimedJob(supabase, job, workerId, {
+      status: 'pending',
+      scheduled_for: nextScheduledFor,
+      processed_at: null,
+      locked_at: null,
+      locked_by: null,
+      error_message: message,
+    })
+
+    if (!updated) return 'lost'
+
+    await insertAutomationLog(supabase, job, 'failed', message)
+    console.warn('[cron] job reagendado com backoff.', {
+      ...getJobContext(job, workerId),
+      retryable,
+      next_scheduled_for: nextScheduledFor,
+    })
+    return 'rescheduled'
+  }
+
+  const logStatus = result.skipped ? 'skipped' : 'failed'
+  const updated = await updateClaimedJob(supabase, job, workerId, {
     status: 'failed',
+    processed_at: finishedAt.toISOString(),
+    locked_at: null,
+    locked_by: null,
     error_message: message,
   })
 
-  return isFinal ? 'failed' : 'retrying'
+  if (!updated) return 'lost'
+
+  await insertAutomationLog(supabase, job, logStatus, message)
+  console.warn('[cron] job finalizado sem retry.', {
+    ...getJobContext(job, workerId),
+    retryable,
+    final_status: logStatus,
+  })
+
+  return result.skipped ? 'skipped' : 'failed'
 }
 
 export async function GET(request: NextRequest) {
@@ -81,58 +350,78 @@ export async function GET(request: NextRequest) {
   }
 
   const start = Date.now()
+  const workerId = crypto.randomUUID()
   const supabase = createAdminClient()
-  const now = new Date().toISOString()
+  const now = new Date()
+  const nowIso = now.toISOString()
+  const leaseSeconds = getAutomationJobLeaseSeconds()
 
-  // Buscar itens prontos para executar
+  const summary: CronSummary = {
+    recovered: 0,
+    claimed: 0,
+    succeeded: 0,
+    rescheduled: 0,
+    failed: 0,
+    skipped: 0,
+    duration_ms: 0,
+  }
+
+  const recovery = await recoverAbandonedJobs(supabase, workerId, now, leaseSeconds)
+  summary.recovered += recovery.recovered
+  summary.failed += recovery.failed
+  summary.failed += await failExhaustedPendingJobs(supabase, workerId, nowIso)
+
   const { data: items, error } = await (supabase as any)
     .from('automation_queue')
     .select('*')
     .eq('status', 'pending')
-    .lte('scheduled_for', now)
-    .lt('attempts', 3)
+    .lte('scheduled_for', nowIso)
     .order('scheduled_for', { ascending: true })
     .limit(10)
 
   if (error) {
-    console.error('[cron] erro ao buscar fila:', error.message)
-    return NextResponse.json({ error: error.message }, { status: 500 })
+    const message = sanitizeAutomationError(error.message)
+    console.error('[cron] erro ao buscar fila.', { worker_id: workerId, error: message })
+    return NextResponse.json({ error: message }, { status: 500 })
   }
 
   const rows = (items ?? []) as QueueRow[]
 
-  let processed = 0
-  let succeeded = 0
-  let failed = 0
-  let retrying = 0
-
   await Promise.allSettled(rows.map(async (item) => {
+    if (item.attempts >= item.max_attempts) return
+
     const claimNow = new Date().toISOString()
     const { data: claimedJob, error: claimError } = await (supabase as any)
       .from('automation_queue')
-      .update({ status: 'processing', attempts: item.attempts + 1 })
+      .update({
+        status: 'processing',
+        locked_at: claimNow,
+        locked_by: workerId,
+        last_attempt_at: claimNow,
+        attempts: item.attempts + 1,
+      })
       .eq('id', item.id)
       .eq('status', 'pending')
       .lte('scheduled_for', claimNow)
+      .lt('attempts', item.max_attempts)
       .select('*')
       .maybeSingle()
 
     if (claimError) {
       console.error('[cron] erro ao adquirir job de automacao.', {
-        ...getJobContext(item),
-        error: claimError.message,
+        ...getJobContext(item, workerId),
+        error: sanitizeAutomationError(claimError.message),
       })
       return
     }
 
     if (!claimedJob) {
-      console.info('[cron] job de automacao ja adquirido por outro worker.', getJobContext(item))
+      console.info('[cron] job de automacao ja adquirido por outro worker.', getJobContext(item, workerId))
       return
     }
 
     const job = claimedJob as QueueRow
-
-    processed++
+    summary.claimed++
 
     const [
       { data: automationRow, error: automationError },
@@ -151,13 +440,23 @@ export async function GET(request: NextRequest) {
     ])
 
     if (automationError || contactError) {
-      const message = automationError?.message ?? contactError?.message ?? 'Erro ao buscar dados do job'
+      const message = sanitizeAutomationError(
+        automationError?.message ?? contactError?.message ?? 'Erro ao buscar dados do job'
+      )
       console.error('[cron] erro ao buscar dados de automacao ou contato.', {
-        ...getJobContext(job),
+        ...getJobContext(job, workerId),
         error: message,
       })
-      const state = await recordActionFailure(supabase, job, 'Erro ao buscar dados do job')
-      if (state === 'failed') { failed++ } else { retrying++ }
+      const state = await finalizeFailure(
+        supabase,
+        job,
+        workerId,
+        { success: false, retryable: true, error: 'Erro ao buscar dados do job' },
+        new Date()
+      )
+      if (state === 'rescheduled') summary.rescheduled++
+      if (state === 'failed') summary.failed++
+      if (state === 'skipped') summary.skipped++
       return
     }
 
@@ -165,10 +464,16 @@ export async function GET(request: NextRequest) {
     const contact = contactRow as Tables<'contacts'> | null
 
     if (!automation || !contact) {
-      const message = 'Automacao ou contato nao encontrado'
-      console.error('[cron] job de automacao sem relacao obrigatoria.', getJobContext(job))
-      await markClaimedJobFailed(supabase, job, message)
-      failed++
+      console.error('[cron] job de automacao sem relacao obrigatoria.', getJobContext(job, workerId))
+      const state = await finalizeFailure(
+        supabase,
+        job,
+        workerId,
+        { success: false, retryable: false, error: 'Automacao ou contato nao encontrado' },
+        new Date()
+      )
+      if (state === 'failed') summary.failed++
+      if (state === 'skipped') summary.skipped++
       return
     }
 
@@ -176,18 +481,24 @@ export async function GET(request: NextRequest) {
       automation.workspace_id !== job.workspace_id ||
       contact.workspace_id !== job.workspace_id
     ) {
-      const message = 'Automacao ou contato pertence a outro workspace'
       console.error('[cron] isolamento de workspace violado em job de automacao.', {
-        ...getJobContext(job),
+        ...getJobContext(job, workerId),
         automation_workspace_id: automation.workspace_id,
         contact_workspace_id: contact.workspace_id,
       })
-      await markClaimedJobFailed(supabase, job, message)
-      failed++
+      const state = await finalizeFailure(
+        supabase,
+        job,
+        workerId,
+        { success: false, retryable: false, error: 'Automacao ou contato pertence a outro workspace' },
+        new Date()
+      )
+      if (state === 'failed') summary.failed++
+      if (state === 'skipped') summary.skipped++
       return
     }
 
-    let result: { success: boolean; skipped?: boolean; error?: string }
+    let result: AutomationActionResult
     try {
       switch (automation.action_type) {
         case 'send_whatsapp_text':
@@ -203,45 +514,37 @@ export async function GET(request: NextRequest) {
           result = await executeCreateTaskAction(automation, contact, job.workspace_id)
           break
         default:
-          result = { success: false, error: `Acao desconhecida: ${automation.action_type}` }
+          result = { success: false, retryable: false, error: `Acao desconhecida: ${automation.action_type}` }
       }
     } catch (err) {
-      result = { success: false, error: errorMessage(err) }
+      result = { success: false, error: sanitizeAutomationError(err) }
     }
 
-    const finishedAt = new Date().toISOString()
+    const finishedAt = new Date()
 
     if (result.success) {
-      await (supabase as any)
-        .from('automation_queue')
-        .update({ status: 'done', processed_at: finishedAt })
-        .eq('id', job.id)
-
-      await (supabase as any).from('automation_logs').insert({
-        workspace_id: job.workspace_id,
-        automation_id: job.automation_id,
-        contact_id: job.contact_id,
-        status: 'success',
-      })
-
-      await (supabase as any)
-        .from('automations')
-        .update({ run_count: (automation.run_count ?? 0) + 1, last_run_at: finishedAt })
-        .eq('id', automation.id)
-
-      succeeded++
-    } else {
-      const state = await recordActionFailure(
+      const updated = await finalizeSuccess(
         supabase,
         job,
-        result.error ?? 'Erro desconhecido',
-        finishedAt
+        automation,
+        workerId,
+        finishedAt.toISOString()
       )
-
-      if (state === 'failed') { failed++ } else { retrying++ }
+      if (updated) summary.succeeded++
+      return
     }
+
+    const state = await finalizeFailure(supabase, job, workerId, result, finishedAt)
+    if (state === 'rescheduled') summary.rescheduled++
+    if (state === 'failed') summary.failed++
+    if (state === 'skipped') summary.skipped++
   }))
 
-  console.info(`[cron] ${processed} items em ${Date.now() - start}ms`)
-  return NextResponse.json({ processed, succeeded, failed, retrying })
+  summary.duration_ms = Date.now() - start
+  console.info('[cron] automation_queue processada.', {
+    worker_id: workerId,
+    ...summary,
+  })
+
+  return NextResponse.json(summary)
 }
