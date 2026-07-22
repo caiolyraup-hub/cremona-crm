@@ -13,12 +13,20 @@ const WORKSPACE_CORE_SELECT = [
   'created_at',
 ].join(', ')
 
-const WORKSPACE_WHATSAPP_CONFIG_SELECT = [
+const WORKSPACE_META_WHATSAPP_CONFIG_SELECT = [
   'whatsapp_phone_number_id',
   'whatsapp_business_account_id',
+].join(', ')
+
+const WORKSPACE_TWILIO_CONFIG_SELECT = [
   'whatsapp_provider',
   'twilio_whatsapp_from',
   'twilio_content_sid_new_lead',
+].join(', ')
+
+const WORKSPACE_WHATSAPP_CONFIG_SELECT = [
+  WORKSPACE_META_WHATSAPP_CONFIG_SELECT,
+  WORKSPACE_TWILIO_CONFIG_SELECT,
 ].join(', ')
 
 const WORKSPACE_ONBOARDING_SELECT = [
@@ -53,6 +61,24 @@ const WORKSPACE_SELECT_WITH_WHATSAPP_CONFIG = [
   WORKSPACE_WHATSAPP_CONFIG_SELECT,
 ].join(', ')
 
+const WORKSPACE_SELECT_WITH_TWILIO_CONFIG = [
+  WORKSPACE_CORE_SELECT,
+  WORKSPACE_TWILIO_CONFIG_SELECT,
+].join(', ')
+
+const WORKSPACE_SELECT_WITH_TWILIO_AND_ONBOARDING = [
+  WORKSPACE_CORE_SELECT,
+  WORKSPACE_TWILIO_CONFIG_SELECT,
+  WORKSPACE_ONBOARDING_SELECT,
+].join(', ')
+
+const WORKSPACE_SELECT_WITH_TWILIO_ONBOARDING_STRIPE = [
+  WORKSPACE_CORE_SELECT,
+  WORKSPACE_TWILIO_CONFIG_SELECT,
+  WORKSPACE_ONBOARDING_SELECT,
+  WORKSPACE_STRIPE_SELECT,
+].join(', ')
+
 const ONBOARDING_COLUMNS = [
   'onboarding_completed',
   'business_name',
@@ -60,12 +86,20 @@ const ONBOARDING_COLUMNS = [
   'logo_url',
 ] as const
 
-const WHATSAPP_CONFIG_COLUMNS = [
+const META_WHATSAPP_CONFIG_COLUMNS = [
   'whatsapp_phone_number_id',
   'whatsapp_business_account_id',
+] as const
+
+const TWILIO_WHATSAPP_CONFIG_COLUMNS = [
   'whatsapp_provider',
   'twilio_whatsapp_from',
   'twilio_content_sid_new_lead',
+] as const
+
+const WHATSAPP_CONFIG_COLUMNS = [
+  ...META_WHATSAPP_CONFIG_COLUMNS,
+  ...TWILIO_WHATSAPP_CONFIG_COLUMNS,
 ] as const
 
 const STRIPE_COLUMNS = [
@@ -107,11 +141,57 @@ type WorkspaceWithWhatsappConfigRow = WorkspaceCoreRow &
     | 'twilio_content_sid_new_lead'
   >
 
+type WorkspaceWithTwilioConfigRow = WorkspaceCoreRow &
+  Pick<
+    Tables<'workspaces'>,
+    'whatsapp_provider' | 'twilio_whatsapp_from' | 'twilio_content_sid_new_lead'
+  >
+
+type WorkspaceWithTwilioOnboardingRow = WorkspaceWithTwilioConfigRow &
+  Pick<
+    Tables<'workspaces'>,
+    'onboarding_completed' | 'business_name' | 'business_type' | 'logo_url'
+  >
+
+type WorkspaceWithTwilioFullRow = WorkspaceWithTwilioOnboardingRow &
+  Pick<
+    Tables<'workspaces'>,
+    | 'stripe_customer_id'
+    | 'stripe_subscription_id'
+    | 'stripe_price_id'
+    | 'subscription_status'
+    | 'subscription_ends_at'
+  >
+
 export type WorkspaceCompatibilityResult = {
   workspace: Tables<'workspaces'> | null
   error: PostgrestError | null
   usesLegacyOnboardingSchema: boolean
   usesLegacyWhatsAppConfigSchema: boolean
+}
+
+export function canWorkspaceSendWhatsAppMessages(
+  workspace:
+    | Pick<
+        Tables<'workspaces'>,
+        | 'whatsapp_provider'
+        | 'twilio_whatsapp_from'
+        | 'whatsapp_phone_number_id'
+        | 'whatsapp_phone'
+        | 'whatsapp_token'
+      >
+    | null
+    | undefined
+): boolean {
+  if (workspace?.whatsapp_provider === 'twilio') {
+    return Boolean(workspace.twilio_whatsapp_from)
+  }
+
+  return Boolean(
+    workspace?.whatsapp_phone_number_id &&
+      workspace?.whatsapp_phone &&
+      workspace?.whatsapp_token
+  )
 }
 
 export async function getWorkspaceIdForUser(
@@ -162,6 +242,18 @@ export function isMissingWhatsAppConfigSchemaError(
   error: Pick<PostgrestError, 'message'> | null | undefined
 ): boolean {
   return isMissingColumnsError(error, WHATSAPP_CONFIG_COLUMNS)
+}
+
+export function isMissingMetaWhatsAppConfigSchemaError(
+  error: Pick<PostgrestError, 'message'> | null | undefined
+): boolean {
+  return isMissingColumnsError(error, META_WHATSAPP_CONFIG_COLUMNS)
+}
+
+export function isMissingTwilioWhatsAppConfigSchemaError(
+  error: Pick<PostgrestError, 'message'> | null | undefined
+): boolean {
+  return isMissingColumnsError(error, TWILIO_WHATSAPP_CONFIG_COLUMNS)
 }
 
 export function isMissingStripeSchemaError(
@@ -221,6 +313,164 @@ function withLegacyDefaults(
   }
 }
 
+function twilioDefaults(row: WorkspaceWithTwilioConfigRow) {
+  return {
+    whatsapp_provider: row.whatsapp_provider,
+    twilio_whatsapp_from: row.twilio_whatsapp_from,
+    twilio_content_sid_new_lead: row.twilio_content_sid_new_lead,
+  }
+}
+
+function buildWorkspaceFromTwilioRow(
+  row: WorkspaceWithTwilioConfigRow,
+  options?: {
+    onboarding?: Partial<
+      Pick<
+        Tables<'workspaces'>,
+        'onboarding_completed' | 'business_name' | 'business_type' | 'logo_url'
+      >
+    >
+    stripe?: Partial<
+      Pick<
+        Tables<'workspaces'>,
+        | 'stripe_customer_id'
+        | 'stripe_subscription_id'
+        | 'stripe_price_id'
+        | 'subscription_status'
+        | 'subscription_ends_at'
+      >
+    >
+  }
+): Tables<'workspaces'> {
+  return withLegacyDefaults(row, {
+    whatsappConfig: {
+      whatsapp_phone_number_id: null,
+      whatsapp_business_account_id: null,
+      ...twilioDefaults(row),
+    },
+    onboarding: options?.onboarding,
+    stripe: options?.stripe,
+  })
+}
+
+async function fetchWorkspacePreservingTwilioConfig(
+  supabase: DatabaseClient,
+  workspaceId: string
+): Promise<WorkspaceCompatibilityResult | null> {
+  const fullTwilioResult = (await supabase
+    .from('workspaces')
+    .select(WORKSPACE_SELECT_WITH_TWILIO_ONBOARDING_STRIPE)
+    .eq('id', workspaceId)
+    .maybeSingle()) as {
+    data: WorkspaceWithTwilioFullRow | null
+    error: PostgrestError | null
+  }
+
+  if (fullTwilioResult.data) {
+    return {
+      workspace: buildWorkspaceFromTwilioRow(fullTwilioResult.data, {
+        onboarding: {
+          onboarding_completed: fullTwilioResult.data.onboarding_completed,
+          business_name: fullTwilioResult.data.business_name,
+          business_type: fullTwilioResult.data.business_type,
+          logo_url: fullTwilioResult.data.logo_url,
+        },
+        stripe: {
+          stripe_customer_id: fullTwilioResult.data.stripe_customer_id,
+          stripe_subscription_id: fullTwilioResult.data.stripe_subscription_id,
+          stripe_price_id: fullTwilioResult.data.stripe_price_id,
+          subscription_status: fullTwilioResult.data.subscription_status,
+          subscription_ends_at: fullTwilioResult.data.subscription_ends_at,
+        },
+      }),
+      error: null,
+      usesLegacyOnboardingSchema: false,
+      usesLegacyWhatsAppConfigSchema: true,
+    }
+  }
+
+  if (
+    fullTwilioResult.error &&
+    !isMissingOnboardingSchemaError(fullTwilioResult.error) &&
+    !isMissingStripeSchemaError(fullTwilioResult.error) &&
+    !isMissingTwilioWhatsAppConfigSchemaError(fullTwilioResult.error)
+  ) {
+    return {
+      workspace: null,
+      error: fullTwilioResult.error,
+      usesLegacyOnboardingSchema: false,
+      usesLegacyWhatsAppConfigSchema: true,
+    }
+  }
+
+  const twilioWithOnboardingResult = (await supabase
+    .from('workspaces')
+    .select(WORKSPACE_SELECT_WITH_TWILIO_AND_ONBOARDING)
+    .eq('id', workspaceId)
+    .maybeSingle()) as {
+    data: WorkspaceWithTwilioOnboardingRow | null
+    error: PostgrestError | null
+  }
+
+  if (twilioWithOnboardingResult.data) {
+    return {
+      workspace: buildWorkspaceFromTwilioRow(twilioWithOnboardingResult.data, {
+        onboarding: {
+          onboarding_completed: twilioWithOnboardingResult.data.onboarding_completed,
+          business_name: twilioWithOnboardingResult.data.business_name,
+          business_type: twilioWithOnboardingResult.data.business_type,
+          logo_url: twilioWithOnboardingResult.data.logo_url,
+        },
+      }),
+      error: null,
+      usesLegacyOnboardingSchema: false,
+      usesLegacyWhatsAppConfigSchema: true,
+    }
+  }
+
+  if (
+    twilioWithOnboardingResult.error &&
+    !isMissingOnboardingSchemaError(twilioWithOnboardingResult.error) &&
+    !isMissingTwilioWhatsAppConfigSchemaError(twilioWithOnboardingResult.error)
+  ) {
+    return {
+      workspace: null,
+      error: twilioWithOnboardingResult.error,
+      usesLegacyOnboardingSchema: false,
+      usesLegacyWhatsAppConfigSchema: true,
+    }
+  }
+
+  const twilioResult = (await supabase
+    .from('workspaces')
+    .select(WORKSPACE_SELECT_WITH_TWILIO_CONFIG)
+    .eq('id', workspaceId)
+    .maybeSingle()) as {
+    data: WorkspaceWithTwilioConfigRow | null
+    error: PostgrestError | null
+  }
+
+  if (twilioResult.data) {
+    return {
+      workspace: buildWorkspaceFromTwilioRow(twilioResult.data),
+      error: null,
+      usesLegacyOnboardingSchema: true,
+      usesLegacyWhatsAppConfigSchema: true,
+    }
+  }
+
+  if (twilioResult.error && !isMissingTwilioWhatsAppConfigSchemaError(twilioResult.error)) {
+    return {
+      workspace: null,
+      error: twilioResult.error,
+      usesLegacyOnboardingSchema: true,
+      usesLegacyWhatsAppConfigSchema: true,
+    }
+  }
+
+  return null
+}
+
 export async function getWorkspaceByIdCompatible(
   supabase: DatabaseClient,
   workspaceId: string
@@ -245,6 +495,7 @@ export async function getWorkspaceByIdCompatible(
 
   const missingOnboarding = isMissingOnboardingSchemaError(fullResult.error)
   const missingWhatsAppConfig = isMissingWhatsAppConfigSchemaError(fullResult.error)
+  const missingMetaWhatsAppConfig = isMissingMetaWhatsAppConfigSchemaError(fullResult.error)
   const missingStripe = isMissingStripeSchemaError(fullResult.error)
 
   if (fullResult.error && !missingOnboarding && !missingWhatsAppConfig && !missingStripe) {
@@ -253,6 +504,13 @@ export async function getWorkspaceByIdCompatible(
       error: fullResult.error,
       usesLegacyOnboardingSchema: false,
       usesLegacyWhatsAppConfigSchema: false,
+    }
+  }
+
+  if (missingMetaWhatsAppConfig) {
+    const twilioCompatibleResult = await fetchWorkspacePreservingTwilioConfig(supabase, workspaceId)
+    if (twilioCompatibleResult) {
+      return twilioCompatibleResult
     }
   }
 

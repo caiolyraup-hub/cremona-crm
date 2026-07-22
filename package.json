@@ -14,6 +14,7 @@
     "test:automation-migration": "node --experimental-strip-types scripts/validate-automation-migration.ts",
     "test:automation-queue": "node --experimental-strip-types scripts/validate-automation-queue.ts",
     "test:automation-concurrency": "node --experimental-strip-types scripts/validate-automation-concurrency.ts",
+    "test:workspace-compat": "node --experimental-strip-types scripts/validate-workspace-compat.ts",
     "test:twilio-unit": "node --experimental-strip-types scripts/validate-twilio-provider.ts",
     "test:twilio": "node --experimental-strip-types scripts/test-twilio-integration.ts",
     "test:whatsapp-sprint": "npx tsx scripts/test-whatsapp-sprint.ts",

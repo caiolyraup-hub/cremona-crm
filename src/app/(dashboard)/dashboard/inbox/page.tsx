@@ -1,6 +1,10 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { getWorkspaceByIdCompatible, getWorkspaceIdForUser } from '@/lib/workspace-compat'
+import {
+  canWorkspaceSendWhatsAppMessages,
+  getWorkspaceByIdCompatible,
+  getWorkspaceIdForUser,
+} from '@/lib/workspace-compat'
 import { InboxClient } from '@/components/inbox/inbox-client'
 
 export default async function InboxPage() {
@@ -25,14 +29,7 @@ export default async function InboxPage() {
   )
   if (workspaceError) throw new Error(workspaceError.message)
 
-  const canSendMessages =
-    workspace?.whatsapp_provider === 'twilio'
-      ? Boolean(workspace.twilio_whatsapp_from)
-      : Boolean(
-          workspace?.whatsapp_phone_number_id &&
-            workspace?.whatsapp_phone &&
-            workspace?.whatsapp_token
-        )
+  const canSendMessages = canWorkspaceSendWhatsAppMessages(workspace)
 
   return <InboxClient canSendMessages={canSendMessages} />
 }
