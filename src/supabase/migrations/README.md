@@ -34,6 +34,8 @@ Execute no Supabase SQL Editor, nesta ordem:
     Lease, retries com backoff e recuperacao de processing abandonado
 17. 017_twilio_whatsapp_provider.sql
     Provider WhatsApp por workspace, dispatch idempotente Twilio e eventos de status
+18. 018_secure_lead_ingestion.sql
+    lead_sources, lead_submissions, rate limit persistente e consentimento WhatsApp em contacts
 
 ## Como verificar se todas foram aplicadas
 
@@ -57,5 +59,8 @@ Tabelas esperadas apos todas as migrations:
 - whatsapp_templates
 - whatsapp_dispatches
 - whatsapp_message_events
+- lead_sources
+- lead_submissions
+- lead_rate_limit_events
 - workspace_members
 - workspaces

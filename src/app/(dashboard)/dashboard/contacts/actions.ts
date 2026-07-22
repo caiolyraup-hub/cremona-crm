@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
-import { runAutomationsForEvent } from '@/lib/automations/engine'
+import { createOrUpdateContact, CreateContactError } from '@/lib/contacts/create-contact'
 import type { CreateContactInput, UpdateContactInput } from '@/types/app'
 
 function normalizePhone(phone: string): string {
@@ -29,45 +29,33 @@ export async function createContactAction(
 
   const supabase = await createClient()
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data, error } = await (supabase as any)
-    .from('contacts')
-    .insert({
-      workspace_id: workspaceId,
-      name: input.name.trim(),
-      phone: input.phone ? normalizePhone(input.phone) : null,
-      email: input.email.trim() || null,
-      company: input.company.trim() || null,
-      position: input.position.trim() || null,
+  try {
+    const result = await createOrUpdateContact({
+      workspaceId,
+      name: input.name,
+      phone: input.phone,
+      email: input.email,
+      company: input.company,
+      position: input.position,
       tags: input.tags,
-      pipeline_stage_id: input.pipeline_stage_id || null,
-    })
-    .select('id')
-    .limit(1)
+      pipelineStageId: input.pipeline_stage_id || null,
+      activityContent: 'Contato criado manualmente no CRM.',
+    }, supabase)
 
-  if (error) return { error: 'Erro ao criar contato. Tente novamente.' }
-
-  const newContactId = data?.[0]?.id
-  if (newContactId) {
-    try {
-      await runAutomationsForEvent({
-        type: 'contact_created',
-        workspaceId,
-        contactId: newContactId,
-      })
-    } catch (automationError) {
-      console.error('[contacts] contato criado, mas automacoes nao foram enfileiradas.', {
-        workspace_id: workspaceId,
-        contact_id: newContactId,
-        error: automationError instanceof Error ? automationError.message : String(automationError),
-      })
-      return { error: 'Contato criado, mas nao foi possivel registrar as automacoes. Tente novamente.' }
+    revalidatePath('/dashboard/contacts')
+    revalidatePath('/dashboard/pipeline')
+    return { id: result.contactId }
+  } catch (error) {
+    if (error instanceof CreateContactError) {
+      return { error: error.message }
     }
-  }
 
-  revalidatePath('/dashboard/contacts')
-  revalidatePath('/dashboard/pipeline')
-  return { id: newContactId }
+    console.error('[contacts] erro ao criar contato.', {
+      workspace_id: workspaceId,
+      error: error instanceof Error ? error.message : String(error),
+    })
+    return { error: 'Erro ao criar contato. Tente novamente.' }
+  }
 }
 
 export async function updateContactAction(

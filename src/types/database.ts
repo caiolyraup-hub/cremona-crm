@@ -122,6 +122,13 @@ export interface Database {
           custom_fields: Json
           tags: string[]
           pipeline_stage_id: string | null
+          source: string | null
+          external_lead_id: string | null
+          whatsapp_opt_in: boolean
+          whatsapp_opt_in_at: string | null
+          whatsapp_opt_in_source: string | null
+          whatsapp_opt_in_text: string | null
+          last_lead_submission_at: string | null
           deleted_at: string | null
           created_at: string
           updated_at: string
@@ -138,6 +145,13 @@ export interface Database {
           custom_fields?: Json
           tags?: string[]
           pipeline_stage_id?: string | null
+          source?: string | null
+          external_lead_id?: string | null
+          whatsapp_opt_in?: boolean
+          whatsapp_opt_in_at?: string | null
+          whatsapp_opt_in_source?: string | null
+          whatsapp_opt_in_text?: string | null
+          last_lead_submission_at?: string | null
           deleted_at?: string | null
           created_at?: string
           updated_at?: string
@@ -154,9 +168,163 @@ export interface Database {
           custom_fields?: Json
           tags?: string[]
           pipeline_stage_id?: string | null
+          source?: string | null
+          external_lead_id?: string | null
+          whatsapp_opt_in?: boolean
+          whatsapp_opt_in_at?: string | null
+          whatsapp_opt_in_source?: string | null
+          whatsapp_opt_in_text?: string | null
+          last_lead_submission_at?: string | null
           deleted_at?: string | null
           created_at?: string
           updated_at?: string
+        }
+      }
+      lead_sources: {
+        Row: {
+          id: string
+          workspace_id: string
+          name: string
+          slug: string
+          key_hash: string
+          active: boolean
+          default_tags: string[]
+          default_pipeline_stage_id: string | null
+          allowed_origins: string[]
+          rate_limit_per_minute: number
+          created_by: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          name: string
+          slug: string
+          key_hash: string
+          active?: boolean
+          default_tags?: string[]
+          default_pipeline_stage_id?: string | null
+          allowed_origins?: string[]
+          rate_limit_per_minute?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          name?: string
+          slug?: string
+          key_hash?: string
+          active?: boolean
+          default_tags?: string[]
+          default_pipeline_stage_id?: string | null
+          allowed_origins?: string[]
+          rate_limit_per_minute?: number
+          created_by?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      lead_submissions: {
+        Row: {
+          id: string
+          workspace_id: string
+          lead_source_id: string
+          contact_id: string | null
+          external_lead_id: string | null
+          idempotency_key: string | null
+          payload_hash: string
+          status: 'received' | 'processed' | 'duplicate' | 'rejected' | 'failed'
+          name: string | null
+          phone: string | null
+          email: string | null
+          source: string | null
+          whatsapp_opt_in: boolean
+          whatsapp_opt_in_at: string | null
+          whatsapp_opt_in_source: string | null
+          whatsapp_opt_in_text: string | null
+          utm_source: string | null
+          utm_medium: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_term: string | null
+          error_message: string | null
+          created_at: string
+          processed_at: string | null
+        }
+        Insert: {
+          id?: string
+          workspace_id: string
+          lead_source_id: string
+          contact_id?: string | null
+          external_lead_id?: string | null
+          idempotency_key?: string | null
+          payload_hash: string
+          status?: 'received' | 'processed' | 'duplicate' | 'rejected' | 'failed'
+          name?: string | null
+          phone?: string | null
+          email?: string | null
+          source?: string | null
+          whatsapp_opt_in?: boolean
+          whatsapp_opt_in_at?: string | null
+          whatsapp_opt_in_source?: string | null
+          whatsapp_opt_in_text?: string | null
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_term?: string | null
+          error_message?: string | null
+          created_at?: string
+          processed_at?: string | null
+        }
+        Update: {
+          id?: string
+          workspace_id?: string
+          lead_source_id?: string
+          contact_id?: string | null
+          external_lead_id?: string | null
+          idempotency_key?: string | null
+          payload_hash?: string
+          status?: 'received' | 'processed' | 'duplicate' | 'rejected' | 'failed'
+          name?: string | null
+          phone?: string | null
+          email?: string | null
+          source?: string | null
+          whatsapp_opt_in?: boolean
+          whatsapp_opt_in_at?: string | null
+          whatsapp_opt_in_source?: string | null
+          whatsapp_opt_in_text?: string | null
+          utm_source?: string | null
+          utm_medium?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_term?: string | null
+          error_message?: string | null
+          created_at?: string
+          processed_at?: string | null
+        }
+      }
+      lead_rate_limit_events: {
+        Row: {
+          id: string
+          lead_source_id: string
+          request_hash: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          lead_source_id: string
+          request_hash: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          lead_source_id?: string
+          request_hash?: string
+          created_at?: string
         }
       }
       pipelines: {

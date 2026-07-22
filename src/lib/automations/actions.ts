@@ -227,6 +227,15 @@ export async function executeWhatsAppTemplateAction(
   workspaceId: string,
   context?: WhatsAppSendContext
 ): Promise<AutomationActionResult> {
+  if ((contact as Contact & { whatsapp_opt_in?: boolean | null }).whatsapp_opt_in === false) {
+    return {
+      success: false,
+      skipped: true,
+      retryable: false,
+      error: 'Contato sem opt-in para WhatsApp',
+    }
+  }
+
   if (!contact.phone) {
     return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
   }

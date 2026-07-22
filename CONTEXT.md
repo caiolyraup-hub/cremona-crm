@@ -2067,3 +2067,76 @@ TWILIO_STATUS_CALLBACK_URL=
 - Midia Twilio exige URL publica HTTPS; URLs privadas ou temporarias invalidas retornam erro non-retryable.
 
 Nao ha garantia exactly-once para APIs externas. Se o provedor aceitar uma mensagem e a Vercel Function cair antes de persistir o resultado no CRM, o retry pode reenviar a mesma mensagem. A idempotencia atual garante um unico job por `event_key`, mas nao confirma deduplicacao no provedor externo.
+
+## Sessao Entrada Segura de Leads Externos - 2026-07-22
+
+### Objetivo
+
+Permitir que formularios externos enviem leads ao Cremona via backend intermediario, sem expor segredo no navegador, e gerem automacoes existentes somente quando o contato for realmente novo.
+
+### Arquitetura implementada
+
+- `POST /api/leads` e server-to-server e usa runtime Node.js.
+- Autenticacao por `Authorization: Bearer <lead-source-key>` ou, secundariamente, `X-Cremona-Lead-Key`.
+- A chave real da origem nao e persistida; `lead_sources.key_hash` guarda SHA-256.
+- `lead_sources.workspace_id` e a unica origem do workspace. O payload publico nao aceita `workspace_id`, provider, sender, Content SID ou credenciais.
+- `lead_submissions` registra status, origem, UTMs, consentimento WhatsApp e idempotencia sem armazenar payload bruto completo.
+- `lead_rate_limit_events` aplica rate limit persistente por origem, sem depender de memoria da funcao.
+- `src/lib/contacts/create-contact.ts` centraliza criacao, normalizacao, deduplicacao e emissao de `contact_created`.
+- `contact_created` e aguardado e enfileirado em `automation_queue`; nao ha fire-and-forget.
+- Templates automaticos de WhatsApp agora exigem `contacts.whatsapp_opt_in = true`; sem opt-in, a acao termina como skipped/non-retryable.
+
+### Deduplicacao e idempotencia
+
+Ordem aplicada:
+
+1. `Idempotency-Key`;
+2. `external_lead_id`;
+3. `payload_hash` deterministico;
+4. contato ativo por telefone normalizado;
+5. contato ativo por e-mail normalizado.
+
+Contato existente recebe merge controlado de tags, `custom_fields` e campos vazios. Ele nao dispara `contact_created` novamente e nao recebe template inicial duplicado.
+
+### Consentimento WhatsApp
+
+Migration `018_secure_lead_ingestion.sql` adiciona em `contacts`:
+
+- `whatsapp_opt_in`;
+- `whatsapp_opt_in_at`;
+- `whatsapp_opt_in_source`;
+- `whatsapp_opt_in_text`;
+- `source`;
+- `external_lead_id`;
+- `last_lead_submission_at`.
+
+Sem opt-in, o contato e criado e a submissao e registrada, mas a acao WhatsApp de template e encerrada como skipped. Com opt-in, a automacao de boas-vindas pode enviar template Twilio usando Content SID da automacao, do workspace ou de `TWILIO_CONTENT_SID_NEW_LEAD`.
+
+### Scripts
+
+- `npm run setup:beta-lead-source` prepara a origem beta, localizando usuario por e-mail somente no script administrativo, filtrando workspaces Twilio e exigindo `--workspace-id` em ambiguidade.
+- `npm run test:leads` faz dry-run por padrao e so chama endpoint real com `--send`.
+- `npm run test:leads-unit` valida localmente regras de chave, payload, origem, idempotencia, opt-in e compatibilidade Twilio sem chamadas externas.
+
+### Variaveis
+
+No projeto do formulario externo:
+
+```env
+CREMONA_LEAD_SOURCE_KEY=
+CREMONA_LEADS_ENDPOINT=https://cremona-iota.vercel.app/api/leads
+```
+
+No Cremona para teste manual:
+
+```env
+LEADS_ENDPOINT_URL=
+LEADS_TEST_PHONE=
+LEADS_TEST_EMAIL=
+```
+
+### Limitacoes
+
+- Nao foi criada pagina publica de formulario.
+- A UI de detalhe do contato ainda nao ganhou painel dedicado de origem/UTM; os dados estao em `lead_submissions` e `contacts.custom_fields`.
+- Exactly-once externo continua limitado: se a Twilio aceitar uma mensagem e a funcao cair antes de persistir o SID, `whatsapp_dispatches` reduz reenvios quando possivel, mas `delivery_unknown` ainda exige conferencia manual.

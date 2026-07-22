@@ -49,6 +49,18 @@ Execute no Supabase SQL Editor, nesta ordem:
 4. `supabase/migrations/004_dashboard_indexes.sql`
 5. `supabase/migrations/005_onboarding.sql`
 6. `supabase/migrations/006_whatsapp_config.sql`
+7. `supabase/migrations/007_stripe.sql`
+8. `supabase/migrations/008_media_storage.sql`
+9. `supabase/migrations/009_automations.sql`
+10. `supabase/migrations/010_custom_templates.sql`
+11. `supabase/migrations/011_automation_media.sql`
+12. `supabase/migrations/012_automation_queue.sql`
+13. `supabase/migrations/013_whatsapp_indexes.sql`
+14. `supabase/migrations/014_pipelines.sql`
+15. `supabase/migrations/015_automation_queue_idempotency.sql`
+16. `supabase/migrations/016_automation_queue_retries_and_lease.sql`
+17. `supabase/migrations/017_twilio_whatsapp_provider.sql`
+18. `supabase/migrations/018_secure_lead_ingestion.sql`
 
 ## Scripts
 
@@ -63,6 +75,110 @@ npm run test:automation-migration
 npm run test:automation-queue
 npm run test:automation-concurrency
 npm run test:twilio-unit
+npm run test:leads-unit
+```
+
+## Leads externos - entrada server-to-server
+
+O endpoint `POST /api/leads` recebe leads de formularios externos sem expor segredo no navegador. O fluxo correto e:
+
+```txt
+Formulario publico -> backend do site/formulario -> POST /api/leads do Cremona
+```
+
+O navegador nunca deve chamar o Cremona diretamente com a chave. O backend intermediario deve ler `CREMONA_LEAD_SOURCE_KEY` como variavel server-side, gerar `Idempotency-Key` e chamar `CREMONA_LEADS_ENDPOINT`.
+
+Arquitetura:
+
+- `lead_sources` identifica o workspace por uma chave secreta armazenada somente como SHA-256 em `key_hash`.
+- `lead_submissions` registra submissao, origem, UTMs, opt-in e status sem guardar payload bruto completo.
+- `lead_rate_limit_events` aplica rate limit persistente por origem.
+- `src/lib/contacts/create-contact.ts` centraliza normalizacao, deduplicacao e emissao de `contact_created`.
+- contatos novos disparam `contact_created` e entram na `automation_queue`; contatos duplicados nao disparam novamente.
+- templates automaticos de WhatsApp exigem opt-in; sem opt-in, a acao termina como skipped/non-retryable.
+
+Idempotencia:
+
+- primeira chave: header `Idempotency-Key`;
+- segunda chave: `external_lead_id`;
+- terceira chave: `payload_hash` deterministico;
+- por fim, deduplicacao de contato por telefone/e-mail dentro do mesmo workspace.
+
+Variaveis server-side para o projeto que hospeda o formulario:
+
+```env
+CREMONA_LEAD_SOURCE_KEY=
+CREMONA_LEADS_ENDPOINT=https://cremona-iota.vercel.app/api/leads
+```
+
+Rota intermediaria segura em outro Next.js/Vercel:
+
+```ts
+// src/app/api/submit-lead/route.ts
+import { NextResponse } from 'next/server'
+
+export async function POST(request: Request) {
+  const body = await request.json()
+  const endpoint = process.env.CREMONA_LEADS_ENDPOINT
+  const key = process.env.CREMONA_LEAD_SOURCE_KEY
+  if (!endpoint || !key) {
+    return NextResponse.json({ success: false, error: 'lead_config_missing' }, { status: 500 })
+  }
+
+  const controller = new AbortController()
+  const timeout = setTimeout(() => controller.abort(), 12000)
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+        'Idempotency-Key': crypto.randomUUID(),
+      },
+      body: JSON.stringify(body),
+      signal: controller.signal,
+    })
+
+    if (!response.ok) {
+      return NextResponse.json({ success: false, error: 'lead_submit_failed' }, { status: 400 })
+    }
+
+    return NextResponse.json({ success: true })
+  } finally {
+    clearTimeout(timeout)
+  }
+}
+```
+
+Preparar a origem beta:
+
+```bash
+npm run setup:beta-lead-source -- \
+  --email caiolyra.up@gmail.com \
+  --source-name "Formulario Beta Cremona" \
+  --source-slug "beta-cremona" \
+  --ensure-welcome-automation
+```
+
+A chave exibida pelo script aparece apenas uma vez. Guarde em um secret manager ou nas env vars server-side do projeto do formulario. Para rotacionar: use `--rotate-key`; para revogar temporariamente: use `--deactivate`.
+
+Teste local seguro:
+
+```bash
+npm run test:leads
+LEADS_ENDPOINT_URL=https://SEU-DOMINIO/api/leads CREMONA_LEAD_SOURCE_KEY=... LEADS_TEST_PHONE=+55... npm run test:leads -- --send
+```
+
+Rollback sem desativar a Inbox Twilio:
+
+```sql
+UPDATE lead_sources SET active = false WHERE slug = 'beta-cremona';
+UPDATE automations
+SET active = false
+WHERE workspace_id = '<WORKSPACE_ID>'
+  AND trigger_type = 'contact_created'
+  AND action_type = 'send_whatsapp_template'
+  AND name = 'Boas-vindas novo lead - Twilio';
 ```
 
 ## Automacoes - fila duravel
