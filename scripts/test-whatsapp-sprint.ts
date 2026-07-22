@@ -1,1 +1,317 @@
-LyoqCiAqIEVuZC10by1lbmQgc21va2UgY2hlY2tzIGZvciBTcHJpbnQgV2hhdHNBcHAgTVZQLgogKgogKiBVc2FnZToKICogICBucHggdHN4IHNjcmlwdHMvdGVzdC13aGF0c2FwcC1zcHJpbnQudHMgW1dPUktTUEFDRV9JRF0KICovCgppbXBvcnQgeyBjcmVhdGVDbGllbnQgfSBmcm9tICdAc3VwYWJhc2Uvc3VwYWJhc2UtanMnCmltcG9ydCAqIGFzIGRvdGVudiBmcm9tICdkb3RlbnYnCmltcG9ydCAqIGFzIHBhdGggZnJvbSAncGF0aCcKaW1wb3J0IHsgZXhpc3RzU3luYywgcmVhZEZpbGVTeW5jIH0gZnJvbSAnZnMnCmltcG9ydCB7IHJ1bkF1dG9tYXRpb25zRm9yRXZlbnQgfSBmcm9tICcuLi9saWIvYXV0b21hdGlvbnMvZW5naW5lJwoKZG90ZW52LmNvbmZpZyh7IHBhdGg6IHBhdGgucmVzb2x2ZShwcm9jZXNzLmN3ZCgpLCAnLmVudi5sb2NhbCcpIH0pCgpjb25zdCBzdXBhYmFzZVVybCA9IHByb2Nlc3MuZW52Lk5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTApjb25zdCBzZXJ2aWNlUm9sZUtleSA9IHByb2Nlc3MuZW52LlNVUEFCQVNFX1NFUlZJQ0VfUk9MRV9LRVkKY29uc3Qgd29ya3NwYWNlSWQgPSBwcm9jZXNzLmFyZ3ZbMl0KCmlmICghc3VwYWJhc2VVcmwgfHwgIXNlcnZpY2VSb2xlS2V5KSB7CiAgY29uc29sZS5lcnJvcignRmFsdGFuZG8gTkVYVF9QVUJMSUNfU1VQQUJBU0VfVVJMIG91IFNVUEFCQVNFX1NFUlZJQ0VfUk9MRV9LRVkgZW0gLmVudi5sb2NhbCcpCiAgcHJvY2Vzcy5leGl0KDEpCn0KCmlmICghd29ya3NwYWNlSWQpIHsKICBjb25zb2xlLmVycm9yKCdVc286IG5weCB0c3ggc2NyaXB0cy90ZXN0LXdoYXRzYXBwLXNwcmludC50cyBbV09SS1NQQUNFX0lEXScpCiAgcHJvY2Vzcy5leGl0KDEpCn0KCmNvbnN0IHN1cGFiYXNlID0gY3JlYXRlQ2xpZW50KHN1cGFiYXNlVXJsLCBzZXJ2aWNlUm9sZUtleSkKCnR5cGUgVGVzdFJlc3VsdCA9IHsKICBuYW1lOiBzdHJpbmcKICBvazogYm9vbGVhbgogIGRldGFpbHM/OiBzdHJpbmcKfQoKY29uc3QgcmVzdWx0czogVGVzdFJlc3VsdFtdID0gW10KCmZ1bmN0aW9uIHJlY29yZChuYW1lOiBzdHJpbmcsIG9rOiBib29sZWFuLCBkZXRhaWxzPzogc3RyaW5nKSB7CiAgcmVzdWx0cy5wdXNoKHsgbmFtZSwgb2ssIGRldGFpbHMgfSkKICBjb25zb2xlLmxvZyhgJHtvayA/ICdPSycgOiAnRkFMSE9VJ30gJHtuYW1lfSR7ZGV0YWlscyA/IGAgLSAke2RldGFpbHN9YCA6ICcnfWApCn0KCmZ1bmN0aW9uIHJlYWRQcm9qZWN0RmlsZShmaWxlUGF0aDogc3RyaW5nKSB7CiAgcmV0dXJuIHJlYWRGaWxlU3luYyhwYXRoLnJlc29sdmUocHJvY2Vzcy5jd2QoKSwgZmlsZVBhdGgpLCAndXRmLTgnKQp9Cgphc3luYyBmdW5jdGlvbiBjbGVhbnVwKGlkczogewogIGF1dG9tYXRpb25JZHM/OiBzdHJpbmdbXQogIGNvbnRhY3RJZHM/OiBzdHJpbmdbXQp9KSB7CiAgY29uc3QgYXV0b21hdGlvbklkcyA9IGlkcy5hdXRvbWF0aW9uSWRzID8/IFtdCiAgY29uc3QgY29udGFjdElkcyA9IGlkcy5jb250YWN0SWRzID8/IFtdCgogIGlmIChhdXRvbWF0aW9uSWRzLmxlbmd0aCA+IDApIHsKICAgIGF3YWl0IChzdXBhYmFzZSBhcyBhbnkpLmZyb20oJ2F1dG9tYXRpb25fcXVldWUnKS5kZWxldGUoKS5pbignYXV0b21hdGlvbl9pZCcsIGF1dG9tYXRpb25JZHMpCiAgICBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KS5mcm9tKCdhdXRvbWF0aW9uX2xvZ3MnKS5kZWxldGUoKS5pbignYXV0b21hdGlvbl9pZCcsIGF1dG9tYXRpb25JZHMpCiAgICBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KS5mcm9tKCdhdXRvbWF0aW9ucycpLmRlbGV0ZSgpLmluKCdpZCcsIGF1dG9tYXRpb25JZHMpCiAgfQoKICBpZiAoY29udGFjdElkcy5sZW5ndGggPiAwKSB7CiAgICBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KS5mcm9tKCd0YXNrcycpLmRlbGV0ZSgpLmluKCdjb250YWN0X2lkJywgY29udGFjdElkcykKICAgIGF3YWl0IChzdXBhYmFzZSBhcyBhbnkpLmZyb20oJ21lc3NhZ2VzJykuZGVsZXRlKCkuaW4oJ2NvbnRhY3RfaWQnLCBjb250YWN0SWRzKQogICAgYXdhaXQgKHN1cGFiYXNlIGFzIGFueSkuZnJvbSgnY29udGFjdHMnKS5kZWxldGUoKS5pbignaWQnLCBjb250YWN0SWRzKQogIH0KfQoKYXN5bmMgZnVuY3Rpb24gY3JlYXRlQXV0b21hdGlvbihwYXJhbXM6IHsKICBuYW1lOiBzdHJpbmcKICBhY3Rpb25UeXBlOiBzdHJpbmcKICBhY3Rpb25Db25maWc6IFJlY29yZDxzdHJpbmcsIHVua25vd24+CiAgZGVsYXlNaW51dGVzPzogbnVtYmVyCn0pIHsKICBjb25zdCB7IGRhdGEsIGVycm9yIH0gPSBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KQogICAgLmZyb20oJ2F1dG9tYXRpb25zJykKICAgIC5pbnNlcnQoewogICAgICB3b3Jrc3BhY2VfaWQ6IHdvcmtzcGFjZUlkLAogICAgICBuYW1lOiBwYXJhbXMubmFtZSwKICAgICAgdHJpZ2dlcl90eXBlOiAnY29udGFjdF9jcmVhdGVkJywKICAgICAgdHJpZ2dlcl9jb25maWc6IHt9LAogICAgICBhY3Rpb25fdHlwZTogcGFyYW1zLmFjdGlvblR5cGUsCiAgICAgIGFjdGlvbl9jb25maWc6IHBhcmFtcy5hY3Rpb25Db25maWcsCiAgICAgIGFjdGl2ZTogdHJ1ZSwKICAgICAgZGVsYXlfbWludXRlczogcGFyYW1zLmRlbGF5TWludXRlcyA/PyAwLAogICAgfSkKICAgIC5zZWxlY3QoJyonKQogICAgLnNpbmdsZSgpCgogIGlmIChlcnJvcikgdGhyb3cgbmV3IEVycm9yKGVycm9yLm1lc3NhZ2UpCiAgcmV0dXJuIGRhdGEgYXMgeyBpZDogc3RyaW5nIH0KfQoKYXN5bmMgZnVuY3Rpb24gY3JlYXRlQ29udGFjdChwaG9uZVN1ZmZpeDogc3RyaW5nKSB7CiAgY29uc3QgeyBkYXRhLCBlcnJvciB9ID0gYXdhaXQgKHN1cGFiYXNlIGFzIGFueSkKICAgIC5mcm9tKCdjb250YWN0cycpCiAgICAuaW5zZXJ0KHsKICAgICAgd29ya3NwYWNlX2lkOiB3b3Jrc3BhY2VJZCwKICAgICAgbmFtZTogJ0NvbnRhdG8gVGVzdGUgU3ByaW50JywKICAgICAgcGhvbmU6IGA1NTExOTk5OSR7cGhvbmVTdWZmaXh9YCwKICAgICAgdGFnczogW10sCiAgICB9KQogICAgLnNlbGVjdCgnKicpCiAgICAuc2luZ2xlKCkKCiAgaWYgKGVycm9yKSB0aHJvdyBuZXcgRXJyb3IoZXJyb3IubWVzc2FnZSkKICByZXR1cm4gZGF0YSBhcyB7IGlkOiBzdHJpbmcgfQp9Cgphc3luYyBmdW5jdGlvbiB0ZXN0TWVkaWFJbmZyYXN0cnVjdHVyZSgpIHsKICB0cnkgewogICAgY29uc3QgYnVja2V0ID0gYXdhaXQgc3VwYWJhc2Uuc3RvcmFnZS5nZXRCdWNrZXQoJ291dGJvdW5kLW1lZGlhJykKICAgIGlmIChidWNrZXQuZXJyb3IpIHRocm93IG5ldyBFcnJvcihgQnVja2V0IG91dGJvdW5kLW1lZGlhIGluZGlzcG9uaXZlbDogJHtidWNrZXQuZXJyb3IubWVzc2FnZX1gKQoKICAgIGNvbnN0IGluYm94QWN0aW9ucyA9IHJlYWRQcm9qZWN0RmlsZSgnYXBwLyhkYXNoYm9hcmQpL2Rhc2hib2FyZC9pbmJveC9hY3Rpb25zLnRzJykKICAgIGlmICghaW5ib3hBY3Rpb25zLmluY2x1ZGVzKCdzZW5kTWVkaWFNZXNzYWdlQWN0aW9uJykpIHsKICAgICAgdGhyb3cgbmV3IEVycm9yKCdzZW5kTWVkaWFNZXNzYWdlQWN0aW9uIG5hbyBlbmNvbnRyYWRvIGVtIGluYm94L2FjdGlvbnMudHMnKQogICAgfQoKICAgIGNvbnN0IG1lZGlhVXBsb2FkID0gcmVhZFByb2plY3RGaWxlKCdsaWIvd2hhdHNhcHAvbWVkaWEtdXBsb2FkLnRzJykKICAgIGlmICghbWVkaWFVcGxvYWQuaW5jbHVkZXMoJ3VwbG9hZE91dGJvdW5kTWVkaWEnKSkgewogICAgICB0aHJvdyBuZXcgRXJyb3IoJ3VwbG9hZE91dGJvdW5kTWVkaWEgbmFvIGV4cG9ydGFkbyBlbSBsaWIvd2hhdHNhcHAvbWVkaWEtdXBsb2FkLnRzJykKICAgIH0KCiAgICByZWNvcmQoJ0luZnJhZXN0cnV0dXJhIGRlIG1pZGlhJywgdHJ1ZSwgJ0J1Y2tldCBlIGV4cG9ydHMgT0snKQogIH0gY2F0Y2ggKGVycikgewogICAgcmVjb3JkKCdJbmZyYWVzdHJ1dHVyYSBkZSBtaWRpYScsIGZhbHNlLCBTdHJpbmcoZXJyKSkKICB9Cn0KCmFzeW5jIGZ1bmN0aW9uIHRlc3RBdXRvbWF0aW9uRW5naW5lKCkgewogIGNvbnN0IGF1dG9tYXRpb25JZHM6IHN0cmluZ1tdID0gW10KICBjb25zdCBjb250YWN0SWRzOiBzdHJpbmdbXSA9IFtdCiAgdHJ5IHsKICAgIGNvbnN0IGF1dG9tYXRpb24gPSBhd2FpdCBjcmVhdGVBdXRvbWF0aW9uKHsKICAgICAgbmFtZTogJ19fdGVzdF9hdXRvbWF0aW9uX2VuZ2luZV9fJywKICAgICAgYWN0aW9uVHlwZTogJ2NyZWF0ZV90YXNrJywKICAgICAgYWN0aW9uQ29uZmlnOiB7IHRpdGxlOiAnVGVzdGUge3tjb250YWN0X25hbWV9fScsIHByaW9yaXR5OiAnbWVkaXVtJywgZGF5c19vZmZzZXQ6ICcwJyB9LAogICAgfSkKICAgIGNvbnN0IGNvbnRhY3QgPSBhd2FpdCBjcmVhdGVDb250YWN0KCcwMDAxJykKICAgIGF1dG9tYXRpb25JZHMucHVzaChhdXRvbWF0aW9uLmlkKQogICAgY29udGFjdElkcy5wdXNoKGNvbnRhY3QuaWQpCgogICAgYXdhaXQgcnVuQXV0b21hdGlvbnNGb3JFdmVudCh7CiAgICAgIHR5cGU6ICdjb250YWN0X2NyZWF0ZWQnLAogICAgICB3b3Jrc3BhY2VJZCwKICAgICAgY29udGFjdElkOiBjb250YWN0LmlkLAogICAgfSkKCiAgICBjb25zdCB7IGRhdGE6IGxvZyB9ID0gYXdhaXQgKHN1cGFiYXNlIGFzIGFueSkKICAgICAgLmZyb20oJ2F1dG9tYXRpb25fbG9ncycpCiAgICAgIC5zZWxlY3QoJyonKQogICAgICAuZXEoJ2F1dG9tYXRpb25faWQnLCBhdXRvbWF0aW9uLmlkKQogICAgICAuZXEoJ2NvbnRhY3RfaWQnLCBjb250YWN0LmlkKQogICAgICAub3JkZXIoJ2V4ZWN1dGVkX2F0JywgeyBhc2NlbmRpbmc6IGZhbHNlIH0pCiAgICAgIC5saW1pdCgxKQogICAgICAubWF5YmVTaW5nbGUoKQoKICAgIGlmICghbG9nKSB0aHJvdyBuZXcgRXJyb3IoJ05lbmh1bSBsb2cgY3JpYWRvJykKICAgIGlmICghWydzdWNjZXNzJywgJ3NraXBwZWQnXS5pbmNsdWRlcyhsb2cuc3RhdHVzKSkgdGhyb3cgbmV3IEVycm9yKGBTdGF0dXMgaW5lc3BlcmFkbzogJHtsb2cuc3RhdHVzfWApCgogICAgY29uc3QgeyBkYXRhOiB0YXNrIH0gPSBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KQogICAgICAuZnJvbSgndGFza3MnKQogICAgICAuc2VsZWN0KCd0aXRsZScpCiAgICAgIC5lcSgnd29ya3NwYWNlX2lkJywgd29ya3NwYWNlSWQpCiAgICAgIC5lcSgnY29udGFjdF9pZCcsIGNvbnRhY3QuaWQpCiAgICAgIC5vcmRlcignY3JlYXRlZF9hdCcsIHsgYXNjZW5kaW5nOiBmYWxzZSB9KQogICAgICAubGltaXQoMSkKICAgICAgLm1heWJlU2luZ2xlKCkKCiAgICBpZiAobG9nLnN0YXR1cyA9PT0gJ3N1Y2Nlc3MnICYmIHRhc2s/LnRpdGxlPy5pbmNsdWRlcygne3tjb250YWN0X25hbWV9fScpKSB7CiAgICAgIHRocm93IG5ldyBFcnJvcignSW50ZXJwb2xhY2FvIG1hbnRldmUge3tjb250YWN0X25hbWV9fSBsaXRlcmFsJykKICAgIH0KCiAgICByZWNvcmQoJ01vdG9yIGRlIGF1dG9tYWNvZXMnLCB0cnVlLCBgTG9nICR7bG9nLnN0YXR1c31gKQogIH0gY2F0Y2ggKGVycikgewogICAgcmVjb3JkKCdNb3RvciBkZSBhdXRvbWFjb2VzJywgZmFsc2UsIFN0cmluZyhlcnIpKQogIH0gZmluYWxseSB7CiAgICBhd2FpdCBjbGVhbnVwKHsgYXV0b21hdGlvbklkcywgY29udGFjdElkcyB9KQogIH0KfQoKYXN5bmMgZnVuY3Rpb24gdGVzdERlbGF5UXVldWUoKSB7CiAgY29uc3QgYXV0b21hdGlvbklkczogc3RyaW5nW10gPSBbXQogIGNvbnN0IGNvbnRhY3RJZHM6IHN0cmluZ1tdID0gW10KICB0cnkgewogICAgY29uc3QgYXV0b21hdGlvbiA9IGF3YWl0IGNyZWF0ZUF1dG9tYXRpb24oewogICAgICBuYW1lOiAnX190ZXN0X2F1dG9tYXRpb25fZGVsYXlfXycsCiAgICAgIGFjdGlvblR5cGU6ICdjcmVhdGVfdGFzaycsCiAgICAgIGFjdGlvbkNvbmZpZzogeyB0aXRsZTogJ0RlbGF5IHt7Y29udGFjdF9uYW1lfX0nLCBwcmlvcml0eTogJ21lZGl1bScsIGRheXNfb2Zmc2V0OiAnMCcgfSwKICAgICAgZGVsYXlNaW51dGVzOiAxLAogICAgfSkKICAgIGNvbnN0IGNvbnRhY3QgPSBhd2FpdCBjcmVhdGVDb250YWN0KCcwMDAyJykKICAgIGF1dG9tYXRpb25JZHMucHVzaChhdXRvbWF0aW9uLmlkKQogICAgY29udGFjdElkcy5wdXNoKGNvbnRhY3QuaWQpCgogICAgYXdhaXQgcnVuQXV0b21hdGlvbnNGb3JFdmVudCh7CiAgICAgIHR5cGU6ICdjb250YWN0X2NyZWF0ZWQnLAogICAgICB3b3Jrc3BhY2VJZCwKICAgICAgY29udGFjdElkOiBjb250YWN0LmlkLAogICAgfSkKCiAgICBjb25zdCB7IGRhdGE6IHF1ZXVlIH0gPSBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KQogICAgICAuZnJvbSgnYXV0b21hdGlvbl9xdWV1ZScpCiAgICAgIC5zZWxlY3QoJyonKQogICAgICAuZXEoJ2F1dG9tYXRpb25faWQnLCBhdXRvbWF0aW9uLmlkKQogICAgICAuZXEoJ2NvbnRhY3RfaWQnLCBjb250YWN0LmlkKQogICAgICAuZXEoJ3N0YXR1cycsICdwZW5kaW5nJykKICAgICAgLm1heWJlU2luZ2xlKCkKCiAgICBpZiAoIXF1ZXVlKSB0aHJvdyBuZXcgRXJyb3IoJ0l0ZW0gbmFvIGVudHJvdSBlbSBhdXRvbWF0aW9uX3F1ZXVlJykKCiAgICBjb25zdCB7IGRhdGE6IGxvZyB9ID0gYXdhaXQgKHN1cGFiYXNlIGFzIGFueSkKICAgICAgLmZyb20oJ2F1dG9tYXRpb25fbG9ncycpCiAgICAgIC5zZWxlY3QoJyonKQogICAgICAuZXEoJ2F1dG9tYXRpb25faWQnLCBhdXRvbWF0aW9uLmlkKQogICAgICAuZXEoJ2NvbnRhY3RfaWQnLCBjb250YWN0LmlkKQogICAgICAuZXEoJ3N0YXR1cycsICdza2lwcGVkJykKICAgICAgLmlsaWtlKCdlcnJvcl9tZXNzYWdlJywgJyVBZ2VuZGFkYSUnKQogICAgICAubWF5YmVTaW5nbGUoKQoKICAgIGlmICghbG9nKSB0aHJvdyBuZXcgRXJyb3IoJ0xvZyBkZSBhZ2VuZGFtZW50byBza2lwcGVkIG5hbyBlbmNvbnRyYWRvJykKCiAgICByZWNvcmQoJ0ZpbGEgZGUgZGVsYXknLCB0cnVlLCAnUXVldWUgcGVuZGluZyBlIGxvZyBkZSBhZ2VuZGFtZW50byBPSycpCiAgfSBjYXRjaCAoZXJyKSB7CiAgICByZWNvcmQoJ0ZpbGEgZGUgZGVsYXknLCBmYWxzZSwgU3RyaW5nKGVycikpCiAgfSBmaW5hbGx5IHsKICAgIGF3YWl0IGNsZWFudXAoeyBhdXRvbWF0aW9uSWRzLCBjb250YWN0SWRzIH0pCiAgfQp9Cgphc3luYyBmdW5jdGlvbiB0ZXN0RGVkdXBsaWNhdGlvbigpIHsKICBjb25zdCBhdXRvbWF0aW9uSWRzOiBzdHJpbmdbXSA9IFtdCiAgY29uc3QgY29udGFjdElkczogc3RyaW5nW10gPSBbXQogIHRyeSB7CiAgICBjb25zdCBhdXRvbWF0aW9uID0gYXdhaXQgY3JlYXRlQXV0b21hdGlvbih7CiAgICAgIG5hbWU6ICdfX3Rlc3RfYXV0b21hdGlvbl9kZWR1cF9fJywKICAgICAgYWN0aW9uVHlwZTogJ2NyZWF0ZV90YXNrJywKICAgICAgYWN0aW9uQ29uZmlnOiB7IHRpdGxlOiAnRGVkdXAge3tjb250YWN0X25hbWV9fScsIHByaW9yaXR5OiAnbWVkaXVtJywgZGF5c19vZmZzZXQ6ICcwJyB9LAogICAgfSkKICAgIGNvbnN0IGNvbnRhY3QgPSBhd2FpdCBjcmVhdGVDb250YWN0KCcwMDAzJykKICAgIGF1dG9tYXRpb25JZHMucHVzaChhdXRvbWF0aW9uLmlkKQogICAgY29udGFjdElkcy5wdXNoKGNvbnRhY3QuaWQpCgogICAgY29uc3QgZXZlbnQgPSB7IHR5cGU6ICdjb250YWN0X2NyZWF0ZWQnIGFzIGNvbnN0LCB3b3Jrc3BhY2VJZCwgY29udGFjdElkOiBjb250YWN0LmlkIH0KICAgIGF3YWl0IHJ1bkF1dG9tYXRpb25zRm9yRXZlbnQoZXZlbnQpCiAgICBhd2FpdCBydW5BdXRvbWF0aW9uc0ZvckV2ZW50KGV2ZW50KQoKICAgIGNvbnN0IHsgZGF0YTogbG9ncyB9ID0gYXdhaXQgKHN1cGFiYXNlIGFzIGFueSkKICAgICAgLmZyb20oJ2F1dG9tYXRpb25fbG9ncycpCiAgICAgIC5zZWxlY3QoJ3N0YXR1cywgZXJyb3JfbWVzc2FnZScpCiAgICAgIC5lcSgnYXV0b21hdGlvbl9pZCcsIGF1dG9tYXRpb24uaWQpCiAgICAgIC5lcSgnY29udGFjdF9pZCcsIGNvbnRhY3QuaWQpCgogICAgY29uc3Qgc3VjY2Vzc0NvdW50ID0gKGxvZ3MgPz8gW10pLmZpbHRlcigobG9nOiBhbnkpID0+IGxvZy5zdGF0dXMgPT09ICdzdWNjZXNzJykubGVuZ3RoCiAgICBjb25zdCBza2lwcGVkQ291bnQgPSAobG9ncyA/PyBbXSkuZmlsdGVyKChsb2c6IGFueSkgPT4gbG9nLnN0YXR1cyA9PT0gJ3NraXBwZWQnKS5sZW5ndGgKCiAgICBpZiAoc3VjY2Vzc0NvdW50ICE9PSAxIHx8IHNraXBwZWRDb3VudCAhPT0gMSkgewogICAgICB0aHJvdyBuZXcgRXJyb3IoYEVzcGVyYWRvIDEgc3VjY2VzcyBlIDEgc2tpcHBlZDsgcmVjZWJpZG8gJHtzdWNjZXNzQ291bnR9IHN1Y2Nlc3MgZSAke3NraXBwZWRDb3VudH0gc2tpcHBlZGApCiAgICB9CgogICAgcmVjb3JkKCdEZWR1cGxpY2FjYW8nLCB0cnVlLCAnMSBzdWNjZXNzIGUgMSBza2lwcGVkJykKICB9IGNhdGNoIChlcnIpIHsKICAgIHJlY29yZCgnRGVkdXBsaWNhY2FvJywgZmFsc2UsIFN0cmluZyhlcnIpKQogIH0gZmluYWxseSB7CiAgICBhd2FpdCBjbGVhbnVwKHsgYXV0b21hdGlvbklkcywgY29udGFjdElkcyB9KQogIH0KfQoKYXN5bmMgZnVuY3Rpb24gdGVzdFNjaGVtYSgpIHsKICB0cnkgewogICAgY29uc3QgdGFibGVzID0gWydhdXRvbWF0aW9uX3F1ZXVlJywgJ2F1dG9tYXRpb25fbG9ncycsICdhdXRvbWF0aW9ucycsICd3aGF0c2FwcF90ZW1wbGF0ZXMnXQogICAgZm9yIChjb25zdCB0YWJsZSBvZiB0YWJsZXMpIHsKICAgICAgY29uc3QgeyBlcnJvciB9ID0gYXdhaXQgKHN1cGFiYXNlIGFzIGFueSkuZnJvbSh0YWJsZSkuc2VsZWN0KCdpZCcpLmxpbWl0KDEpCiAgICAgIGlmIChlcnJvcikgdGhyb3cgbmV3IEVycm9yKGBUYWJlbGEgJHt0YWJsZX06ICR7ZXJyb3IubWVzc2FnZX1gKQogICAgfQoKICAgIGNvbnN0IG1pZ3JhdGlvbjAxMiA9IHJlYWRQcm9qZWN0RmlsZSgnc3VwYWJhc2UvbWlncmF0aW9ucy8wMTJfYXV0b21hdGlvbl9xdWV1ZS5zcWwnKQogICAgY29uc3QgbWlncmF0aW9uMDEzID0gcmVhZFByb2plY3RGaWxlKCdzdXBhYmFzZS9taWdyYXRpb25zLzAxM193aGF0c2FwcF9pbmRleGVzLnNxbCcpCiAgICBjb25zdCByZXF1aXJlZEluZGV4SGludHMgPSBbCiAgICAgICdhdXRvbWF0aW9uX3F1ZXVlJywKICAgICAgJ21lc3NhZ2VzJywKICAgICAgJ2F1dG9tYXRpb25fbG9ncycsCiAgICBdCgogICAgZm9yIChjb25zdCBoaW50IG9mIHJlcXVpcmVkSW5kZXhIaW50cykgewogICAgICBpZiAoIW1pZ3JhdGlvbjAxMi5pbmNsdWRlcyhoaW50KSAmJiAhbWlncmF0aW9uMDEzLmluY2x1ZGVzKGhpbnQpKSB7CiAgICAgICAgdGhyb3cgbmV3IEVycm9yKGBJbmRpY2UgY3JpdGljbyBuYW8gcmVmZXJlbmNpYWRvIG5hcyBtaWdyYXRpb25zOiAke2hpbnR9YCkKICAgICAgfQogICAgfQoKICAgIHJlY29yZCgnU2NoZW1hIGRvIGJhbmNvJywgdHJ1ZSwgJ1RhYmVsYXMgbm8gYmFuY28gZSBtaWdyYXRpb25zIGRlIGluZGljZXMgT0snKQogIH0gY2F0Y2ggKGVycikgewogICAgcmVjb3JkKCdTY2hlbWEgZG8gYmFuY28nLCBmYWxzZSwgU3RyaW5nKGVycikpCiAgfQp9Cgphc3luYyBmdW5jdGlvbiBtYWluKCkgewogIGNvbnNvbGUubG9nKCdcblNtb2tlIHRlc3QgU3ByaW50IFdoYXRzQXBwIE1WUCcpCiAgY29uc29sZS5sb2coJz0nLnJlcGVhdCg0MCkpCgogIGF3YWl0IHRlc3RNZWRpYUluZnJhc3RydWN0dXJlKCkKICBhd2FpdCB0ZXN0QXV0b21hdGlvbkVuZ2luZSgpCiAgYXdhaXQgdGVzdERlbGF5UXVldWUoKQogIGF3YWl0IHRlc3REZWR1cGxpY2F0aW9uKCkKICBhd2FpdCB0ZXN0U2NoZW1hKCkKCiAgY29uc3QgcGFzc2VkID0gcmVzdWx0cy5maWx0ZXIoKHJlc3VsdCkgPT4gcmVzdWx0Lm9rKS5sZW5ndGgKICBjb25zb2xlLmxvZygnPScucmVwZWF0KDQwKSkKICBjb25zb2xlLmxvZyhgJHtwYXNzZWR9LyR7cmVzdWx0cy5sZW5ndGh9IHRlc3RlcyBwYXNzYXJhbWApCgogIGlmIChwYXNzZWQgIT09IHJlc3VsdHMubGVuZ3RoKSB7CiAgICBwcm9jZXNzLmV4aXRDb2RlID0gMQogIH0KfQoKdm9pZCBtYWluKCkK
+/**
+ * End-to-end smoke checks for Sprint WhatsApp MVP.
+ *
+ * Usage:
+ *   npx tsx scripts/test-whatsapp-sprint.ts [WORKSPACE_ID]
+ */
+
+import { createClient } from '@supabase/supabase-js'
+import * as dotenv from 'dotenv'
+import * as path from 'path'
+import { existsSync, readFileSync } from 'fs'
+import { runAutomationsForEvent } from '../lib/automations/engine'
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const workspaceId = process.argv[2]
+
+if (!supabaseUrl || !serviceRoleKey) {
+  console.error('Faltando NEXT_PUBLIC_SUPABASE_URL ou SUPABASE_SERVICE_ROLE_KEY em .env.local')
+  process.exit(1)
+}
+
+if (!workspaceId) {
+  console.error('Uso: npx tsx scripts/test-whatsapp-sprint.ts [WORKSPACE_ID]')
+  process.exit(1)
+}
+
+const supabase = createClient(supabaseUrl, serviceRoleKey)
+
+type TestResult = {
+  name: string
+  ok: boolean
+  details?: string
+}
+
+const results: TestResult[] = []
+
+function record(name: string, ok: boolean, details?: string) {
+  results.push({ name, ok, details })
+  console.log(`${ok ? 'OK' : 'FALHOU'} ${name}${details ? ` - ${details}` : ''}`)
+}
+
+function readProjectFile(filePath: string) {
+  return readFileSync(path.resolve(process.cwd(), filePath), 'utf-8')
+}
+
+async function cleanup(ids: {
+  automationIds?: string[]
+  contactIds?: string[]
+}) {
+  const automationIds = ids.automationIds ?? []
+  const contactIds = ids.contactIds ?? []
+
+  if (automationIds.length > 0) {
+    await (supabase as any).from('automation_queue').delete().in('automation_id', automationIds)
+    await (supabase as any).from('automation_logs').delete().in('automation_id', automationIds)
+    await (supabase as any).from('automations').delete().in('id', automationIds)
+  }
+
+  if (contactIds.length > 0) {
+    await (supabase as any).from('tasks').delete().in('contact_id', contactIds)
+    await (supabase as any).from('messages').delete().in('contact_id', contactIds)
+    await (supabase as any).from('contacts').delete().in('id', contactIds)
+  }
+}
+
+async function createAutomation(params: {
+  name: string
+  actionType: string
+  actionConfig: Record<string, unknown>
+  delayMinutes?: number
+}) {
+  const { data, error } = await (supabase as any)
+    .from('automations')
+    .insert({
+      workspace_id: workspaceId,
+      name: params.name,
+      trigger_type: 'contact_created',
+      trigger_config: {},
+      action_type: params.actionType,
+      action_config: params.actionConfig,
+      active: true,
+      delay_minutes: params.delayMinutes ?? 0,
+    })
+    .select('*')
+    .single()
+
+  if (error) throw new Error(error.message)
+  return data as { id: string }
+}
+
+async function createContact(phoneSuffix: string) {
+  const { data, error } = await (supabase as any)
+    .from('contacts')
+    .insert({
+      workspace_id: workspaceId,
+      name: 'Contato Teste Sprint',
+      phone: `55119999${phoneSuffix}`,
+      tags: [],
+    })
+    .select('*')
+    .single()
+
+  if (error) throw new Error(error.message)
+  return data as { id: string }
+}
+
+async function testMediaInfrastructure() {
+  try {
+    const bucket = await supabase.storage.getBucket('outbound-media')
+    if (bucket.error) throw new Error(`Bucket outbound-media indisponivel: ${bucket.error.message}`)
+
+    const inboxActions = readProjectFile('app/(dashboard)/dashboard/inbox/actions.ts')
+    if (!inboxActions.includes('sendMediaMessageAction')) {
+      throw new Error('sendMediaMessageAction nao encontrado em inbox/actions.ts')
+    }
+
+    const mediaUpload = readProjectFile('lib/whatsapp/media-upload.ts')
+    if (!mediaUpload.includes('uploadOutboundMedia')) {
+      throw new Error('uploadOutboundMedia nao exportado em lib/whatsapp/media-upload.ts')
+    }
+
+    record('Infraestrutura de midia', true, 'Bucket e exports OK')
+  } catch (err) {
+    record('Infraestrutura de midia', false, String(err))
+  }
+}
+
+async function testAutomationEngine() {
+  const automationIds: string[] = []
+  const contactIds: string[] = []
+  try {
+    const automation = await createAutomation({
+      name: '__test_automation_engine__',
+      actionType: 'create_task',
+      actionConfig: { title: 'Teste {{contact_name}}', priority: 'medium', days_offset: '0' },
+    })
+    const contact = await createContact('0001')
+    automationIds.push(automation.id)
+    contactIds.push(contact.id)
+
+    await runAutomationsForEvent({
+      type: 'contact_created',
+      workspaceId,
+      contactId: contact.id,
+    })
+
+    const { data: log } = await (supabase as any)
+      .from('automation_logs')
+      .select('*')
+      .eq('automation_id', automation.id)
+      .eq('contact_id', contact.id)
+      .order('executed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (!log) throw new Error('Nenhum log criado')
+    if (!['success', 'skipped'].includes(log.status)) throw new Error(`Status inesperado: ${log.status}`)
+
+    const { data: task } = await (supabase as any)
+      .from('tasks')
+      .select('title')
+      .eq('workspace_id', workspaceId)
+      .eq('contact_id', contact.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+
+    if (log.status === 'success' && task?.title?.includes('{{contact_name}}')) {
+      throw new Error('Interpolacao manteve {{contact_name}} literal')
+    }
+
+    record('Motor de automacoes', true, `Log ${log.status}`)
+  } catch (err) {
+    record('Motor de automacoes', false, String(err))
+  } finally {
+    await cleanup({ automationIds, contactIds })
+  }
+}
+
+async function testDelayQueue() {
+  const automationIds: string[] = []
+  const contactIds: string[] = []
+  try {
+    const automation = await createAutomation({
+      name: '__test_automation_delay__',
+      actionType: 'create_task',
+      actionConfig: { title: 'Delay {{contact_name}}', priority: 'medium', days_offset: '0' },
+      delayMinutes: 1,
+    })
+    const contact = await createContact('0002')
+    automationIds.push(automation.id)
+    contactIds.push(contact.id)
+
+    await runAutomationsForEvent({
+      type: 'contact_created',
+      workspaceId,
+      contactId: contact.id,
+    })
+
+    const { data: queue } = await (supabase as any)
+      .from('automation_queue')
+      .select('*')
+      .eq('automation_id', automation.id)
+      .eq('contact_id', contact.id)
+      .eq('status', 'pending')
+      .maybeSingle()
+
+    if (!queue) throw new Error('Item nao entrou em automation_queue')
+
+    const { data: log } = await (supabase as any)
+      .from('automation_logs')
+      .select('*')
+      .eq('automation_id', automation.id)
+      .eq('contact_id', contact.id)
+      .eq('status', 'skipped')
+      .ilike('error_message', '%Agendada%')
+      .maybeSingle()
+
+    if (!log) throw new Error('Log de agendamento skipped nao encontrado')
+
+    record('Fila de delay', true, 'Queue pending e log de agendamento OK')
+  } catch (err) {
+    record('Fila de delay', false, String(err))
+  } finally {
+    await cleanup({ automationIds, contactIds })
+  }
+}
+
+async function testDeduplication() {
+  const automationIds: string[] = []
+  const contactIds: string[] = []
+  try {
+    const automation = await createAutomation({
+      name: '__test_automation_dedup__',
+      actionType: 'create_task',
+      actionConfig: { title: 'Dedup {{contact_name}}', priority: 'medium', days_offset: '0' },
+    })
+    const contact = await createContact('0003')
+    automationIds.push(automation.id)
+    contactIds.push(contact.id)
+
+    const event = { type: 'contact_created' as const, workspaceId, contactId: contact.id }
+    await runAutomationsForEvent(event)
+    await runAutomationsForEvent(event)
+
+    const { data: logs } = await (supabase as any)
+      .from('automation_logs')
+      .select('status, error_message')
+      .eq('automation_id', automation.id)
+      .eq('contact_id', contact.id)
+
+    const successCount = (logs ?? []).filter((log: any) => log.status === 'success').length
+    const skippedCount = (logs ?? []).filter((log: any) => log.status === 'skipped').length
+
+    if (successCount !== 1 || skippedCount !== 1) {
+      throw new Error(`Esperado 1 success e 1 skipped; recebido ${successCount} success e ${skippedCount} skipped`)
+    }
+
+    record('Deduplicacao', true, '1 success e 1 skipped')
+  } catch (err) {
+    record('Deduplicacao', false, String(err))
+  } finally {
+    await cleanup({ automationIds, contactIds })
+  }
+}
+
+async function testSchema() {
+  try {
+    const tables = ['automation_queue', 'automation_logs', 'automations', 'whatsapp_templates']
+    for (const table of tables) {
+      const { error } = await (supabase as any).from(table).select('id').limit(1)
+      if (error) throw new Error(`Tabela ${table}: ${error.message}`)
+    }
+
+    const migration012 = readProjectFile('supabase/migrations/012_automation_queue.sql')
+    const migration013 = readProjectFile('supabase/migrations/013_whatsapp_indexes.sql')
+    const requiredIndexHints = [
+      'automation_queue',
+      'messages',
+      'automation_logs',
+    ]
+
+    for (const hint of requiredIndexHints) {
+      if (!migration012.includes(hint) && !migration013.includes(hint)) {
+        throw new Error(`Indice critico nao referenciado nas migrations: ${hint}`)
+      }
+    }
+
+    record('Schema do banco', true, 'Tabelas no banco e migrations de indices OK')
+  } catch (err) {
+    record('Schema do banco', false, String(err))
+  }
+}
+
+async function main() {
+  console.log('\nSmoke test Sprint WhatsApp MVP')
+  console.log('='.repeat(40))
+
+  await testMediaInfrastructure()
+  await testAutomationEngine()
+  await testDelayQueue()
+  await testDeduplication()
+  await testSchema()
+
+  const passed = results.filter((result) => result.ok).length
+  console.log('='.repeat(40))
+  console.log(`${passed}/${results.length} testes passaram`)
+
+  if (passed !== results.length) {
+    process.exitCode = 1
+  }
+}
+
+void main()

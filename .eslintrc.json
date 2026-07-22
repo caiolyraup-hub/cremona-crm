@@ -1,1 +1,3 @@
-ewogICJleHRlbmRzIjogWyJuZXh0L2NvcmUtd2ViLXZpdGFscyIsICJuZXh0L3R5cGVzY3JpcHQiXQp9Cg==
+{
+  "extends": ["next/core-web-vitals", "next/typescript"]
+}

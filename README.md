@@ -1,1 +1,354 @@
-IyBDcmVtb25hCgpDUk0gdmlhIFdoYXRzQXBwIHBhcmEgbWljcm8gZSBwZXF1ZW5vcyBlbXByZXNhcmlvcyBicmFzaWxlaXJvcy4KCiMjIFN0YWNrCgotIE5leHQuanMgMTQgKyBBcHAgUm91dGVyICsgVHlwZVNjcmlwdAotIFRhaWx3aW5kQ1NTICsgc2hhZGNuL3VpICsgQmFzZSBVSQotIFN1cGFiYXNlOiBiYW5jbywgYXV0aCwgc3RvcmFnZSBlIHJlYWx0aW1lCi0gZnJhbWVyLW1vdGlvbgotIFJlY2hhcnRzCi0gQGRuZC1raXQKLSBzb25uZXIKLSBNZXRhIENsb3VkIEFQSSBwYXJhIFdoYXRzQXBwCgojIyBTZXR1cCBsb2NhbAoKYGBgYmFzaApnaXQgY2xvbmUgPHJlcG8tdXJsPgpjZCBjcmVtb25hCm5wbSBpbnN0YWxsCmNwIC5lbnYubG9jYWwuZXhhbXBsZSAuZW52LmxvY2FsCmBgYAoKUHJlZW5jaGEgbm8gYC5lbnYubG9jYWxgOgoKLSBgTkVYVF9QVUJMSUNfU1VQQUJBU0VfVVJMYAotIGBORVhUX1BVQkxJQ19TVVBBQkFTRV9BTk9OX0tFWWAKLSBgU1VQQUJBU0VfU0VSVklDRV9ST0xFX0tFWWAKLSBgV0hBVFNBUFBfVkVSSUZZX1RPS0VOYAotIGBXSEFUU0FQUF9BUFBfU0VDUkVUYAotIGBXRUJIT09LX0JBU0VfVVJMYCwgb3BjaW9uYWwgcGFyYSBvcyBzY3JpcHRzIGxvY2FpcwoKT2JzZXJ2YWNvZXM6CgotIGBXSEFUU0FQUF9WRVJJRllfVE9LRU5gIHZhbGlkYSBvIGBHRVQgL2FwaS93aGF0c2FwcC93ZWJob29rYAotIGBXSEFUU0FQUF9BUFBfU0VDUkVUYCB2YWxpZGEgYSBhc3NpbmF0dXJhIGB4LWh1Yi1zaWduYXR1cmUtMjU2YCBubyBgUE9TVGAKLSBvIHRva2VuIGRlIGFjZXNzbyBkYSBNZXRhIG5hbyBlIGdsb2JhbAotIG8gdG9rZW4gZGEgTWV0YSBmaWNhIHNhbHZvIHBvciB3b3Jrc3BhY2UgZW0gYHdvcmtzcGFjZXMud2hhdHNhcHBfdG9rZW5gCi0gZGVwb2lzIGRlIGFsdGVyYXIgZW52IHZhcnMgbmEgVmVyY2VsLCBmYWNhIHJlZGVwbG95CgojIyBNaWdyYXRpb25zCgpFeGVjdXRlIG5vIFN1cGFiYXNlIFNRTCBFZGl0b3IsIG5lc3RhIG9yZGVtOgoKMS4gYHN1cGFiYXNlL21pZ3JhdGlvbnMvMDAxX2luaXRpYWxfc2NoZW1hLnNxbGAKMi4gYHN1cGFiYXNlL21pZ3JhdGlvbnMvMDAyX3NvZnRfZGVsZXRlLnNxbGAKMy4gYHN1cGFiYXNlL21pZ3JhdGlvbnMvMDAzX3NlYXJjaF9pbmRleGVzLnNxbGAKNC4gYHN1cGFiYXNlL21pZ3JhdGlvbnMvMDA0X2Rhc2hib2FyZF9pbmRleGVzLnNxbGAKNS4gYHN1cGFiYXNlL21pZ3JhdGlvbnMvMDA1X29uYm9hcmRpbmcuc3FsYAo2LiBgc3VwYWJhc2UvbWlncmF0aW9ucy8wMDZfd2hhdHNhcHBfY29uZmlnLnNxbGAKCiMjIFNjcmlwdHMKCmBgYGJhc2gKbnBtIHJ1biBkZXYKbnBtIHJ1biBsaW50Cm5wbSBydW4gYnVpbGQKbnBtIHJ1biBjaGVjazp3aGF0c2FwcC1lbnYKbnBtIHJ1biB0ZXN0OndlYmhvb2sKbnBtIHJ1biB0ZXN0OndoYXRzYXBwLXdpbmRvdwpgYGAKCiMjIFdoYXRzQXBwIC0gYXJxdWl0ZXR1cmEKCkZsdXhvIGF0dWFsOgoKMS4gQSBNZXRhIGVudmlhIGV2ZW50b3MgcGFyYSBgR0VUL1BPU1QgL2FwaS93aGF0c2FwcC93ZWJob29rYC4KMi4gTyBgR0VUYCB2YWxpZGEgYGh1Yi52ZXJpZnlfdG9rZW5gIGUgcmV0b3JuYSBgaHViLmNoYWxsZW5nZWAgZW0gdGV4dG8gcHVyby4KMy4gTyBgUE9TVGAgbGUgbyBib2R5IGJydXRvIGUgdmFsaWRhIEhNQUMgY29tIGBXSEFUU0FQUF9BUFBfU0VDUkVUYC4KNC4gRW0gZGVzZW52b2x2aW1lbnRvLCBvIGBQT1NUYCBhY2VpdGEgdGVzdGUgc2VtIGFwcCBzZWNyZXQ7IGVtIHByb2R1Y2FvLCBuYW8uCjUuIE8gd29ya3NwYWNlIGUgcmVzb2x2aWRvIHByaW1laXJvIHBvciBgd2hhdHNhcHBfcGhvbmVfbnVtYmVyX2lkYCBlIGRlcG9pcyBwb3IgZmFsbGJhY2sgZW0gYHdoYXRzYXBwX3Bob25lYC4KNi4gTyBjb250YXRvIGUgZW5jb250cmFkbyBvdSBjcmlhZG8gcG9yIHRlbGVmb25lLgo3LiBBIG1lbnNhZ2VtIGluYm91bmQgZSBzYWx2YSBlbSBgbWVzc2FnZXNgLgo4LiBVbWEgYWN0aXZpdHkgZG8gdGlwbyBgd2hhdHNhcHBgIGUgY3JpYWRhLgo5LiBBIEluYm94IGVtIGAvZGFzaGJvYXJkL2luYm94YCBsZSBgbWVzc2FnZXNgLgoxMC4gUmVhbHRpbWUgYXR1YWxpemEgbGlzdGEsIGhpc3RvcmljbyBlIGJhZGdlLgoxMS4gTyBlbnZpbyBiYXNpY28gdXNhIGEgTWV0YSBDbG91ZCBBUEkgZSBwZXJzaXN0ZSBvdXRib3VuZCBubyBDUk0gdmlhIFNlcnZlciBBY3Rpb24uCjEyLiBPIGVudmlvIGxpdnJlIGFnb3JhIHJlc3BlaXRhIGEgamFuZWxhIGRlIGF0ZW5kaW1lbnRvIGRlIDI0IGhvcmFzIGRhIE1ldGEuCgojIyBXaGF0c0FwcCAtIHZhcmlhdmVpcwoKYGBgZW52CldIQVRTQVBQX1ZFUklGWV9UT0tFTj0KV0hBVFNBUFBfQVBQX1NFQ1JFVD0KV0VCSE9PS19CQVNFX1VSTD1odHRwOi8vbG9jYWxob3N0OjMwMDAKYGBgCgpSZWdyYXM6CgotIGBXSEFUU0FQUF9WRVJJRllfVE9LRU5gIGUgb2JyaWdhdG9yaW8gcGFyYSBhIHZlcmlmaWNhY2FvIGRvIHdlYmhvb2sKLSBgV0hBVFNBUFBfQVBQX1NFQ1JFVGAgZSBvYnJpZ2F0b3JpbyBwYXJhIHByb2R1Y2FvCi0gYFdFQkhPT0tfQkFTRV9VUkxgIGUgdXNhZG8gYXBlbmFzIHBlbG9zIHNjcmlwdHMgZGUgdGVzdGUKLSBvIHRva2VuIGRlIGFjZXNzbyBkYSBNZXRhIGZpY2EgZW0gYFNldHRpbmdzID4gV2hhdHNBcHBgLCBwb3Igd29ya3NwYWNlLCBlIG5hbyBubyBmcm9udGVuZAoKIyMgV2hhdHNBcHAgLSB0ZXN0ZSBsb2NhbCBlIHByb2R1Y2FvCgojIyMgQ2hlY2sgZGUgYW1iaWVudGUKCmBgYGJhc2gKbnBtIHJ1biBjaGVjazp3aGF0c2FwcC1lbnYKYGBgCgojIyMgVGVzdGUgbWFudWFsIGRvIEdFVCBsb2NhbAoKYGBgYmFzaApjdXJsICJodHRwOi8vbG9jYWxob3N0OjMwMDAvYXBpL3doYXRzYXBwL3dlYmhvb2s/aHViLm1vZGU9c3Vic2NyaWJlJmh1Yi52ZXJpZnlfdG9rZW49U0VVX1RPS0VOJmh1Yi5jaGFsbGVuZ2U9MTIzIgpgYGAKClJlc3Bvc3RhIGVzcGVyYWRhOgoKYGBgdHh0CjEyMwpgYGAKCiMjIyBUZXN0ZSBwb3Igc2NyaXB0IGxvY2FsCgpgYGBiYXNoCldFQkhPT0tfQkFTRV9VUkw9aHR0cDovL2xvY2FsaG9zdDozMDAwIG5wbSBydW4gdGVzdDp3ZWJob29rCmBgYAoKTyBzY3JpcHQgdGVzdGE6CgotIEdFVCBkZSB2ZXJpZmljYWNhbyBjb20gYGh1Yi5jaGFsbGVuZ2VgCi0gUE9TVCBmYWtlIGRlIHRleHRvCi0gUE9TVCBmYWtlIGRlIG1pZGlhCi0gUE9TVCBmYWtlIGRlIHN0YXR1cyBjYWxsYmFjawotIHJlc3VtbyBgT0tgIG91IGBGQUlMYCBubyB0ZXJtaW5hbAotIHN0YXR1cyBlIGJvZHkgYXBlbmFzIHF1YW5kbyBhbGd1bSB0ZXN0ZSBmYWxoYQoKIyMjIFRlc3RlIHBvciBzY3JpcHQgZW0gcHJvZHVjYW8KCmBgYGJhc2gKV0VCSE9PS19CQVNFX1VSTD1odHRwczovL1NFVS1ET01JTklPLnZlcmNlbC5hcHAgbnBtIHJ1biB0ZXN0OndlYmhvb2sKYGBgCgojIyMgT25kZSBvbGhhciBvcyByZXN1bHRhZG9zCgotIG5vIHRlcm1pbmFsIGRvIHNjcmlwdCwgcGFyYSB2ZXIgYE9LYCBvdSBgRkFJTGAKLSBub3MgbG9ncyBkbyBzZXJ2aWRvciBOZXh0LmpzCi0gbmEgdGFiZWxhIGBtZXNzYWdlc2AKLSBuYSBJbmJveCBlbSBgL2Rhc2hib2FyZC9pbmJveGAKCiMjIFdoYXRzQXBwIC0gVmVyY2VsCgpQYXJhIG8gcHJpbWVpcm8gdGVzdGUgcmVhbDoKCjEuIEZhemVyIGRlcGxveSBlbSBhbWJpZW50ZSBIVFRQUy4KMi4gQ29uZmlndXJhciBgV0hBVFNBUFBfVkVSSUZZX1RPS0VOYCBlIGBXSEFUU0FQUF9BUFBfU0VDUkVUYCBuYSBWZXJjZWwuCjMuIEZhemVyIHJlZGVwbG95Lgo0LiBQcmVlbmNoZXIgY3JlZGVuY2lhaXMgcmVhaXMgZW0gYFNldHRpbmdzID4gV2hhdHNBcHBgLgo1LiBUZXN0YXIgbyBgR0VUIC9hcGkvd2hhdHNhcHAvd2ViaG9va2Agbm8gZG9taW5pbyBwdWJsaWNhZG8uCjYuIENvbmZpZ3VyYXIgbyB3ZWJob29rIG5vIHBhaW5lbCBkYSBNZXRhLgo3LiBTZWd1aXIgbyBjaGVja2xpc3QgZGUgcHJvZHVjYW8uCgpUZXN0ZSBtYW51YWwgZG8gR0VUOgoKYGBgYmFzaApjdXJsICJodHRwczovL1NFVS1ET01JTklPLnZlcmNlbC5hcHAvYXBpL3doYXRzYXBwL3dlYmhvb2s/aHViLm1vZGU9c3Vic2NyaWJlJmh1Yi52ZXJpZnlfdG9rZW49U0VVX1RPS0VOJmh1Yi5jaGFsbGVuZ2U9MTIzIgpgYGAKClRlc3RlIHBvciBzY3JpcHQ6CgpgYGBiYXNoCldFQkhPT0tfQkFTRV9VUkw9aHR0cHM6Ly9TRVUtRE9NSU5JTy52ZXJjZWwuYXBwIG5wbSBydW4gdGVzdDp3ZWJob29rCmBgYAoKR3VpYXM6CgotIGBkb2NzL3doYXRzYXBwLXZlcmNlbC1kZXBsb3kubWRgCi0gYGRvY3Mvd2hhdHNhcHAtcHJvZHVjdGlvbi10ZXN0LWNoZWNrbGlzdC5tZGAKLSBgZG9jcy93aGF0c2FwcC10cm91Ymxlc2hvb3RpbmcubWRgCi0gYGRvY3Mvd2hhdHNhcHAtc2V0dXAubWRgCi0gYGRvY3Mvd2hhdHNhcHAtdGVzdC1yZXBvcnQtdGVtcGxhdGUubWRgCgojIyBXaGF0c0FwcCAtIGNvbmZpZ3VyYWNhbyBwb3Igd29ya3NwYWNlCgpDYW1wb3Mgc2Fsdm9zIGVtIGB3b3Jrc3BhY2VzYDoKCi0gYHdoYXRzYXBwX3Bob25lX251bWJlcl9pZGAKLSBgd2hhdHNhcHBfYnVzaW5lc3NfYWNjb3VudF9pZGAKLSBgd2hhdHNhcHBfcGhvbmVgCi0gYHdoYXRzYXBwX3Rva2VuYAoKRmx1eG86CgoxLiBBYnJpciBgU2V0dGluZ3MgPiBXaGF0c0FwcGAuCjIuIFByZWVuY2hlciBgUGhvbmUgTnVtYmVyIElEYC4KMy4gUHJlZW5jaGVyIGBOdW1lcm8gV2hhdHNBcHBgLgo0LiBPcGNpb25hbG1lbnRlIHByZWVuY2hlciBgV2hhdHNBcHAgQnVzaW5lc3MgQWNjb3VudCBJRGAuCjUuIEluZm9ybWFyIHRva2VuIGFwZW5hcyBzZSBhaW5kYSBuYW8gZXhpc3RpciB1bSBzYWx2by4KNi4gVXNhciBgU2FsdmFyIGNvbmZpZ3VyYWNvZXNgIG91IGBTYWx2YXIgZSB0ZXN0YXIgY29uZXhhb2AuCgpSZWdyYXMgaW1wb3J0YW50ZXM6CgotIG8gdG9rZW4gbnVuY2EgZSBleHBvc3RvIHBhcmEgY2xpZW50IGNvbXBvbmVudHMKLSBvIGNsaWVudCByZWNlYmUgYXBlbmFzIGBoYXNfd2hhdHNhcHBfdG9rZW5gCi0gcXVhbmRvIG8gdG9rZW4gamEgZXhpc3RlLCBhIGludGVyZmFjZSBtb3N0cmEgYXBlbmFzIG1hc2NhcmEKLSB1c2UgU3lzdGVtIFVzZXIgVG9rZW4gcGVybWFuZW50ZSBlbSBwcm9kdWNhbwoKIyMgV2hhdHNBcHAgLSBkaWFnbm9zdGljbwoKTyBkaWFnbm9zdGljbyB0ZWNuaWNvIGZpY2EgZW0gYFNldHRpbmdzID4gV2hhdHNBcHBgLgoKRWxlIG1vc3RyYToKCi0gYFdIQVRTQVBQX1ZFUklGWV9UT0tFTmA6IGNvbmZpZ3VyYWRvIG91IGF1c2VudGUKLSBgV0hBVFNBUFBfQVBQX1NFQ1JFVGA6IGNvbmZpZ3VyYWRvIG91IGF1c2VudGUKLSBgUGhvbmUgTnVtYmVyIElEYDogY29uZmlndXJhZG8gb3UgYXVzZW50ZQotIGBOdW1lcm8gV2hhdHNBcHBgOiBjb25maWd1cmFkbyBvdSBhdXNlbnRlCi0gYFRva2VuIGRlIGFjZXNzb2A6IGNvbmZpZ3VyYWRvIG91IGF1c2VudGUKLSB3ZWJob29rIHN1Z2VyaWRvIHBhcmEgY29waWFyIG5hIE1ldGEKLSB1bHRpbW8gcmVzdWx0YWRvIGxvY2FsIGRlIHRlc3RlIGRlIGNvbmV4YW8sIHF1YW5kbyBleGlzdGlyCgpSZWdyYXM6CgotIHRva2VucyBlIGFwcCBzZWNyZXQgbnVuY2Egc2FvIGV4aWJpZG9zCi0gbyBkaWFnbm9zdGljbyBtb3N0cmEgYXBlbmFzIHN0YXR1cyBib29sZWFubwoKIyMgV2hhdHNBcHAgLSBqYW5lbGEgZGUgMjQgaG9yYXMKCkEgTWV0YSBwZXJtaXRlIG1lbnNhZ2VucyBsaXZyZXMgcG9yIGF0ZSAyNCBob3JhcyBhcG9zIGEgdWx0aW1hIG1lbnNhZ2VtIGluYm91bmQgZG8gY2xpZW50ZS4KCk5vIENyZW1vbmE6CgotIGNhZGEgY29udmVyc2EgdXNhIGEgdWx0aW1hIG1lbnNhZ2VtIGluYm91bmQgY29tbyByZWZlcmVuY2lhIGRhIGphbmVsYTsKLSBhIEluYm94IG1vc3RyYSBgSmFuZWxhIDI0aCBhYmVydGFgLCBgSmFuZWxhIDI0aCBmZWNoYWRhYCBvdSBgU2VtIGphbmVsYSBhdGl2YWA7Ci0gcXVhbmRvIHJlc3RhbSA2MCBtaW51dG9zIG91IG1lbm9zLCBhIEluYm94IHNpbmFsaXphIGEgZXhwaXJhY2FvIGRlIGZvcm1hIGRpc2NyZXRhOwotIHF1YW5kbyBhIGphbmVsYSBmZWNoYSwgbyBlbnZpbyBsaXZyZSBlIGJsb3F1ZWFkbyBhbnRlcyBkYSBjaGFtYWRhIHBhcmEgYSBNZXRhOwotIG8gdXN1YXJpbyByZWNlYmUgb3JpZW50YWNhbyBkZSBxdWUgdGVtcGxhdGVzIHNlcmFvIG5lY2Vzc2FyaW9zLgoKRGV0YWxoZXMgdGVjbmljb3M6CgotIGBsaWIvd2hhdHNhcHAvY29udmVyc2F0aW9uLXdpbmRvdy50c2AKLSBgZG9jcy93aGF0c2FwcC0yNGgtd2luZG93LWFuZC10ZW1wbGF0ZXMubWRgCi0gYHNjcmlwdHMvdGVzdC13aGF0c2FwcC13aW5kb3cudHNgCgojIyBXaGF0c0FwcCAtIEluYm94CgpSb3RhOgoKLSBgL2Rhc2hib2FyZC9pbmJveGAKClJlY3Vyc29zIGF0dWFpczoKCi0gbGlzdGEgZGUgY29udmVyc2FzIHBvciBjb250YXRvCi0gaGlzdG9yaWNvIG9yZGVuYWRvIHBvciBgY3JlYXRlZF9hdGAKLSBhZ3J1cGFtZW50byB2aXN1YWwgcG9yIGRpYQotIGVzdGlsb3MgZGlzdGludG9zIHBhcmEgaW5ib3VuZCBlIG91dGJvdW5kCi0gcGxhY2Vob2xkZXJzIHZpc3VhaXMgcGFyYSBgaW1hZ2VgLCBgYXVkaW9gLCBgZG9jdW1lbnRgLCBgdmlkZW9gIGUgYGxvY2F0aW9uYAotIFJlYWx0aW1lIGVtIGBtZXNzYWdlc2AKLSBtYXJjYWNhbyBjb21vIGxpZGEgYW8gYWJyaXIgY29udmVyc2EKLSBiYWRnZSB2ZXJkZSBkZSBuYW8gbGlkYXMgbmEgc2lkZWJhcgotIHN0YXR1cyB2aXN1YWwgZGEgamFuZWxhIGRlIDI0aCBuYSBjb252ZXJzYSBzZWxlY2lvbmFkYQotIGVudmlvIGJhc2ljbyBkZSB0ZXh0byBxdWFuZG8gbyB3b3Jrc3BhY2UgZXN0aXZlciBjb25maWd1cmFkbyBlIGEgamFuZWxhIGVzdGl2ZXIgYWJlcnRhCi0gbW9jayB2aXN1YWwgZGUgYEVudmlhciB0ZW1wbGF0ZWAgYXBlbmFzIHF1YW5kbyBhIGphbmVsYSBlc3RpdmVyIGZlY2hhZGEgb3UgaW5leGlzdGVudGUKCiMjIFdoYXRzQXBwIC0gZW52aW8KClJlcXVpc2l0b3M6CgotIGB3aGF0c2FwcF9waG9uZV9udW1iZXJfaWRgIGNvbmZpZ3VyYWRvCi0gYHdoYXRzYXBwX3Rva2VuYCBjb25maWd1cmFkbwotIGNvbnRhdG8gY29tIHRlbGVmb25lIHZhbGlkbwoKRXNjb3BvIGF0dWFsOgoKLSBlbnZpYSBtZW5zYWdlbnMgZGUgdGV4dG8gc2ltcGxlcwotIHNhbHZhIG91dGJvdW5kIGVtIGBtZXNzYWdlc2AKLSBjcmlhIGFjdGl2aXR5IGRvIHRpcG8gYHdoYXRzYXBwYAotIGF0dWFsaXphIHN0YXR1cyBxdWFuZG8gYSBNZXRhIGVudmlhIGBzdGF0dXNlc2AKLSBibG9xdWVpYSBlbnZpbyBsaXZyZSBxdWFuZG8gYSBqYW5lbGEgZGUgMjRoIGVzdGl2ZXIgZmVjaGFkYQotIGFpbmRhIG5hbyBjb2JyZSB0ZW1wbGF0ZXMKLSBhaW5kYSBuYW8gY29icmUgZG93bmxvYWQgY29tcGxldG8gZGUgbWlkaWEKCiMjIFdoYXRzQXBwIC0gdGVtcGxhdGVzCgpUZW1wbGF0ZXMgYWluZGEgbmFvIGVzdGFvIGltcGxlbWVudGFkb3MuCgpFbGVzIHNlcmFvIG5lY2Vzc2FyaW9zIHBhcmEgbWVuc2FnZW5zIGZvcmEgZGEgamFuZWxhIGRlIDI0IGhvcmFzIGUgcGFyYSBmbHV4b3MgYXRpdm9zIGRvIENSTS4KCk5hIEluYm94LCBvIGJvdGFvIGBFbnZpYXIgdGVtcGxhdGVgIGFwYXJlY2UgYXBlbmFzIGNvbW8gbW9jayB2aXN1YWwgZGVzYWJpbGl0YWRvIHF1YW5kbyBhIGphbmVsYSBlc3RpdmVyIGZlY2hhZGEgb3UgaW5leGlzdGVudGUuCgpSb2FkbWFwIGF0dWFsOgoKLSBgZG9jcy93aGF0c2FwcC0yNGgtd2luZG93LWFuZC10ZW1wbGF0ZXMubWRgCi0gYGRvY3Mvd2hhdHNhcHAtdGVtcGxhdGVzLXJvYWRtYXAubWRgCgojIyBXaGF0c0FwcCAtIG1pZGlhCgpPIENyZW1vbmEgcmVjb25oZWNlIHRpcG9zIGRlIG1pZGlhIHJlY2ViaWRvcyBubyB3ZWJob29rIGUgZXhpYmUgcGxhY2Vob2xkZXJzIG5hIEluYm94LgoKRXN0YWRvIGF0dWFsOgoKLSBgaW1hZ2VgOiBwbGFjZWhvbGRlciBjb20gY2FwdGlvbiBxdWFuZG8gZXhpc3RpcjsKLSBgYXVkaW9gOiBwbGFjZWhvbGRlciBjb20gYXZpc28gZGUgcmVwcm9kdWNhbyBmdXR1cmE7Ci0gYGRvY3VtZW50YDogcGxhY2Vob2xkZXIgY29tIG5vbWUgZG8gYXJxdWl2byBxdWFuZG8gZXhpc3RpcjsKLSBgdmlkZW9gOiBwbGFjZWhvbGRlciBjb20gYXZpc28gZGUgcHJldmlldyBmdXR1cm87Ci0gYGxvY2F0aW9uYDogcGxhY2Vob2xkZXIgY29tIG5vbWUvZW5kZXJlY28gcXVhbmRvIGV4aXN0aXIuCgpEb3dubG9hZCBlIHByZXZpZXcgcmVhbCBhaW5kYSBmaWNhcmFvIHBhcmEgdW1hIHNwcmludCBmdXR1cmEuCgojIyBXaGF0c0FwcCAtIGhpc3RvcmljbyBkbyBjb250YXRvCgpNZW5zYWdlbnMgZSBldmVudG9zIHJlbGV2YW50ZXMgZG8gV2hhdHNBcHAgdGFtYmVtIGdlcmFtIGBhY3Rpdml0aWVzYCBubyBjb250YXRvLgoKSXNzbyBtYW50ZW0gbyBoaXN0b3JpY28gY29tZXJjaWFsIGNlbnRyYWxpemFkbyBlIGRlaXhhIGNsYXJvIHF1YW5kbyBob3V2ZToKCi0gbWVuc2FnZW0gcmVjZWJpZGE7Ci0gbWVuc2FnZW0gZW52aWFkYTsKLSByZWNlYmltZW50byBkZSBpbWFnZW0sIGF1ZGlvLCBkb2N1bWVudG8sIHZpZGVvIG91IGxvY2FsaXphY2FvOwotIGZhbGhhIGRlIGVudHJlZ2EgcmVsZXZhbnRlLgoKIyMgVGFyZWZhcyAtIHByYXpvcyBwZXJzb25hbGl6YWRvcwoKTyBtb2R1bG8gZGUgVGFyZWZhcyBhZ29yYSBhY2VpdGEgcHJhem9zIHBlcnNvbmFsaXphZG9zIHZpYSBjYWxlbmRhcmlvIG5vIHF1aWNrIGFkZCBlIG5vIG1vZGFsIGNvbXBsZXRvLgoKUmVncmFzIGF0dWFpczoKCi0gbyBwcmF6byBlIHNhbHZvIGVtIGB0YXNrcy5kdWVfZGF0ZWAgY29tbyBkYXRhIGxvY2FsIG5vIGZvcm1hdG8gYFlZWVktTU0tRERgOwotIHRhcmVmYXMgcG9kZW0gY29udGludWFyIHNlbSBwcmF6byBxdWFuZG8gbyBmbHV4byBwZXJtaXRpcjsKLSBjcmlhciBlIGVkaXRhciB0YXJlZmFzIGNvbSBkYXRhcyBmdXR1cmFzIGZ1bmNpb25hIG5vIHF1aWNrIGFkZCwgbm8gbW9kYWwgY29tcGxldG8gZSBuYSBlZGljYW87Ci0gZmlsdHJvcyBjb21vIGBIb2plYCwgYEVzdGEgc2VtYW5hYCBlIGBWZW5jaWRhc2AgY29udGludWFtIGZ1bmNpb25hbmRvOwotIGEgbm9ybWFsaXphY2FvIGZvaSBhanVzdGFkYSBwYXJhIGV2aXRhciBtdWRhbmNhIGRlIGRpYSBwb3IgdGltZXpvbmUuCgojIyBBcnF1aXZvcyBpbXBvcnRhbnRlcwoKLSBgYXBwL2FwaS93aGF0c2FwcC93ZWJob29rL3JvdXRlLnRzYAotIGBtaWRkbGV3YXJlLnRzYAotIGBsaWIvd2hhdHNhcHAvZW52LnRzYAotIGBsaWIvd2hhdHNhcHAvbWV0YS1hcGkudHNgCi0gYGxpYi93aGF0c2FwcC9lcnJvcnMudHNgCi0gYGxpYi93aGF0c2FwcC9mb3JtYXQudHNgCi0gYGxpYi93aGF0c2FwcC9sb2dnZXIudHNgCi0gYGxpYi93aGF0c2FwcC9wcm9jZXNzLWluY29taW5nLW1lc3NhZ2UudHNgCi0gYGxpYi93aGF0c2FwcC9jb252ZXJzYXRpb24td2luZG93LnRzYAotIGBsaWIvd2hhdHNhcHAvcXVlcmllcy50c2AKLSBgYXBwLyhkYXNoYm9hcmQpL2Rhc2hib2FyZC9pbmJveC9wYWdlLnRzeGAKLSBgYXBwLyhkYXNoYm9hcmQpL2Rhc2hib2FyZC9pbmJveC9hY3Rpb25zLnRzYAotIGBhcHAvKGRhc2hib2FyZCkvZGFzaGJvYXJkL3NldHRpbmdzL2FjdGlvbnMudHNgCi0gYGNvbXBvbmVudHMvaW5ib3gvKmAKLSBgY29tcG9uZW50cy9zZXR0aW5ncy93aGF0c2FwcC1zZXR0aW5ncy50c3hgCi0gYHNjcmlwdHMvY2hlY2std2hhdHNhcHAtZW52LnRzYAotIGBzY3JpcHRzL3Rlc3Qtd2ViaG9vay50c2AKCiMjIERvY3VtZW50YWNhbwoKLSBgZG9jcy93aGF0c2FwcC1zZXR1cC5tZGAKLSBgZG9jcy93aGF0c2FwcC12ZXJjZWwtZGVwbG95Lm1kYAotIGBkb2NzL3doYXRzYXBwLXByb2R1Y3Rpb24tdGVzdC1jaGVja2xpc3QubWRgCi0gYGRvY3Mvd2hhdHNhcHAtdHJvdWJsZXNob290aW5nLm1kYAotIGBkb2NzL3doYXRzYXBwLXRlc3QtcmVwb3J0LXRlbXBsYXRlLm1kYAotIGBkb2NzL3doYXRzYXBwLTI0aC13aW5kb3ctYW5kLXRlbXBsYXRlcy5tZGAKLSBgZG9jcy93aGF0c2FwcC10ZW1wbGF0ZXMtcm9hZG1hcC5tZGAK
+# Cremona
+
+CRM via WhatsApp para micro e pequenos empresarios brasileiros.
+
+## Stack
+
+- Next.js 14 + App Router + TypeScript
+- TailwindCSS + shadcn/ui + Base UI
+- Supabase: banco, auth, storage e realtime
+- framer-motion
+- Recharts
+- @dnd-kit
+- sonner
+- Meta Cloud API para WhatsApp
+
+## Setup local
+
+```bash
+git clone <repo-url>
+cd cremona
+npm install
+cp .env.local.example .env.local
+```
+
+Preencha no `.env.local`:
+
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `WHATSAPP_VERIFY_TOKEN`
+- `WHATSAPP_APP_SECRET`
+- `WEBHOOK_BASE_URL`, opcional para os scripts locais
+
+Observacoes:
+
+- `WHATSAPP_VERIFY_TOKEN` valida o `GET /api/whatsapp/webhook`
+- `WHATSAPP_APP_SECRET` valida a assinatura `x-hub-signature-256` no `POST`
+- o token de acesso da Meta nao e global
+- o token da Meta fica salvo por workspace em `workspaces.whatsapp_token`
+- depois de alterar env vars na Vercel, faca redeploy
+
+## Migrations
+
+Execute no Supabase SQL Editor, nesta ordem:
+
+1. `supabase/migrations/001_initial_schema.sql`
+2. `supabase/migrations/002_soft_delete.sql`
+3. `supabase/migrations/003_search_indexes.sql`
+4. `supabase/migrations/004_dashboard_indexes.sql`
+5. `supabase/migrations/005_onboarding.sql`
+6. `supabase/migrations/006_whatsapp_config.sql`
+
+## Scripts
+
+```bash
+npm run dev
+npm run lint
+npm run build
+npm run check:whatsapp-env
+npm run test:webhook
+npm run test:whatsapp-window
+```
+
+## WhatsApp - arquitetura
+
+Fluxo atual:
+
+1. A Meta envia eventos para `GET/POST /api/whatsapp/webhook`.
+2. O `GET` valida `hub.verify_token` e retorna `hub.challenge` em texto puro.
+3. O `POST` le o body bruto e valida HMAC com `WHATSAPP_APP_SECRET`.
+4. Em desenvolvimento, o `POST` aceita teste sem app secret; em producao, nao.
+5. O workspace e resolvido primeiro por `whatsapp_phone_number_id` e depois por fallback em `whatsapp_phone`.
+6. O contato e encontrado ou criado por telefone.
+7. A mensagem inbound e salva em `messages`.
+8. Uma activity do tipo `whatsapp` e criada.
+9. A Inbox em `/dashboard/inbox` le `messages`.
+10. Realtime atualiza lista, historico e badge.
+11. O envio basico usa a Meta Cloud API e persiste outbound no CRM via Server Action.
+12. O envio livre agora respeita a janela de atendimento de 24 horas da Meta.
+
+## WhatsApp - variaveis
+
+```env
+WHATSAPP_VERIFY_TOKEN=
+WHATSAPP_APP_SECRET=
+WEBHOOK_BASE_URL=http://localhost:3000
+```
+
+Regras:
+
+- `WHATSAPP_VERIFY_TOKEN` e obrigatorio para a verificacao do webhook
+- `WHATSAPP_APP_SECRET` e obrigatorio para producao
+- `WEBHOOK_BASE_URL` e usado apenas pelos scripts de teste
+- o token de acesso da Meta fica em `Settings > WhatsApp`, por workspace, e nao no frontend
+
+## WhatsApp - teste local e producao
+
+### Check de ambiente
+
+```bash
+npm run check:whatsapp-env
+```
+
+### Teste manual do GET local
+
+```bash
+curl "http://localhost:3000/api/whatsapp/webhook?hub.mode=subscribe&hub.verify_token=SEU_TOKEN&hub.challenge=123"
+```
+
+Resposta esperada:
+
+```txt
+123
+```
+
+### Teste por script local
+
+```bash
+WEBHOOK_BASE_URL=http://localhost:3000 npm run test:webhook
+```
+
+O script testa:
+
+- GET de verificacao com `hub.challenge`
+- POST fake de texto
+- POST fake de midia
+- POST fake de status callback
+- resumo `OK` ou `FAIL` no terminal
+- status e body apenas quando algum teste falha
+
+### Teste por script em producao
+
+```bash
+WEBHOOK_BASE_URL=https://SEU-DOMINIO.vercel.app npm run test:webhook
+```
+
+### Onde olhar os resultados
+
+- no terminal do script, para ver `OK` ou `FAIL`
+- nos logs do servidor Next.js
+- na tabela `messages`
+- na Inbox em `/dashboard/inbox`
+
+## WhatsApp - Vercel
+
+Para o primeiro teste real:
+
+1. Fazer deploy em ambiente HTTPS.
+2. Configurar `WHATSAPP_VERIFY_TOKEN` e `WHATSAPP_APP_SECRET` na Vercel.
+3. Fazer redeploy.
+4. Preencher credenciais reais em `Settings > WhatsApp`.
+5. Testar o `GET /api/whatsapp/webhook` no dominio publicado.
+6. Configurar o webhook no painel da Meta.
+7. Seguir o checklist de producao.
+
+Teste manual do GET:
+
+```bash
+curl "https://SEU-DOMINIO.vercel.app/api/whatsapp/webhook?hub.mode=subscribe&hub.verify_token=SEU_TOKEN&hub.challenge=123"
+```
+
+Teste por script:
+
+```bash
+WEBHOOK_BASE_URL=https://SEU-DOMINIO.vercel.app npm run test:webhook
+```
+
+Guias:
+
+- `docs/whatsapp-vercel-deploy.md`
+- `docs/whatsapp-production-test-checklist.md`
+- `docs/whatsapp-troubleshooting.md`
+- `docs/whatsapp-setup.md`
+- `docs/whatsapp-test-report-template.md`
+
+## WhatsApp - configuracao por workspace
+
+Campos salvos em `workspaces`:
+
+- `whatsapp_phone_number_id`
+- `whatsapp_business_account_id`
+- `whatsapp_phone`
+- `whatsapp_token`
+
+Fluxo:
+
+1. Abrir `Settings > WhatsApp`.
+2. Preencher `Phone Number ID`.
+3. Preencher `Numero WhatsApp`.
+4. Opcionalmente preencher `WhatsApp Business Account ID`.
+5. Informar token apenas se ainda nao existir um salvo.
+6. Usar `Salvar configuracoes` ou `Salvar e testar conexao`.
+
+Regras importantes:
+
+- o token nunca e exposto para client components
+- o client recebe apenas `has_whatsapp_token`
+- quando o token ja existe, a interface mostra apenas mascara
+- use System User Token permanente em producao
+
+## WhatsApp - diagnostico
+
+O diagnostico tecnico fica em `Settings > WhatsApp`.
+
+Ele mostra:
+
+- `WHATSAPP_VERIFY_TOKEN`: configurado ou ausente
+- `WHATSAPP_APP_SECRET`: configurado ou ausente
+- `Phone Number ID`: configurado ou ausente
+- `Numero WhatsApp`: configurado ou ausente
+- `Token de acesso`: configurado ou ausente
+- webhook sugerido para copiar na Meta
+- ultimo resultado local de teste de conexao, quando existir
+
+Regras:
+
+- tokens e app secret nunca sao exibidos
+- o diagnostico mostra apenas status booleano
+
+## WhatsApp - janela de 24 horas
+
+A Meta permite mensagens livres por ate 24 horas apos a ultima mensagem inbound do cliente.
+
+No Cremona:
+
+- cada conversa usa a ultima mensagem inbound como referencia da janela;
+- a Inbox mostra `Janela 24h aberta`, `Janela 24h fechada` ou `Sem janela ativa`;
+- quando restam 60 minutos ou menos, a Inbox sinaliza a expiracao de forma discreta;
+- quando a janela fecha, o envio livre e bloqueado antes da chamada para a Meta;
+- o usuario recebe orientacao de que templates serao necessarios.
+
+Detalhes tecnicos:
+
+- `lib/whatsapp/conversation-window.ts`
+- `docs/whatsapp-24h-window-and-templates.md`
+- `scripts/test-whatsapp-window.ts`
+
+## WhatsApp - Inbox
+
+Rota:
+
+- `/dashboard/inbox`
+
+Recursos atuais:
+
+- lista de conversas por contato
+- historico ordenado por `created_at`
+- agrupamento visual por dia
+- estilos distintos para inbound e outbound
+- placeholders visuais para `image`, `audio`, `document`, `video` e `location`
+- Realtime em `messages`
+- marcacao como lida ao abrir conversa
+- badge verde de nao lidas na sidebar
+- status visual da janela de 24h na conversa selecionada
+- envio basico de texto quando o workspace estiver configurado e a janela estiver aberta
+- mock visual de `Enviar template` apenas quando a janela estiver fechada ou inexistente
+
+## WhatsApp - envio
+
+Requisitos:
+
+- `whatsapp_phone_number_id` configurado
+- `whatsapp_token` configurado
+- contato com telefone valido
+
+Escopo atual:
+
+- envia mensagens de texto simples
+- salva outbound em `messages`
+- cria activity do tipo `whatsapp`
+- atualiza status quando a Meta envia `statuses`
+- bloqueia envio livre quando a janela de 24h estiver fechada
+- ainda nao cobre templates
+- ainda nao cobre download completo de midia
+
+## WhatsApp - templates
+
+Templates ainda nao estao implementados.
+
+Eles serao necessarios para mensagens fora da janela de 24 horas e para fluxos ativos do CRM.
+
+Na Inbox, o botao `Enviar template` aparece apenas como mock visual desabilitado quando a janela estiver fechada ou inexistente.
+
+Roadmap atual:
+
+- `docs/whatsapp-24h-window-and-templates.md`
+- `docs/whatsapp-templates-roadmap.md`
+
+## WhatsApp - midia
+
+O Cremona reconhece tipos de midia recebidos no webhook e exibe placeholders na Inbox.
+
+Estado atual:
+
+- `image`: placeholder com caption quando existir;
+- `audio`: placeholder com aviso de reproducao futura;
+- `document`: placeholder com nome do arquivo quando existir;
+- `video`: placeholder com aviso de preview futuro;
+- `location`: placeholder com nome/endereco quando existir.
+
+Download e preview real ainda ficarao para uma sprint futura.
+
+## WhatsApp - historico do contato
+
+Mensagens e eventos relevantes do WhatsApp tambem geram `activities` no contato.
+
+Isso mantem o historico comercial centralizado e deixa claro quando houve:
+
+- mensagem recebida;
+- mensagem enviada;
+- recebimento de imagem, audio, documento, video ou localizacao;
+- falha de entrega relevante.
+
+## Tarefas - prazos personalizados
+
+O modulo de Tarefas agora aceita prazos personalizados via calendario no quick add e no modal completo.
+
+Regras atuais:
+
+- o prazo e salvo em `tasks.due_date` como data local no formato `YYYY-MM-DD`;
+- tarefas podem continuar sem prazo quando o fluxo permitir;
+- criar e editar tarefas com datas futuras funciona no quick add, no modal completo e na edicao;
+- filtros como `Hoje`, `Esta semana` e `Vencidas` continuam funcionando;
+- a normalizacao foi ajustada para evitar mudanca de dia por timezone.
+
+## Arquivos importantes
+
+- `app/api/whatsapp/webhook/route.ts`
+- `middleware.ts`
+- `lib/whatsapp/env.ts`
+- `lib/whatsapp/meta-api.ts`
+- `lib/whatsapp/errors.ts`
+- `lib/whatsapp/format.ts`
+- `lib/whatsapp/logger.ts`
+- `lib/whatsapp/process-incoming-message.ts`
+- `lib/whatsapp/conversation-window.ts`
+- `lib/whatsapp/queries.ts`
+- `app/(dashboard)/dashboard/inbox/page.tsx`
+- `app/(dashboard)/dashboard/inbox/actions.ts`
+- `app/(dashboard)/dashboard/settings/actions.ts`
+- `components/inbox/*`
+- `components/settings/whatsapp-settings.tsx`
+- `scripts/check-whatsapp-env.ts`
+- `scripts/test-webhook.ts`
+
+## Documentacao
+
+- `docs/whatsapp-setup.md`
+- `docs/whatsapp-vercel-deploy.md`
+- `docs/whatsapp-production-test-checklist.md`
+- `docs/whatsapp-troubleshooting.md`
+- `docs/whatsapp-test-report-template.md`
+- `docs/whatsapp-24h-window-and-templates.md`
+- `docs/whatsapp-templates-roadmap.md`

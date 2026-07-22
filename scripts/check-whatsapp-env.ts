@@ -1,1 +1,61 @@
-aW1wb3J0IHsgZXhpc3RzU3luYywgcmVhZEZpbGVTeW5jIH0gZnJvbSAnbm9kZTpmcycKaW1wb3J0ICogYXMgcGF0aCBmcm9tICdub2RlOnBhdGgnCgpmdW5jdGlvbiBsb2FkRW52RmlsZShmaWxlUGF0aDogc3RyaW5nKSB7CiAgaWYgKCFleGlzdHNTeW5jKGZpbGVQYXRoKSkgewogICAgcmV0dXJuCiAgfQoKICBjb25zdCBjb250ZW50ID0gcmVhZEZpbGVTeW5jKGZpbGVQYXRoLCAndXRmOCcpCgogIGZvciAoY29uc3QgbGluZSBvZiBjb250ZW50LnNwbGl0KC9ccj9cbi8pKSB7CiAgICBjb25zdCBtYXRjaCA9IGxpbmUubWF0Y2goL14oW14jPV0rKT0oLiopJC8pCiAgICBpZiAoIW1hdGNoKSBjb250aW51ZQoKICAgIGNvbnN0IGtleSA9IG1hdGNoWzFdLnRyaW0oKQogICAgbGV0IHZhbHVlID0gbWF0Y2hbMl0udHJpbSgpCgogICAgaWYgKAogICAgICAodmFsdWUuc3RhcnRzV2l0aCgnIicpICYmIHZhbHVlLmVuZHNXaXRoKCciJykpIHx8CiAgICAgICh2YWx1ZS5zdGFydHNXaXRoKCInIikgJiYgdmFsdWUuZW5kc1dpdGgoIiciKSkKICAgICkgewogICAgICB2YWx1ZSA9IHZhbHVlLnNsaWNlKDEsIC0xKQogICAgfQoKICAgIGlmICghcHJvY2Vzcy5lbnZba2V5XSkgewogICAgICBwcm9jZXNzLmVudltrZXldID0gdmFsdWUKICAgIH0KICB9Cn0KCmZ1bmN0aW9uIGZvcm1hdFN0YXR1cyh2YWx1ZTogYm9vbGVhbik6IHN0cmluZyB7CiAgcmV0dXJuIHZhbHVlID8gJ09LJyA6ICdwZW5kZW50ZScKfQoKZnVuY3Rpb24gbWFpbigpIHsKICBsb2FkRW52RmlsZShwYXRoLmpvaW4ocHJvY2Vzcy5jd2QoKSwgJy5lbnYubG9jYWwnKSkKCiAgY29uc3QgaGFzVmVyaWZ5VG9rZW4gPSBCb29sZWFuKHByb2Nlc3MuZW52LldIQVRTQVBQX1ZFUklGWV9UT0tFTj8udHJpbSgpKQogIGNvbnN0IGhhc0FwcFNlY3JldCA9IEJvb2xlYW4ocHJvY2Vzcy5lbnYuV0hBVFNBUFBfQVBQX1NFQ1JFVD8udHJpbSgpKQogIGNvbnN0IHdlYmhvb2tCYXNlVXJsID0gcHJvY2Vzcy5lbnYuV0VCSE9PS19CQVNFX1VSTD8udHJpbSgpCgogIGNvbnNvbGUubG9nKCdXaGF0c0FwcCBFbnZpcm9ubWVudCBDaGVjaycpCiAgY29uc29sZS5sb2coJycpCiAgY29uc29sZS5sb2coYFdIQVRTQVBQX1ZFUklGWV9UT0tFTjogJHtmb3JtYXRTdGF0dXMoaGFzVmVyaWZ5VG9rZW4pfWApCiAgY29uc29sZS5sb2coYFdIQVRTQVBQX0FQUF9TRUNSRVQ6ICR7Zm9ybWF0U3RhdHVzKGhhc0FwcFNlY3JldCl9YCkKICBjb25zb2xlLmxvZygKICAgIGBXRUJIT09LX0JBU0VfVVJMOiAke3dlYmhvb2tCYXNlVXJsID8gJ09LJyA6ICduYW8gY29uZmlndXJhZG8sIHVzYW5kbyBsb2NhbGhvc3QnfWAKICApCgogIGlmICghaGFzVmVyaWZ5VG9rZW4pIHsKICAgIGNvbnNvbGUubG9nKCctIFdIQVRTQVBQX1ZFUklGWV9UT0tFTiBuYW8gY29uZmlndXJhZG8uJykKICB9CgogIGlmICghaGFzQXBwU2VjcmV0KSB7CiAgICBjb25zb2xlLmxvZygKICAgICAgJy0gV0hBVFNBUFBfQVBQX1NFQ1JFVCBuYW8gY29uZmlndXJhZG8uIEEgdmFsaWRhY2FvIEhNQUMgbmFvIGZ1bmNpb25hcmEgZW0gcHJvZHVjYW8uJwogICAgKQogIH0KfQoKbWFpbigpCg==
+import { existsSync, readFileSync } from 'node:fs'
+import * as path from 'node:path'
+
+function loadEnvFile(filePath: string) {
+  if (!existsSync(filePath)) {
+    return
+  }
+
+  const content = readFileSync(filePath, 'utf8')
+
+  for (const line of content.split(/\r?\n/)) {
+    const match = line.match(/^([^#=]+)=(.*)$/)
+    if (!match) continue
+
+    const key = match[1].trim()
+    let value = match[2].trim()
+
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1)
+    }
+
+    if (!process.env[key]) {
+      process.env[key] = value
+    }
+  }
+}
+
+function formatStatus(value: boolean): string {
+  return value ? 'OK' : 'pendente'
+}
+
+function main() {
+  loadEnvFile(path.join(process.cwd(), '.env.local'))
+
+  const hasVerifyToken = Boolean(process.env.WHATSAPP_VERIFY_TOKEN?.trim())
+  const hasAppSecret = Boolean(process.env.WHATSAPP_APP_SECRET?.trim())
+  const webhookBaseUrl = process.env.WEBHOOK_BASE_URL?.trim()
+
+  console.log('WhatsApp Environment Check')
+  console.log('')
+  console.log(`WHATSAPP_VERIFY_TOKEN: ${formatStatus(hasVerifyToken)}`)
+  console.log(`WHATSAPP_APP_SECRET: ${formatStatus(hasAppSecret)}`)
+  console.log(
+    `WEBHOOK_BASE_URL: ${webhookBaseUrl ? 'OK' : 'nao configurado, usando localhost'}`
+  )
+
+  if (!hasVerifyToken) {
+    console.log('- WHATSAPP_VERIFY_TOKEN nao configurado.')
+  }
+
+  if (!hasAppSecret) {
+    console.log(
+      '- WHATSAPP_APP_SECRET nao configurado. A validacao HMAC nao funcionara em producao.'
+    )
+  }
+}
+
+main()

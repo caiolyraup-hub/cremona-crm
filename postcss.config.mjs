@@ -1,1 +1,9 @@
-LyoqIEB0eXBlIHtpbXBvcnQoJ3Bvc3Rjc3MtbG9hZC1jb25maWcnKS5Db25maWd9ICovCmNvbnN0IGNvbmZpZyA9IHsKICBwbHVnaW5zOiB7CiAgICB0YWlsd2luZGNzczoge30sCiAgICBhdXRvcHJlZml4ZXI6IHt9LAogIH0sCn07CgpleHBvcnQgZGVmYXVsdCBjb25maWc7Cg==
+/** @type {import('postcss-load-config').Config} */
+const config = {
+  plugins: {
+    tailwindcss: {},
+    autoprefixer: {},
+  },
+};
+
+export default config;

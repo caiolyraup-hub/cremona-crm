@@ -1,1 +1,92 @@
-LyoqCiAqIFNlZWRzIDMgZGVmYXVsdCBXaGF0c0FwcCB0ZW1wbGF0ZXMgZm9yIGEgd29ya3NwYWNlLgogKgogKiBVc2FnZToKICogICBub2RlIC0tZXhwZXJpbWVudGFsLXN0cmlwLXR5cGVzIHNjcmlwdHMvc2VlZC1kZWZhdWx0LXRlbXBsYXRlcy50cyBbV09SS1NQQUNFX0lEXQogKiAgIG5wbSBydW4gc2VlZDp0ZW1wbGF0ZXMgLS0gW1dPUktTUEFDRV9JRF0KICoKICogUmVxdWlyZXMgTkVYVF9QVUJMSUNfU1VQQUJBU0VfVVJMIGFuZCBTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZIGluIC5lbnYubG9jYWwuCiAqLwoKaW1wb3J0IHsgY3JlYXRlQ2xpZW50IH0gZnJvbSAnQHN1cGFiYXNlL3N1cGFiYXNlLWpzJwppbXBvcnQgKiBhcyBkb3RlbnYgZnJvbSAnZG90ZW52JwppbXBvcnQgKiBhcyBwYXRoIGZyb20gJ3BhdGgnCgpkb3RlbnYuY29uZmlnKHsgcGF0aDogcGF0aC5yZXNvbHZlKHByb2Nlc3MuY3dkKCksICcuZW52LmxvY2FsJykgfSkKCmNvbnN0IHN1cGFiYXNlVXJsID0gcHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfU1VQQUJBU0VfVVJMCmNvbnN0IHNlcnZpY2VSb2xlS2V5ID0gcHJvY2Vzcy5lbnYuU1VQQUJBU0VfU0VSVklDRV9ST0xFX0tFWQpjb25zdCB3b3Jrc3BhY2VJZCA9IHByb2Nlc3MuYXJndlsyXQoKaWYgKCFzdXBhYmFzZVVybCB8fCAhc2VydmljZVJvbGVLZXkpIHsKICBjb25zb2xlLmVycm9yKCdNaXNzaW5nIE5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTCBvciBTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZIGluIC5lbnYubG9jYWwnKQogIHByb2Nlc3MuZXhpdCgxKQp9CgppZiAoIXdvcmtzcGFjZUlkKSB7CiAgY29uc29sZS5lcnJvcignVXNhZ2U6IG5vZGUgLS1leHBlcmltZW50YWwtc3RyaXAtdHlwZXMgc2NyaXB0cy9zZWVkLWRlZmF1bHQtdGVtcGxhdGVzLnRzIFtXT1JLU1BBQ0VfSURdJykKICBwcm9jZXNzLmV4aXQoMSkKfQoKY29uc3Qgc3VwYWJhc2UgPSBjcmVhdGVDbGllbnQoc3VwYWJhc2VVcmwsIHNlcnZpY2VSb2xlS2V5KQoKY29uc3QgVEVNUExBVEVTID0gWwogIHsKICAgIHdvcmtzcGFjZV9pZDogd29ya3NwYWNlSWQsCiAgICBuYW1lOiAnY3JlbW9uYV9mb2xsb3dfdXAnLAogICAgZGlzcGxheV9uYW1lOiAnRm9sbG93LXVwIHDDs3MtdmlzaXRhJywKICAgIGxhbmd1YWdlOiAncHRfQlInLAogICAgY2F0ZWdvcnk6ICdVVElMSVRZJywKICAgIGJvZHlfdGV4dDogJ09sw6Ege3sxfX0sIHR1ZG8gYmVtPyBQYXNzYW5kbyBwYXJhIHNhYmVyIHNlIGZpY291IGFsZ3VtYSBkw7p2aWRhIGFww7NzIG5vc3NhIGNvbnZlcnNhLiBGaWNvIMOgIGRpc3Bvc2nDp8OjbyBwYXJhIGFqdWRhciEnLAogICAgdmFyaWFibGVzOiBbCiAgICAgIHsgaW5kZXg6IDEsIGxhYmVsOiAnTm9tZSBkbyBjbGllbnRlJywgZGVmYXVsdDogJ3t7Y29udGFjdF9uYW1lfX0nIH0sCiAgICBdLAogICAgc3RhdHVzOiAnYXBwcm92ZWQnLAogIH0sCiAgewogICAgd29ya3NwYWNlX2lkOiB3b3Jrc3BhY2VJZCwKICAgIG5hbWU6ICdjcmVtb25hX3Byb3Bvc3RhJywKICAgIGRpc3BsYXlfbmFtZTogJ0VudmlvIGRlIHByb3Bvc3RhJywKICAgIGxhbmd1YWdlOiAncHRfQlInLAogICAgY2F0ZWdvcnk6ICdVVElMSVRZJywKICAgIGJvZHlfdGV4dDogJ09sw6Ege3sxfX0hIFNlZ3VlIGEgcHJvcG9zdGEgcXVlIHByZXBhcmFtb3MgcGFyYSB2b2PDqiBkYSBlbXByZXNhIHt7Mn19LiBRdWFscXVlciBkw7p2aWRhLCDDqSBzw7MgY2hhbWFyLicsCiAgICB2YXJpYWJsZXM6IFsKICAgICAgeyBpbmRleDogMSwgbGFiZWw6ICdOb21lIGRvIGNsaWVudGUnLCBkZWZhdWx0OiAne3tjb250YWN0X25hbWV9fScgfSwKICAgICAgeyBpbmRleDogMiwgbGFiZWw6ICdFbXByZXNhIGRvIGNsaWVudGUnLCBkZWZhdWx0OiAne3tjb250YWN0X2NvbXBhbnl9fScgfSwKICAgIF0sCiAgICBzdGF0dXM6ICdhcHByb3ZlZCcsCiAgfSwKICB7CiAgICB3b3Jrc3BhY2VfaWQ6IHdvcmtzcGFjZUlkLAogICAgbmFtZTogJ2NyZW1vbmFfcmVhdGl2YWNhbycsCiAgICBkaXNwbGF5X25hbWU6ICdSZWF0aXZhw6fDo28gZGUgbGVhZCcsCiAgICBsYW5ndWFnZTogJ3B0X0JSJywKICAgIGNhdGVnb3J5OiAnTUFSS0VUSU5HJywKICAgIGJvZHlfdGV4dDogJ09pIHt7MX19LCB0dWRvIGJlbT8gRmF6IHVtIHRlbXBvIHF1ZSBuw6NvIGNvbnZlcnNhbW9zISBUZW1vcyBub3ZpZGFkZXMgcXVlIHBvZGVtIGludGVyZXNzYXIgYSB2b2PDqi4gUG9zc28gdGUgY29udGFyIG1haXM/JywKICAgIHZhcmlhYmxlczogWwogICAgICB7IGluZGV4OiAxLCBsYWJlbDogJ05vbWUgZG8gY2xpZW50ZScsIGRlZmF1bHQ6ICd7e2NvbnRhY3RfbmFtZX19JyB9LAogICAgXSwKICAgIHN0YXR1czogJ3BlbmRpbmcnLAogIH0sCl0KCmFzeW5jIGZ1bmN0aW9uIHJ1bigpIHsKICBjb25zb2xlLmxvZyhgU2VlZGluZyAke1RFTVBMQVRFUy5sZW5ndGh9IHRlbXBsYXRlcyBmb3Igd29ya3NwYWNlICR7d29ya3NwYWNlSWR94oCmYCkKCiAgZm9yIChjb25zdCB0cGwgb2YgVEVNUExBVEVTKSB7CiAgICAvLyBlc2xpbnQtZGlzYWJsZS1uZXh0LWxpbmUgQHR5cGVzY3JpcHQtZXNsaW50L25vLWV4cGxpY2l0LWFueQogICAgY29uc3QgeyBlcnJvciB9ID0gYXdhaXQgKHN1cGFiYXNlIGFzIGFueSkKICAgICAgLmZyb20oJ3doYXRzYXBwX3RlbXBsYXRlcycpCiAgICAgIC51cHNlcnQodHBsLCB7IG9uQ29uZmxpY3Q6ICd3b3Jrc3BhY2VfaWQsbmFtZScgfSkKCiAgICBpZiAoZXJyb3IpIHsKICAgICAgY29uc29sZS5lcnJvcihgICDinJcgJHt0cGwubmFtZX06ICR7ZXJyb3IubWVzc2FnZX1gKQogICAgfSBlbHNlIHsKICAgICAgY29uc29sZS5sb2coYCAg4pyTICR7dHBsLm5hbWV9ICgke3RwbC5zdGF0dXN9KWApCiAgICB9CiAgfQoKICBjb25zb2xlLmxvZygnRG9uZS4nKQp9Cgp2b2lkIHJ1bigpCg==
+/**
+ * Seeds 3 default WhatsApp templates for a workspace.
+ *
+ * Usage:
+ *   node --experimental-strip-types scripts/seed-default-templates.ts [WORKSPACE_ID]
+ *   npm run seed:templates -- [WORKSPACE_ID]
+ *
+ * Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local.
+ */
+
+import { createClient } from '@supabase/supabase-js'
+import * as dotenv from 'dotenv'
+import * as path from 'path'
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const workspaceId = process.argv[2]
+
+if (!supabaseUrl || !serviceRoleKey) {
+  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local')
+  process.exit(1)
+}
+
+if (!workspaceId) {
+  console.error('Usage: node --experimental-strip-types scripts/seed-default-templates.ts [WORKSPACE_ID]')
+  process.exit(1)
+}
+
+const supabase = createClient(supabaseUrl, serviceRoleKey)
+
+const TEMPLATES = [
+  {
+    workspace_id: workspaceId,
+    name: 'cremona_follow_up',
+    display_name: 'Follow-up pós-visita',
+    language: 'pt_BR',
+    category: 'UTILITY',
+    body_text: 'Olá {{1}}, tudo bem? Passando para saber se ficou alguma dúvida após nossa conversa. Fico à disposição para ajudar!',
+    variables: [
+      { index: 1, label: 'Nome do cliente', default: '{{contact_name}}' },
+    ],
+    status: 'approved',
+  },
+  {
+    workspace_id: workspaceId,
+    name: 'cremona_proposta',
+    display_name: 'Envio de proposta',
+    language: 'pt_BR',
+    category: 'UTILITY',
+    body_text: 'Olá {{1}}! Segue a proposta que preparamos para você da empresa {{2}}. Qualquer dúvida, é só chamar.',
+    variables: [
+      { index: 1, label: 'Nome do cliente', default: '{{contact_name}}' },
+      { index: 2, label: 'Empresa do cliente', default: '{{contact_company}}' },
+    ],
+    status: 'approved',
+  },
+  {
+    workspace_id: workspaceId,
+    name: 'cremona_reativacao',
+    display_name: 'Reativação de lead',
+    language: 'pt_BR',
+    category: 'MARKETING',
+    body_text: 'Oi {{1}}, tudo bem? Faz um tempo que não conversamos! Temos novidades que podem interessar a você. Posso te contar mais?',
+    variables: [
+      { index: 1, label: 'Nome do cliente', default: '{{contact_name}}' },
+    ],
+    status: 'pending',
+  },
+]
+
+async function run() {
+  console.log(`Seeding ${TEMPLATES.length} templates for workspace ${workspaceId}…`)
+
+  for (const tpl of TEMPLATES) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { error } = await (supabase as any)
+      .from('whatsapp_templates')
+      .upsert(tpl, { onConflict: 'workspace_id,name' })
+
+    if (error) {
+      console.error(`  ✗ ${tpl.name}: ${error.message}`)
+    } else {
+      console.log(`  ✓ ${tpl.name} (${tpl.status})`)
+    }
+  }
+
+  console.log('Done.')
+}
+
+void run()

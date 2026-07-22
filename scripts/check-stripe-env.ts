@@ -1,1 +1,85 @@
-aW1wb3J0IHsgZXhpc3RzU3luYywgcmVhZEZpbGVTeW5jIH0gZnJvbSAnbm9kZTpmcycKaW1wb3J0ICogYXMgcGF0aCBmcm9tICdub2RlOnBhdGgnCgpmdW5jdGlvbiBsb2FkRW52RmlsZShmaWxlUGF0aDogc3RyaW5nKSB7CiAgaWYgKCFleGlzdHNTeW5jKGZpbGVQYXRoKSkgcmV0dXJuCgogIGNvbnN0IGNvbnRlbnQgPSByZWFkRmlsZVN5bmMoZmlsZVBhdGgsICd1dGY4JykKCiAgZm9yIChjb25zdCBsaW5lIG9mIGNvbnRlbnQuc3BsaXQoL1xyP1xuLykpIHsKICAgIGNvbnN0IG1hdGNoID0gbGluZS5tYXRjaCgvXihbXiM9XSspPSguKikkLykKICAgIGlmICghbWF0Y2gpIGNvbnRpbnVlCgogICAgY29uc3Qga2V5ID0gbWF0Y2hbMV0udHJpbSgpCiAgICBsZXQgdmFsdWUgPSBtYXRjaFsyXS50cmltKCkKCiAgICBpZiAoCiAgICAgICh2YWx1ZS5zdGFydHNXaXRoKCciJykgJiYgdmFsdWUuZW5kc1dpdGgoJyInKSkgfHwKICAgICAgKHZhbHVlLnN0YXJ0c1dpdGgoIiciKSAmJiB2YWx1ZS5lbmRzV2l0aCgiJyIpKQogICAgKSB7CiAgICAgIHZhbHVlID0gdmFsdWUuc2xpY2UoMSwgLTEpCiAgICB9CgogICAgaWYgKCFwcm9jZXNzLmVudltrZXldKSB7CiAgICAgIHByb2Nlc3MuZW52W2tleV0gPSB2YWx1ZQogICAgfQogIH0KfQoKZnVuY3Rpb24gb2sobGFiZWw6IHN0cmluZywgdmFsdWU6IGJvb2xlYW4pOiBzdHJpbmcgewogIHJldHVybiBgJHt2YWx1ZSA/ICdbT0tdJyA6ICdbWF0gJ30gJHtsYWJlbH1gCn0KCmZ1bmN0aW9uIG1haW4oKSB7CiAgbG9hZEVudkZpbGUocGF0aC5qb2luKHByb2Nlc3MuY3dkKCksICcuZW52LmxvY2FsJykpCgogIGNvbnN0IHNlY3JldEtleSA9IEJvb2xlYW4ocHJvY2Vzcy5lbnYuU1RSSVBFX1NFQ1JFVF9LRVk/LnRyaW0oKSkKICBjb25zdCBwdWJsaXNoYWJsZUtleSA9IEJvb2xlYW4ocHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfU1RSSVBFX1BVQkxJU0hBQkxFX0tFWT8udHJpbSgpKQogIGNvbnN0IHdlYmhvb2tTZWNyZXQgPSBCb29sZWFuKHByb2Nlc3MuZW52LlNUUklQRV9XRUJIT09LX1NFQ1JFVD8udHJpbSgpKQogIGNvbnN0IGFwcFVybCA9IEJvb2xlYW4ocHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfQVBQX1VSTD8udHJpbSgpKQogIGNvbnN0IHByaWNlU3RhcnRlciA9IEJvb2xlYW4ocHJvY2Vzcy5lbnYuU1RSSVBFX1BSSUNFX1NUQVJURVI/LnRyaW0oKSkKICBjb25zdCBwcmljZVByb2Zlc3Npb25hbCA9IEJvb2xlYW4ocHJvY2Vzcy5lbnYuU1RSSVBFX1BSSUNFX1BST0ZFU1NJT05BTD8udHJpbSgpKQoKICBjb25zdCBhbGxPayA9IHNlY3JldEtleSAmJiBwdWJsaXNoYWJsZUtleSAmJiB3ZWJob29rU2VjcmV0ICYmIGFwcFVybCAmJiBwcmljZVN0YXJ0ZXIgJiYgcHJpY2VQcm9mZXNzaW9uYWwKCiAgY29uc29sZS5sb2coJycpCiAgY29uc29sZS5sb2coJ1N0cmlwZSBFbnZpcm9ubWVudCBDaGVjaycpCiAgY29uc29sZS5sb2coJz09PT09PT09PT09PT09PT09PT09PT09PScpCiAgY29uc29sZS5sb2coJycpCiAgY29uc29sZS5sb2cob2soJ1NUUklQRV9TRUNSRVRfS0VZJywgc2VjcmV0S2V5KSkKICBjb25zb2xlLmxvZyhvaygnTkVYVF9QVUJMSUNfU1RSSVBFX1BVQkxJU0hBQkxFX0tFWScsIHB1Ymxpc2hhYmxlS2V5KSkKICBjb25zb2xlLmxvZyhvaygnU1RSSVBFX1dFQkhPT0tfU0VDUkVUJywgd2ViaG9va1NlY3JldCkpCiAgY29uc29sZS5sb2cob2soJ05FWFRfUFVCTElDX0FQUF9VUkwnLCBhcHBVcmwpKQogIGNvbnNvbGUubG9nKG9rKCdTVFJJUEVfUFJJQ0VfU1RBUlRFUicsIHByaWNlU3RhcnRlcikpCiAgY29uc29sZS5sb2cob2soJ1NUUklQRV9QUklDRV9QUk9GRVNTSU9OQUwnLCBwcmljZVByb2Zlc3Npb25hbCkpCiAgY29uc29sZS5sb2coJycpCgogIGlmICghc2VjcmV0S2V5KSB7CiAgICBjb25zb2xlLmxvZygnLSBTVFJJUEVfU0VDUkVUX0tFWTogb2J0ZW5oYSBlbSBTdHJpcGUgRGFzaGJvYXJkIOKGkiBEZXZlbG9wZXJzIOKGkiBBUEkga2V5cycpCiAgfQogIGlmICghcHVibGlzaGFibGVLZXkpIHsKICAgIGNvbnNvbGUubG9nKCctIE5FWFRfUFVCTElDX1NUUklQRV9QVUJMSVNIQUJMRV9LRVk6IGNoYXZlIHB1YmxpY2Egbm8gbWVzbW8gbG9jYWwnKQogIH0KICBpZiAoIXdlYmhvb2tTZWNyZXQpIHsKICAgIGNvbnNvbGUubG9nKCctIFNUUklQRV9XRUJIT09LX1NFQ1JFVDogcm9kZSAic3RyaXBlIGxpc3RlbiAtLWZvcndhcmQtdG8gbG9jYWxob3N0OjMwMDAvYXBpL3N0cmlwZS93ZWJob29rIiBlIGNvcGllIG8gd2hzZWNfLi4uJykKICB9CiAgaWYgKCFhcHBVcmwpIHsKICAgIGNvbnNvbGUubG9nKCctIE5FWFRfUFVCTElDX0FQUF9VUkw6IGV4OiBodHRwOi8vbG9jYWxob3N0OjMwMDAgcGFyYSBkZXYsIGh0dHBzOi8vc3VhLWFwcC52ZXJjZWwuYXBwIHBhcmEgcHJvZCcpCiAgfQogIGlmICghcHJpY2VTdGFydGVyKSB7CiAgICBjb25zb2xlLmxvZygnLSBTVFJJUEVfUFJJQ0VfU1RBUlRFUjogY3JpZSBvIHByb2R1dG8gQ3JlbW9uYSBTdGFydGVyIG5vIFN0cmlwZSBlIGNvcGllIG8gUHJpY2UgSUQnKQogIH0KICBpZiAoIXByaWNlUHJvZmVzc2lvbmFsKSB7CiAgICBjb25zb2xlLmxvZygnLSBTVFJJUEVfUFJJQ0VfUFJPRkVTU0lPTkFMOiBjcmllIG8gcHJvZHV0byBDcmVtb25hIFByb2Zpc3Npb25hbCBubyBTdHJpcGUgZSBjb3BpZSBvIFByaWNlIElEJykKICB9CgogIGlmIChhbGxPaykgewogICAgY29uc29sZS5sb2coJ1N0cmlwZSBwcm9udG8gcGFyYSB1c28uJykKICB9IGVsc2UgewogICAgY29uc29sZS5sb2coJ0NvbmZpZ3VyZSBhcyB2YXJpYXZlaXMgYWNpbWEgZSByb2RlIG5vdmFtZW50ZS4nKQogIH0KCiAgY29uc29sZS5sb2coJycpCn0KCm1haW4oKQo=
+import { existsSync, readFileSync } from 'node:fs'
+import * as path from 'node:path'
+
+function loadEnvFile(filePath: string) {
+  if (!existsSync(filePath)) return
+
+  const content = readFileSync(filePath, 'utf8')
+
+  for (const line of content.split(/\r?\n/)) {
+    const match = line.match(/^([^#=]+)=(.*)$/)
+    if (!match) continue
+
+    const key = match[1].trim()
+    let value = match[2].trim()
+
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1)
+    }
+
+    if (!process.env[key]) {
+      process.env[key] = value
+    }
+  }
+}
+
+function ok(label: string, value: boolean): string {
+  return `${value ? '[OK]' : '[X] '} ${label}`
+}
+
+function main() {
+  loadEnvFile(path.join(process.cwd(), '.env.local'))
+
+  const secretKey = Boolean(process.env.STRIPE_SECRET_KEY?.trim())
+  const publishableKey = Boolean(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY?.trim())
+  const webhookSecret = Boolean(process.env.STRIPE_WEBHOOK_SECRET?.trim())
+  const appUrl = Boolean(process.env.NEXT_PUBLIC_APP_URL?.trim())
+  const priceStarter = Boolean(process.env.STRIPE_PRICE_STARTER?.trim())
+  const priceProfessional = Boolean(process.env.STRIPE_PRICE_PROFESSIONAL?.trim())
+
+  const allOk = secretKey && publishableKey && webhookSecret && appUrl && priceStarter && priceProfessional
+
+  console.log('')
+  console.log('Stripe Environment Check')
+  console.log('========================')
+  console.log('')
+  console.log(ok('STRIPE_SECRET_KEY', secretKey))
+  console.log(ok('NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY', publishableKey))
+  console.log(ok('STRIPE_WEBHOOK_SECRET', webhookSecret))
+  console.log(ok('NEXT_PUBLIC_APP_URL', appUrl))
+  console.log(ok('STRIPE_PRICE_STARTER', priceStarter))
+  console.log(ok('STRIPE_PRICE_PROFESSIONAL', priceProfessional))
+  console.log('')
+
+  if (!secretKey) {
+    console.log('- STRIPE_SECRET_KEY: obtenha em Stripe Dashboard → Developers → API keys')
+  }
+  if (!publishableKey) {
+    console.log('- NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: chave publica no mesmo local')
+  }
+  if (!webhookSecret) {
+    console.log('- STRIPE_WEBHOOK_SECRET: rode "stripe listen --forward-to localhost:3000/api/stripe/webhook" e copie o whsec_...')
+  }
+  if (!appUrl) {
+    console.log('- NEXT_PUBLIC_APP_URL: ex: http://localhost:3000 para dev, https://sua-app.vercel.app para prod')
+  }
+  if (!priceStarter) {
+    console.log('- STRIPE_PRICE_STARTER: crie o produto Cremona Starter no Stripe e copie o Price ID')
+  }
+  if (!priceProfessional) {
+    console.log('- STRIPE_PRICE_PROFESSIONAL: crie o produto Cremona Profissional no Stripe e copie o Price ID')
+  }
+
+  if (allOk) {
+    console.log('Stripe pronto para uso.')
+  } else {
+    console.log('Configure as variaveis acima e rode novamente.')
+  }
+
+  console.log('')
+}
+
+main()

@@ -1,1 +1,221 @@
-aW1wb3J0IHsgZXhpc3RzU3luYywgcmVhZEZpbGVTeW5jIH0gZnJvbSAnZnMnCmltcG9ydCBwYXRoIGZyb20gJ3BhdGgnCgpjb25zdCByb290ID0gcHJvY2Vzcy5jd2QoKQoKY29uc3QgZW52UGF0aCA9IHBhdGguam9pbihyb290LCAnLmVudi5sb2NhbCcpCmlmIChleGlzdHNTeW5jKGVudlBhdGgpKSB7CiAgY29uc3QgZW52U291cmNlID0gcmVhZEZpbGVTeW5jKGVudlBhdGgsICd1dGYtOCcpCiAgZm9yIChjb25zdCBsaW5lIG9mIGVudlNvdXJjZS5zcGxpdCgvXHI/XG4vKSkgewogICAgY29uc3QgdHJpbW1lZCA9IGxpbmUudHJpbSgpCiAgICBpZiAoIXRyaW1tZWQgfHwgdHJpbW1lZC5zdGFydHNXaXRoKCcjJykpIGNvbnRpbnVlCiAgICBjb25zdCBzZXBhcmF0b3JJbmRleCA9IHRyaW1tZWQuaW5kZXhPZignPScpCiAgICBpZiAoc2VwYXJhdG9ySW5kZXggPT09IC0xKSBjb250aW51ZQogICAgY29uc3Qga2V5ID0gdHJpbW1lZC5zbGljZSgwLCBzZXBhcmF0b3JJbmRleCkudHJpbSgpCiAgICBjb25zdCB2YWx1ZSA9IHRyaW1tZWQuc2xpY2Uoc2VwYXJhdG9ySW5kZXggKyAxKS50cmltKCkucmVwbGFjZSgvXlsnIl18WyciXSQvZywgJycpCiAgICBpZiAoa2V5ICYmICFwcm9jZXNzLmVudltrZXldKSB7CiAgICAgIHByb2Nlc3MuZW52W2tleV0gPSB2YWx1ZQogICAgfQogIH0KfQoKaW50ZXJmYWNlIENoZWNrUmVzdWx0IHsKICBsYWJlbDogc3RyaW5nCiAgb2s6IGJvb2xlYW4KICB3YXJuaW5nPzogc3RyaW5nCiAgY3JpdGljYWw6IGJvb2xlYW4KfQoKZnVuY3Rpb24gY2hlY2sobGFiZWw6IHN0cmluZywgY3JpdGljYWw6IGJvb2xlYW4sIGZuOiAoKSA9PiBib29sZWFuIHwgc3RyaW5nKTogQ2hlY2tSZXN1bHQgewogIHRyeSB7CiAgICBjb25zdCByZXN1bHQgPSBmbigpCiAgICBpZiAocmVzdWx0ID09PSB0cnVlKSByZXR1cm4geyBsYWJlbCwgb2s6IHRydWUsIGNyaXRpY2FsIH0KICAgIGlmICh0eXBlb2YgcmVzdWx0ID09PSAnc3RyaW5nJykgcmV0dXJuIHsgbGFiZWwsIG9rOiB0cnVlLCB3YXJuaW5nOiByZXN1bHQsIGNyaXRpY2FsIH0KICAgIHJldHVybiB7IGxhYmVsLCBvazogZmFsc2UsIGNyaXRpY2FsIH0KICB9IGNhdGNoIChlcnIpIHsKICAgIHJldHVybiB7IGxhYmVsLCBvazogZmFsc2UsIHdhcm5pbmc6IFN0cmluZyhlcnIpLCBjcml0aWNhbCB9CiAgfQp9Cgpjb25zdCBjaGVja3M6IENoZWNrUmVzdWx0W10gPSBbCgogIC8vIDEuIFZhcmnDoXZlaXMgZGUgYW1iaWVudGUgY3LDrXRpY2FzCiAgY2hlY2soJ1ZhcmlhdmVpcyBkZSBhbWJpZW50ZSBjcml0aWNhcyBleGlzdGVtJywgdHJ1ZSwgKCkgPT4gewogICAgY29uc3QgcmVxdWlyZWQgPSBbCiAgICAgICdORVhUX1BVQkxJQ19TVVBBQkFTRV9VUkwnLAogICAgICAnTkVYVF9QVUJMSUNfU1VQQUJBU0VfQU5PTl9LRVknLAogICAgICAnU1VQQUJBU0VfU0VSVklDRV9ST0xFX0tFWScsCiAgICAgICdXSEFUU0FQUF9WRVJJRllfVE9LRU4nLAogICAgICAnU1RSSVBFX1NFQ1JFVF9LRVknLAogICAgICAnTkVYVF9QVUJMSUNfU1RSSVBFX1BVQkxJU0hBQkxFX0tFWScsCiAgICAgICdORVhUX1BVQkxJQ19BUFBfVVJMJywKICAgIF0KICAgIGNvbnN0IG1pc3NpbmcgPSByZXF1aXJlZC5maWx0ZXIoKGspID0+ICFwcm9jZXNzLmVudltrXT8udHJpbSgpKQogICAgaWYgKG1pc3NpbmcubGVuZ3RoID4gMCkgewogICAgICBjb25zb2xlLmVycm9yKCcgIEZhbHRhbmRvOicsIG1pc3Npbmcuam9pbignLCAnKSkKICAgICAgcmV0dXJuIGZhbHNlCiAgICB9CiAgICByZXR1cm4gdHJ1ZQogIH0pLAoKICAvLyAyLiBNaWdyYXRpb25zIFNRTCBleGlzdGVtCiAgY2hlY2soJ01pZ3JhdGlvbnMgU1FMIGV4aXN0ZW0gKDAwMS0wMDcpJywgdHJ1ZSwgKCkgPT4gewogICAgY29uc3QgZmlsZXMgPSBbCiAgICAgICcwMDFfaW5pdGlhbF9zY2hlbWEuc3FsJywKICAgICAgJzAwMl9zb2Z0X2RlbGV0ZS5zcWwnLAogICAgICAnMDAzX3NlYXJjaF9pbmRleGVzLnNxbCcsCiAgICAgICcwMDRfZGFzaGJvYXJkX2luZGV4ZXMuc3FsJywKICAgICAgJzAwNV9vbmJvYXJkaW5nLnNxbCcsCiAgICAgICcwMDZfd2hhdHNhcHBfY29uZmlnLnNxbCcsCiAgICAgICcwMDdfc3RyaXBlLnNxbCcsCiAgICBdCiAgICBjb25zdCBtaXNzaW5nID0gZmlsZXMuZmlsdGVyKAogICAgICAoZikgPT4gIWV4aXN0c1N5bmMocGF0aC5qb2luKHJvb3QsICdzdXBhYmFzZScsICdtaWdyYXRpb25zJywgZikpCiAgICApCiAgICBpZiAobWlzc2luZy5sZW5ndGggPiAwKSB7CiAgICAgIGNvbnNvbGUuZXJyb3IoJyAgRmFsdGFuZG86JywgbWlzc2luZy5qb2luKCcsICcpKQogICAgICByZXR1cm4gZmFsc2UKICAgIH0KICAgIHJldHVybiB0cnVlCiAgfSksCgogIC8vIDMuIEFycXVpdm9zIGNyw610aWNvcyBkZSBBUEkgZXhpc3RlbQogIGNoZWNrKCdBcnF1aXZvcyBjcml0aWNvcyBkZSBBUEkgZXhpc3RlbScsIHRydWUsICgpID0+IHsKICAgIGNvbnN0IGZpbGVzID0gWwogICAgICAnYXBwL2FwaS93aGF0c2FwcC93ZWJob29rL3JvdXRlLnRzJywKICAgICAgJ2FwcC9hcGkvc3RyaXBlL3dlYmhvb2svcm91dGUudHMnLAogICAgICAnYXBwL2FwaS9zdHJpcGUvY2hlY2tvdXQvcm91dGUudHMnLAogICAgICAnYXBwL2FwaS9zdHJpcGUvcG9ydGFsL3JvdXRlLnRzJywKICAgIF0KICAgIGNvbnN0IG1pc3NpbmcgPSBmaWxlcy5maWx0ZXIoKGYpID0+ICFleGlzdHNTeW5jKHBhdGguam9pbihyb290LCBmKSkpCiAgICBpZiAobWlzc2luZy5sZW5ndGggPiAwKSB7CiAgICAgIGNvbnNvbGUuZXJyb3IoJyAgRmFsdGFuZG86JywgbWlzc2luZy5qb2luKCcsICcpKQogICAgICByZXR1cm4gZmFsc2UKICAgIH0KICAgIHJldHVybiB0cnVlCiAgfSksCgogIC8vIDQuIFByaWNlIElEcyBkbyBTdHJpcGUgKGF2aXNvLCBuw6NvIGVycm8pCiAgY2hlY2soJ1NUUklQRV9QTEFOUyBjb20gcHJpY2VJZHMgY29uZmlndXJhZG9zJywgZmFsc2UsICgpID0+IHsKICAgIGNvbnN0IHN0YXJ0ZXIgPSBwcm9jZXNzLmVudi5TVFJJUEVfUFJJQ0VfU1RBUlRFUj8udHJpbSgpCiAgICBjb25zdCBwcm8gPSBwcm9jZXNzLmVudi5TVFJJUEVfUFJJQ0VfUFJPRkVTU0lPTkFMPy50cmltKCkKICAgIGlmICghc3RhcnRlciB8fCAhcHJvKSB7CiAgICAgIGNvbnN0IG1pc3NpbmcgPSBbCiAgICAgICAgIXN0YXJ0ZXIgJiYgJ1NUUklQRV9QUklDRV9TVEFSVEVSJywKICAgICAgICAhcHJvICYmICdTVFJJUEVfUFJJQ0VfUFJPRkVTU0lPTkFMJywKICAgICAgXQogICAgICAgIC5maWx0ZXIoQm9vbGVhbikKICAgICAgICAuam9pbignLCAnKQogICAgICBjb25zb2xlLndhcm4oYCAgQXZpc286ICR7bWlzc2luZ30gbmFvIGNvbmZpZ3VyYWRvcyDigJQgY2hlY2tvdXQgbmFvIGZ1bmNpb25hcmEgYXRlIHByZWVuY2hlci5gKQogICAgICByZXR1cm4gYHByaWNlSWRzIG5hbyBjb25maWd1cmFkb3M6ICR7bWlzc2luZ31gCiAgICB9CiAgICByZXR1cm4gdHJ1ZQogIH0pLAoKICAvLyA1LiBDUkVNT05BX1RFTVBMQVRFUyB0ZW0gcGVsbyBtZW5vcyAxIHRlbXBsYXRlCiAgY2hlY2soJ0NSRU1PTkFfVEVNUExBVEVTIHRlbSBwZWxvIG1lbm9zIDEgdGVtcGxhdGUnLCB0cnVlLCAoKSA9PiB7CiAgICBjb25zdCBmaWxlUGF0aCA9IHBhdGguam9pbihyb290LCAnbGliJywgJ3doYXRzYXBwJywgJ3RlbXBsYXRlLWRlZmluaXRpb25zLnRzJykKICAgIGlmICghZXhpc3RzU3luYyhmaWxlUGF0aCkpIHsKICAgICAgY29uc29sZS5lcnJvcignICB0ZW1wbGF0ZS1kZWZpbml0aW9ucy50cyBuYW8gZW5jb250cmFkbycpCiAgICAgIHJldHVybiBmYWxzZQogICAgfQogICAgY29uc3Qgc3JjID0gcmVhZEZpbGVTeW5jKGZpbGVQYXRoLCAndXRmLTgnKQogICAgaWYgKCFzcmMuaW5jbHVkZXMoJ2J1aWxkVGVtcGxhdGU6JykpIHsKICAgICAgY29uc29sZS5lcnJvcignICBDUkVNT05BX1RFTVBMQVRFUyBwYXJlY2UgdmF6aW8gKG5lbmh1bSBidWlsZFRlbXBsYXRlIGVuY29udHJhZG8pJykKICAgICAgcmV0dXJuIGZhbHNlCiAgICB9CiAgICByZXR1cm4gdHJ1ZQogIH0pLAoKICAvLyA2LiBDUk9OX1NFQ1JFVCBwcm90ZWdlIG8gZW5kcG9pbnQgZG8gVmVyY2VsIENyb24KICBjaGVjaygnQ1JPTl9TRUNSRVQgY29uZmlndXJhZGEnLCB0cnVlLCAoKSA9PiB7CiAgICBpZiAoIXByb2Nlc3MuZW52LkNST05fU0VDUkVUPy50cmltKCkpIHsKICAgICAgY29uc29sZS5lcnJvcignICBGYWx0YW5kbzogQ1JPTl9TRUNSRVQnKQogICAgICByZXR1cm4gZmFsc2UKICAgIH0KICAgIHJldHVybiB0cnVlCiAgfSksCgogIC8vIDcuIHZlcmNlbC5qc29uIGNvbnRlbSBjb25maWd1cmFjYW8gZGUgY3JvbgogIGNoZWNrKCd2ZXJjZWwuanNvbiBleGlzdGUgY29tIGNyb24gY29uZmlndXJhZG8nLCB0cnVlLCAoKSA9PiB7CiAgICBjb25zdCBmaWxlUGF0aCA9IHBhdGguam9pbihyb290LCAndmVyY2VsLmpzb24nKQogICAgaWYgKCFleGlzdHNTeW5jKGZpbGVQYXRoKSkgewogICAgICBjb25zb2xlLmVycm9yKCcgIHZlcmNlbC5qc29uIG5hbyBlbmNvbnRyYWRvJykKICAgICAgcmV0dXJuIGZhbHNlCiAgICB9CiAgICBjb25zdCBjb25maWcgPSBKU09OLnBhcnNlKHJlYWRGaWxlU3luYyhmaWxlUGF0aCwgJ3V0Zi04JykpIGFzIHsKICAgICAgY3JvbnM/OiBBcnJheTx7IHBhdGg/OiBzdHJpbmc7IHNjaGVkdWxlPzogc3RyaW5nIH0+CiAgICB9CiAgICBjb25zdCBjcm9uID0gY29uZmlnLmNyb25zPy5maW5kKChpdGVtKSA9PiBpdGVtLnBhdGggPT09ICcvYXBpL2Nyb24vcHJvY2Vzcy1hdXRvbWF0aW9uLXF1ZXVlJykKICAgIGlmICghY3Jvbj8uc2NoZWR1bGUpIHsKICAgICAgY29uc29sZS5lcnJvcignICBDcm9uIC9hcGkvY3Jvbi9wcm9jZXNzLWF1dG9tYXRpb24tcXVldWUgbmFvIGNvbmZpZ3VyYWRvJykKICAgICAgcmV0dXJuIGZhbHNlCiAgICB9CiAgICByZXR1cm4gdHJ1ZQogIH0pLAoKICAvLyA4LiBCdWNrZXQgb3V0Ym91bmQtbWVkaWEgcmVmZXJlbmNpYWRvIG5hIG1pZ3JhdGlvbiAwMDgKICBjaGVjaygnQnVja2V0IG91dGJvdW5kLW1lZGlhIHJlZmVyZW5jaWFkbyBuYSBtaWdyYXRpb24gMDA4JywgdHJ1ZSwgKCkgPT4gewogICAgY29uc3QgZmlsZVBhdGggPSBwYXRoLmpvaW4ocm9vdCwgJ3N1cGFiYXNlJywgJ21pZ3JhdGlvbnMnLCAnMDA4X21lZGlhX3N0b3JhZ2Uuc3FsJykKICAgIGlmICghZXhpc3RzU3luYyhmaWxlUGF0aCkpIHsKICAgICAgY29uc29sZS5lcnJvcignICAwMDhfbWVkaWFfc3RvcmFnZS5zcWwgbmFvIGVuY29udHJhZG8nKQogICAgICByZXR1cm4gZmFsc2UKICAgIH0KICAgIGNvbnN0IHNyYyA9IHJlYWRGaWxlU3luYyhmaWxlUGF0aCwgJ3V0Zi04JykKICAgIGlmICghc3JjLmluY2x1ZGVzKCdvdXRib3VuZC1tZWRpYScpKSB7CiAgICAgIGNvbnNvbGUuZXJyb3IoJyAgb3V0Ym91bmQtbWVkaWEgbmFvIGVuY29udHJhZG8gbmEgbWlncmF0aW9uIDAwOCcpCiAgICAgIHJldHVybiBmYWxzZQogICAgfQogICAgcmV0dXJuIHRydWUKICB9KSwKCiAgLy8gOS4gTWlncmF0aW9ucyBkbyBTcHJpbnQgV2hhdHNBcHAgZXhpc3RlbQogIGNoZWNrKCdNaWdyYXRpb25zIDAwOCBhIDAxMyBleGlzdGVtJywgdHJ1ZSwgKCkgPT4gewogICAgY29uc3QgZmlsZXMgPSBbCiAgICAgICcwMDhfbWVkaWFfc3RvcmFnZS5zcWwnLAogICAgICAnMDA5X2F1dG9tYXRpb25zLnNxbCcsCiAgICAgICcwMTBfY3VzdG9tX3RlbXBsYXRlcy5zcWwnLAogICAgICAnMDExX2F1dG9tYXRpb25fbWVkaWEuc3FsJywKICAgICAgJzAxMl9hdXRvbWF0aW9uX3F1ZXVlLnNxbCcsCiAgICAgICcwMTNfd2hhdHNhcHBfaW5kZXhlcy5zcWwnLAogICAgXQogICAgY29uc3QgbWlzc2luZyA9IGZpbGVzLmZpbHRlcigKICAgICAgKGYpID0+ICFleGlzdHNTeW5jKHBhdGguam9pbihyb290LCAnc3VwYWJhc2UnLCAnbWlncmF0aW9ucycsIGYpKQogICAgKQogICAgaWYgKG1pc3NpbmcubGVuZ3RoID4gMCkgewogICAgICBjb25zb2xlLmVycm9yKCcgIEZhbHRhbmRvOicsIG1pc3Npbmcuam9pbignLCAnKSkKICAgICAgcmV0dXJuIGZhbHNlCiAgICB9CiAgICByZXR1cm4gdHJ1ZQogIH0pLApdCgovLyDigJQgT3V0cHV0IOKAlAoKY29uc3Qgd2lkdGggPSA1OApjb25zb2xlLmxvZygnXG5QcmUtZGVwbG95IENoZWNrIOKAlCBDcmVtb25hJykKY29uc29sZS5sb2coJz0nLnJlcGVhdCh3aWR0aCkpCmxldCBoYXNFcnJvciA9IGZhbHNlCmxldCBoYXNXYXJuaW5nID0gZmFsc2UKbGV0IG9rQ291bnQgPSAwCgpmb3IgKGNvbnN0IHJlc3VsdCBvZiBjaGVja3MpIHsKICBjb25zdCBpY29uID0gcmVzdWx0Lm9rID8gJ+KckycgOiByZXN1bHQuY3JpdGljYWwgPyAn4pyXJyA6ICfimqAnCiAgY29uc3Qgc3VmZml4ID0gcmVzdWx0Lndhcm5pbmcgPyBgICgke3Jlc3VsdC53YXJuaW5nfSlgIDogJycKICBjb25zb2xlLmxvZyhgJHtpY29ufSAgJHtyZXN1bHQubGFiZWx9JHtzdWZmaXh9YCkKICBpZiAocmVzdWx0Lm9rKSBva0NvdW50ICs9IDEKICBpZiAoIXJlc3VsdC5vayAmJiByZXN1bHQuY3JpdGljYWwpIGhhc0Vycm9yID0gdHJ1ZQogIGlmIChyZXN1bHQud2FybmluZykgaGFzV2FybmluZyA9IHRydWUKfQoKY29uc29sZS5sb2coJz0nLnJlcGVhdCh3aWR0aCkpCmNvbnNvbGUubG9nKGAke29rQ291bnR9LyR7Y2hlY2tzLmxlbmd0aH0gdmVyaWZpY2Fjb2VzIE9LYCkKCmlmIChoYXNFcnJvcikgewogIGNvbnNvbGUubG9nKCdcbkNvcnJpZ2lyIGFudGVzIGRvIGRlcGxveSDinJdcbicpCiAgcHJvY2Vzcy5leGl0KDEpCn0gZWxzZSBpZiAoaGFzV2FybmluZykgewogIGNvbnNvbGUubG9nKCdcbkRlcGxveSBwb3NzaXZlbCBjb20gYXZpc29zIOKaoFxuJykKfSBlbHNlIHsKICBjb25zb2xlLmxvZygnXG5Qcm9udG8gcGFyYSBkZXBsb3kg4pyTXG4nKQp9Cg==
+import { existsSync, readFileSync } from 'fs'
+import path from 'path'
+
+const root = process.cwd()
+
+const envPath = path.join(root, '.env.local')
+if (existsSync(envPath)) {
+  const envSource = readFileSync(envPath, 'utf-8')
+  for (const line of envSource.split(/\r?\n/)) {
+    const trimmed = line.trim()
+    if (!trimmed || trimmed.startsWith('#')) continue
+    const separatorIndex = trimmed.indexOf('=')
+    if (separatorIndex === -1) continue
+    const key = trimmed.slice(0, separatorIndex).trim()
+    const value = trimmed.slice(separatorIndex + 1).trim().replace(/^['"]|['"]$/g, '')
+    if (key && !process.env[key]) {
+      process.env[key] = value
+    }
+  }
+}
+
+interface CheckResult {
+  label: string
+  ok: boolean
+  warning?: string
+  critical: boolean
+}
+
+function check(label: string, critical: boolean, fn: () => boolean | string): CheckResult {
+  try {
+    const result = fn()
+    if (result === true) return { label, ok: true, critical }
+    if (typeof result === 'string') return { label, ok: true, warning: result, critical }
+    return { label, ok: false, critical }
+  } catch (err) {
+    return { label, ok: false, warning: String(err), critical }
+  }
+}
+
+const checks: CheckResult[] = [
+
+  // 1. Variáveis de ambiente críticas
+  check('Variaveis de ambiente criticas existem', true, () => {
+    const required = [
+      'NEXT_PUBLIC_SUPABASE_URL',
+      'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+      'SUPABASE_SERVICE_ROLE_KEY',
+      'WHATSAPP_VERIFY_TOKEN',
+      'STRIPE_SECRET_KEY',
+      'NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY',
+      'NEXT_PUBLIC_APP_URL',
+    ]
+    const missing = required.filter((k) => !process.env[k]?.trim())
+    if (missing.length > 0) {
+      console.error('  Faltando:', missing.join(', '))
+      return false
+    }
+    return true
+  }),
+
+  // 2. Migrations SQL existem
+  check('Migrations SQL existem (001-007)', true, () => {
+    const files = [
+      '001_initial_schema.sql',
+      '002_soft_delete.sql',
+      '003_search_indexes.sql',
+      '004_dashboard_indexes.sql',
+      '005_onboarding.sql',
+      '006_whatsapp_config.sql',
+      '007_stripe.sql',
+    ]
+    const missing = files.filter(
+      (f) => !existsSync(path.join(root, 'supabase', 'migrations', f))
+    )
+    if (missing.length > 0) {
+      console.error('  Faltando:', missing.join(', '))
+      return false
+    }
+    return true
+  }),
+
+  // 3. Arquivos críticos de API existem
+  check('Arquivos criticos de API existem', true, () => {
+    const files = [
+      'app/api/whatsapp/webhook/route.ts',
+      'app/api/stripe/webhook/route.ts',
+      'app/api/stripe/checkout/route.ts',
+      'app/api/stripe/portal/route.ts',
+    ]
+    const missing = files.filter((f) => !existsSync(path.join(root, f)))
+    if (missing.length > 0) {
+      console.error('  Faltando:', missing.join(', '))
+      return false
+    }
+    return true
+  }),
+
+  // 4. Price IDs do Stripe (aviso, não erro)
+  check('STRIPE_PLANS com priceIds configurados', false, () => {
+    const starter = process.env.STRIPE_PRICE_STARTER?.trim()
+    const pro = process.env.STRIPE_PRICE_PROFESSIONAL?.trim()
+    if (!starter || !pro) {
+      const missing = [
+        !starter && 'STRIPE_PRICE_STARTER',
+        !pro && 'STRIPE_PRICE_PROFESSIONAL',
+      ]
+        .filter(Boolean)
+        .join(', ')
+      console.warn(`  Aviso: ${missing} nao configurados — checkout nao funcionara ate preencher.`)
+      return `priceIds nao configurados: ${missing}`
+    }
+    return true
+  }),
+
+  // 5. CREMONA_TEMPLATES tem pelo menos 1 template
+  check('CREMONA_TEMPLATES tem pelo menos 1 template', true, () => {
+    const filePath = path.join(root, 'lib', 'whatsapp', 'template-definitions.ts')
+    if (!existsSync(filePath)) {
+      console.error('  template-definitions.ts nao encontrado')
+      return false
+    }
+    const src = readFileSync(filePath, 'utf-8')
+    if (!src.includes('buildTemplate:')) {
+      console.error('  CREMONA_TEMPLATES parece vazio (nenhum buildTemplate encontrado)')
+      return false
+    }
+    return true
+  }),
+
+  // 6. CRON_SECRET protege o endpoint do Vercel Cron
+  check('CRON_SECRET configurada', true, () => {
+    if (!process.env.CRON_SECRET?.trim()) {
+      console.error('  Faltando: CRON_SECRET')
+      return false
+    }
+    return true
+  }),
+
+  // 7. vercel.json contem configuracao de cron
+  check('vercel.json existe com cron configurado', true, () => {
+    const filePath = path.join(root, 'vercel.json')
+    if (!existsSync(filePath)) {
+      console.error('  vercel.json nao encontrado')
+      return false
+    }
+    const config = JSON.parse(readFileSync(filePath, 'utf-8')) as {
+      crons?: Array<{ path?: string; schedule?: string }>
+    }
+    const cron = config.crons?.find((item) => item.path === '/api/cron/process-automation-queue')
+    if (!cron?.schedule) {
+      console.error('  Cron /api/cron/process-automation-queue nao configurado')
+      return false
+    }
+    return true
+  }),
+
+  // 8. Bucket outbound-media referenciado na migration 008
+  check('Bucket outbound-media referenciado na migration 008', true, () => {
+    const filePath = path.join(root, 'supabase', 'migrations', '008_media_storage.sql')
+    if (!existsSync(filePath)) {
+      console.error('  008_media_storage.sql nao encontrado')
+      return false
+    }
+    const src = readFileSync(filePath, 'utf-8')
+    if (!src.includes('outbound-media')) {
+      console.error('  outbound-media nao encontrado na migration 008')
+      return false
+    }
+    return true
+  }),
+
+  // 9. Migrations do Sprint WhatsApp existem
+  check('Migrations 008 a 013 existem', true, () => {
+    const files = [
+      '008_media_storage.sql',
+      '009_automations.sql',
+      '010_custom_templates.sql',
+      '011_automation_media.sql',
+      '012_automation_queue.sql',
+      '013_whatsapp_indexes.sql',
+    ]
+    const missing = files.filter(
+      (f) => !existsSync(path.join(root, 'supabase', 'migrations', f))
+    )
+    if (missing.length > 0) {
+      console.error('  Faltando:', missing.join(', '))
+      return false
+    }
+    return true
+  }),
+]
+
+// — Output —
+
+const width = 58
+console.log('\nPre-deploy Check — Cremona')
+console.log('='.repeat(width))
+let hasError = false
+let hasWarning = false
+let okCount = 0
+
+for (const result of checks) {
+  const icon = result.ok ? '✓' : result.critical ? '✗' : '⚠'
+  const suffix = result.warning ? ` (${result.warning})` : ''
+  console.log(`${icon}  ${result.label}${suffix}`)
+  if (result.ok) okCount += 1
+  if (!result.ok && result.critical) hasError = true
+  if (result.warning) hasWarning = true
+}
+
+console.log('='.repeat(width))
+console.log(`${okCount}/${checks.length} verificacoes OK`)
+
+if (hasError) {
+  console.log('\nCorrigir antes do deploy ✗\n')
+  process.exit(1)
+} else if (hasWarning) {
+  console.log('\nDeploy possivel com avisos ⚠\n')
+} else {
+  console.log('\nPronto para deploy ✓\n')
+}

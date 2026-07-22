@@ -1,1 +1,82 @@
-dHlwZSBTY2VuYXJpbyA9IHsKICBuYW1lOiBzdHJpbmcKICBpbnB1dDogc3RyaW5nIHwgbnVsbAogIGV4cGVjdGVkOiB7CiAgICBpc09wZW46IGJvb2xlYW4KICAgIGxhYmVsOiBzdHJpbmcKICB9Cn0KCmZ1bmN0aW9uIG1pbnV0ZXNBZ28obWludXRlczogbnVtYmVyKTogc3RyaW5nIHsKICByZXR1cm4gbmV3IERhdGUoRGF0ZS5ub3coKSAtIG1pbnV0ZXMgKiA2MCAqIDEwMDApLnRvSVNPU3RyaW5nKCkKfQoKYXN5bmMgZnVuY3Rpb24gbWFpbigpIHsKICBjb25zdCB7IGdldFdoYXRzQXBwV2luZG93U3RhdHVzLCBpc1dpdGhpbldoYXRzQXBwMjRoV2luZG93IH0gPSBhd2FpdCBpbXBvcnQoCiAgICBuZXcgVVJMKCcuLi9saWIvd2hhdHNhcHAvY29udmVyc2F0aW9uLXdpbmRvdy50cycsIGltcG9ydC5tZXRhLnVybCkuaHJlZgogICkKCiAgY29uc3Qgc2NlbmFyaW9zOiBTY2VuYXJpb1tdID0gWwogICAgewogICAgICBuYW1lOiAnU2VtIGluYm91bmQnLAogICAgICBpbnB1dDogbnVsbCwKICAgICAgZXhwZWN0ZWQ6IHsKICAgICAgICBpc09wZW46IGZhbHNlLAogICAgICAgIGxhYmVsOiAnU2VtIGphbmVsYSBhdGl2YScsCiAgICAgIH0sCiAgICB9LAogICAgewogICAgICBuYW1lOiAnSW5ib3VuZCByZWNlbnRlJywKICAgICAgaW5wdXQ6IG1pbnV0ZXNBZ28oMzApLAogICAgICBleHBlY3RlZDogewogICAgICAgIGlzT3BlbjogdHJ1ZSwKICAgICAgICBsYWJlbDogJ0phbmVsYSBhYmVydGEnLAogICAgICB9LAogICAgfSwKICAgIHsKICAgICAgbmFtZTogJ0luYm91bmQgcXVhc2UgZXhwaXJhbmRvJywKICAgICAgaW5wdXQ6IG1pbnV0ZXNBZ28oMjMgKiA2MCArIDMwKSwKICAgICAgZXhwZWN0ZWQ6IHsKICAgICAgICBpc09wZW46IHRydWUsCiAgICAgICAgbGFiZWw6ICdKYW5lbGEgYWJlcnRhJywKICAgICAgfSwKICAgIH0sCiAgICB7CiAgICAgIG5hbWU6ICdJbmJvdW5kIGV4cGlyYWRvJywKICAgICAgaW5wdXQ6IG1pbnV0ZXNBZ28oMjUgKiA2MCksCiAgICAgIGV4cGVjdGVkOiB7CiAgICAgICAgaXNPcGVuOiBmYWxzZSwKICAgICAgICBsYWJlbDogJ0phbmVsYSBmZWNoYWRhJywKICAgICAgfSwKICAgIH0sCiAgXQoKICBsZXQgaGFzRmFpbHVyZSA9IGZhbHNlCgogIGZvciAoY29uc3Qgc2NlbmFyaW8gb2Ygc2NlbmFyaW9zKSB7CiAgICBjb25zdCB3aW5kb3dTdGF0dXMgPSBnZXRXaGF0c0FwcFdpbmRvd1N0YXR1cyhzY2VuYXJpby5pbnB1dCkKICAgIGNvbnN0IGlzT3BlbiA9IGlzV2l0aGluV2hhdHNBcHAyNGhXaW5kb3coc2NlbmFyaW8uaW5wdXQpCiAgICBjb25zdCBwYXNzZWQgPQogICAgICB3aW5kb3dTdGF0dXMuaXNPcGVuID09PSBzY2VuYXJpby5leHBlY3RlZC5pc09wZW4gJiYKICAgICAgd2luZG93U3RhdHVzLmxhYmVsID09PSBzY2VuYXJpby5leHBlY3RlZC5sYWJlbCAmJgogICAgICBpc09wZW4gPT09IHNjZW5hcmlvLmV4cGVjdGVkLmlzT3BlbgoKICAgIGNvbnNvbGUubG9nKGAke3NjZW5hcmlvLm5hbWV9OiAke3Bhc3NlZCA/ICdPSycgOiAnRkFJTCd9YCkKICAgIGNvbnNvbGUubG9nKAogICAgICBgICBpbnB1dD0ke3NjZW5hcmlvLmlucHV0ID8/ICdudWxsJ30gfCBpc09wZW49JHt3aW5kb3dTdGF0dXMuaXNPcGVufSB8IGxhYmVsPSR7d2luZG93U3RhdHVzLmxhYmVsfSB8IG1pbnV0ZXNSZW1haW5pbmc9JHt3aW5kb3dTdGF0dXMubWludXRlc1JlbWFpbmluZyA/PyAnbnVsbCd9YAogICAgKQoKICAgIGlmICghcGFzc2VkKSB7CiAgICAgIGhhc0ZhaWx1cmUgPSB0cnVlCiAgICB9CiAgfQoKICBpZiAoaGFzRmFpbHVyZSkgewogICAgcHJvY2Vzcy5leGl0KDEpCiAgfQp9CgptYWluKCkuY2F0Y2goKGVycm9yKSA9PiB7CiAgY29uc29sZS5lcnJvcignRXJybyBhbyB2YWxpZGFyIGphbmVsYSBXaGF0c0FwcDonLCBlcnJvcikKICBwcm9jZXNzLmV4aXQoMSkKfSkK
+type Scenario = {
+  name: string
+  input: string | null
+  expected: {
+    isOpen: boolean
+    label: string
+  }
+}
+
+function minutesAgo(minutes: number): string {
+  return new Date(Date.now() - minutes * 60 * 1000).toISOString()
+}
+
+async function main() {
+  const { getWhatsAppWindowStatus, isWithinWhatsApp24hWindow } = await import(
+    new URL('../lib/whatsapp/conversation-window.ts', import.meta.url).href
+  )
+
+  const scenarios: Scenario[] = [
+    {
+      name: 'Sem inbound',
+      input: null,
+      expected: {
+        isOpen: false,
+        label: 'Sem janela ativa',
+      },
+    },
+    {
+      name: 'Inbound recente',
+      input: minutesAgo(30),
+      expected: {
+        isOpen: true,
+        label: 'Janela aberta',
+      },
+    },
+    {
+      name: 'Inbound quase expirando',
+      input: minutesAgo(23 * 60 + 30),
+      expected: {
+        isOpen: true,
+        label: 'Janela aberta',
+      },
+    },
+    {
+      name: 'Inbound expirado',
+      input: minutesAgo(25 * 60),
+      expected: {
+        isOpen: false,
+        label: 'Janela fechada',
+      },
+    },
+  ]
+
+  let hasFailure = false
+
+  for (const scenario of scenarios) {
+    const windowStatus = getWhatsAppWindowStatus(scenario.input)
+    const isOpen = isWithinWhatsApp24hWindow(scenario.input)
+    const passed =
+      windowStatus.isOpen === scenario.expected.isOpen &&
+      windowStatus.label === scenario.expected.label &&
+      isOpen === scenario.expected.isOpen
+
+    console.log(`${scenario.name}: ${passed ? 'OK' : 'FAIL'}`)
+    console.log(
+      `  input=${scenario.input ?? 'null'} | isOpen=${windowStatus.isOpen} | label=${windowStatus.label} | minutesRemaining=${windowStatus.minutesRemaining ?? 'null'}`
+    )
+
+    if (!passed) {
+      hasFailure = true
+    }
+  }
+
+  if (hasFailure) {
+    process.exit(1)
+  }
+}
+
+main().catch((error) => {
+  console.error('Erro ao validar janela WhatsApp:', error)
+  process.exit(1)
+})

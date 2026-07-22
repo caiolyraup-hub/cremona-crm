@@ -1,1 +1,304 @@
-aW1wb3J0IHsgY3JlYXRlSG1hYyB9IGZyb20gJ25vZGU6Y3J5cHRvJwppbXBvcnQgeyBleGlzdHNTeW5jLCByZWFkRmlsZVN5bmMgfSBmcm9tICdub2RlOmZzJwppbXBvcnQgKiBhcyBwYXRoIGZyb20gJ25vZGU6cGF0aCcKCmZ1bmN0aW9uIGxvYWRFbnZGaWxlKGZpbGVQYXRoOiBzdHJpbmcpIHsKICBpZiAoIWV4aXN0c1N5bmMoZmlsZVBhdGgpKSB7CiAgICByZXR1cm4KICB9CgogIGNvbnN0IGNvbnRlbnQgPSByZWFkRmlsZVN5bmMoZmlsZVBhdGgsICd1dGY4JykKCiAgZm9yIChjb25zdCBsaW5lIG9mIGNvbnRlbnQuc3BsaXQoL1xyP1xuLykpIHsKICAgIGNvbnN0IG1hdGNoID0gbGluZS5tYXRjaCgvXihbXiM9XSspPSguKikkLykKICAgIGlmICghbWF0Y2gpIGNvbnRpbnVlCgogICAgY29uc3Qga2V5ID0gbWF0Y2hbMV0udHJpbSgpCiAgICBsZXQgdmFsdWUgPSBtYXRjaFsyXS50cmltKCkKCiAgICBpZiAoCiAgICAgICh2YWx1ZS5zdGFydHNXaXRoKCciJykgJiYgdmFsdWUuZW5kc1dpdGgoJyInKSkgfHwKICAgICAgKHZhbHVlLnN0YXJ0c1dpdGgoIiciKSAmJiB2YWx1ZS5lbmRzV2l0aCgiJyIpKQogICAgKSB7CiAgICAgIHZhbHVlID0gdmFsdWUuc2xpY2UoMSwgLTEpCiAgICB9CgogICAgaWYgKCFwcm9jZXNzLmVudltrZXldKSB7CiAgICAgIHByb2Nlc3MuZW52W2tleV0gPSB2YWx1ZQogICAgfQogIH0KfQoKZnVuY3Rpb24gYnVpbGRNZXNzYWdlQnlNb2RlKG1vZGU6IHN0cmluZywgdGltZXN0YW1wOiBzdHJpbmcpIHsKICBjb25zdCBtZXNzYWdlSWQgPSBgd2FtaWQudGVzdC0ke21vZGV9LSR7RGF0ZS5ub3coKX1gCgogIGlmIChtb2RlID09PSAnaW1hZ2UnKSB7CiAgICByZXR1cm4gewogICAgICBmcm9tOiAnNTUxMTk4ODg4Nzc3NycsCiAgICAgIGlkOiBtZXNzYWdlSWQsCiAgICAgIHRpbWVzdGFtcCwKICAgICAgdHlwZTogJ2ltYWdlJywKICAgICAgaW1hZ2U6IHsKICAgICAgICBpZDogJ21lZGlhLWltYWdlLWlkJywKICAgICAgICBtaW1lX3R5cGU6ICdpbWFnZS9qcGVnJywKICAgICAgICBzaGEyNTY6ICdmYWtlLXNoYScsCiAgICAgICAgY2FwdGlvbjogJ0ltYWdlbSBkbyB0ZXN0ZScsCiAgICAgIH0sCiAgICB9CiAgfQoKICBpZiAobW9kZSA9PT0gJ2F1ZGlvJykgewogICAgcmV0dXJuIHsKICAgICAgZnJvbTogJzU1MTE5ODg4ODc3NzcnLAogICAgICBpZDogbWVzc2FnZUlkLAogICAgICB0aW1lc3RhbXAsCiAgICAgIHR5cGU6ICdhdWRpbycsCiAgICAgIGF1ZGlvOiB7CiAgICAgICAgaWQ6ICdtZWRpYS1hdWRpby1pZCcsCiAgICAgICAgbWltZV90eXBlOiAnYXVkaW8vb2dnJywKICAgICAgICBzaGEyNTY6ICdmYWtlLXNoYScsCiAgICAgIH0sCiAgICB9CiAgfQoKICBpZiAobW9kZSA9PT0gJ2RvY3VtZW50JykgewogICAgcmV0dXJuIHsKICAgICAgZnJvbTogJzU1MTE5ODg4ODc3NzcnLAogICAgICBpZDogbWVzc2FnZUlkLAogICAgICB0aW1lc3RhbXAsCiAgICAgIHR5cGU6ICdkb2N1bWVudCcsCiAgICAgIGRvY3VtZW50OiB7CiAgICAgICAgaWQ6ICdtZWRpYS1kb2N1bWVudC1pZCcsCiAgICAgICAgbWltZV90eXBlOiAnYXBwbGljYXRpb24vcGRmJywKICAgICAgICBzaGEyNTY6ICdmYWtlLXNoYScsCiAgICAgICAgZmlsZW5hbWU6ICdjb250cmF0by10ZXN0ZS5wZGYnLAogICAgICB9LAogICAgfQogIH0KCiAgaWYgKG1vZGUgPT09ICd2aWRlbycpIHsKICAgIHJldHVybiB7CiAgICAgIGZyb206ICc1NTExOTg4ODg3Nzc3JywKICAgICAgaWQ6IG1lc3NhZ2VJZCwKICAgICAgdGltZXN0YW1wLAogICAgICB0eXBlOiAndmlkZW8nLAogICAgICB2aWRlbzogewogICAgICAgIGlkOiAnbWVkaWEtdmlkZW8taWQnLAogICAgICAgIG1pbWVfdHlwZTogJ3ZpZGVvL21wNCcsCiAgICAgICAgc2hhMjU2OiAnZmFrZS1zaGEnLAogICAgICAgIGNhcHRpb246ICdWaWRlbyBkbyB0ZXN0ZScsCiAgICAgIH0sCiAgICB9CiAgfQoKICBpZiAobW9kZSA9PT0gJ2xvY2F0aW9uJykgewogICAgcmV0dXJuIHsKICAgICAgZnJvbTogJzU1MTE5ODg4ODc3NzcnLAogICAgICBpZDogbWVzc2FnZUlkLAogICAgICB0aW1lc3RhbXAsCiAgICAgIHR5cGU6ICdsb2NhdGlvbicsCiAgICAgIGxvY2F0aW9uOiB7CiAgICAgICAgbGF0aXR1ZGU6IC05LjY0OTgsCiAgICAgICAgbG9uZ2l0dWRlOiAtMzUuNzA4OSwKICAgICAgICBuYW1lOiAnTWFjZWlvJywKICAgICAgICBhZGRyZXNzOiAnQWxhZ29hcycsCiAgICAgIH0sCiAgICB9CiAgfQoKICByZXR1cm4gewogICAgZnJvbTogJzU1MTE5ODg4ODc3NzcnLAogICAgaWQ6IG1lc3NhZ2VJZCwKICAgIHRpbWVzdGFtcCwKICAgIHRleHQ6IHsgYm9keTogJ09sYSwgdHVkbyBiZW0/JyB9LAogICAgdHlwZTogJ3RleHQnLAogIH0KfQoKZnVuY3Rpb24gYnVpbGRQYXlsb2FkKG1vZGU6IHN0cmluZywgdGltZXN0YW1wOiBzdHJpbmcpIHsKICBpZiAobW9kZSA9PT0gJ3N0YXR1cycpIHsKICAgIHJldHVybiB7CiAgICAgIG9iamVjdDogJ3doYXRzYXBwX2J1c2luZXNzX2FjY291bnQnLAogICAgICBlbnRyeTogWwogICAgICAgIHsKICAgICAgICAgIGlkOiAnV0hBVFNBUFBfQlVTSU5FU1NfQUNDT1VOVF9JRCcsCiAgICAgICAgICBjaGFuZ2VzOiBbCiAgICAgICAgICAgIHsKICAgICAgICAgICAgICBmaWVsZDogJ21lc3NhZ2VzJywKICAgICAgICAgICAgICB2YWx1ZTogewogICAgICAgICAgICAgICAgbWVzc2FnaW5nX3Byb2R1Y3Q6ICd3aGF0c2FwcCcsCiAgICAgICAgICAgICAgICBzdGF0dXNlczogWwogICAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgICAgaWQ6IHByb2Nlc3MuZW52LldFQkhPT0tfU1RBVFVTX01FU1NBR0VfSUQgPz8gJ3dhbWlkLnN0YXR1cy10ZXN0JywKICAgICAgICAgICAgICAgICAgICBzdGF0dXM6IHByb2Nlc3MuZW52LldFQkhPT0tfU1RBVFVTX1ZBTFVFID8/ICdkZWxpdmVyZWQnLAogICAgICAgICAgICAgICAgICAgIHRpbWVzdGFtcCwKICAgICAgICAgICAgICAgICAgICByZWNpcGllbnRfaWQ6ICc1NTExOTg4ODg3Nzc3JywKICAgICAgICAgICAgICAgICAgICBlcnJvcnM6CiAgICAgICAgICAgICAgICAgICAgICAocHJvY2Vzcy5lbnYuV0VCSE9PS19TVEFUVVNfVkFMVUUgPz8gJ2RlbGl2ZXJlZCcpID09PSAnZmFpbGVkJwogICAgICAgICAgICAgICAgICAgICAgICA/IFsKICAgICAgICAgICAgICAgICAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgY29kZTogMTMxMDI2LAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICB0aXRsZTogJ0Vycm8gc2ltdWxhZG8nLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICBtZXNzYWdlOiAnRmFsaGEgc2ltdWxhZGEgbm8gZW52aW8nLAogICAgICAgICAgICAgICAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAgICAgICAgICAgICBdCiAgICAgICAgICAgICAgICAgICAgICAgIDogdW5kZWZpbmVkLAogICAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgICAgXSwKICAgICAgICAgICAgICB9LAogICAgICAgICAgICB9LAogICAgICAgICAgXSwKICAgICAgICB9LAogICAgICBdLAogICAgfQogIH0KCiAgcmV0dXJuIHsKICAgIG9iamVjdDogJ3doYXRzYXBwX2J1c2luZXNzX2FjY291bnQnLAogICAgZW50cnk6IFsKICAgICAgewogICAgICAgIGlkOiAnV0hBVFNBUFBfQlVTSU5FU1NfQUNDT1VOVF9JRCcsCiAgICAgICAgY2hhbmdlczogWwogICAgICAgICAgewogICAgICAgICAgICBmaWVsZDogJ21lc3NhZ2VzJywKICAgICAgICAgICAgdmFsdWU6IHsKICAgICAgICAgICAgICBtZXNzYWdpbmdfcHJvZHVjdDogJ3doYXRzYXBwJywKICAgICAgICAgICAgICBtZXRhZGF0YTogewogICAgICAgICAgICAgICAgZGlzcGxheV9waG9uZV9udW1iZXI6ICc1NTExOTk5OTk5OTk5JywKICAgICAgICAgICAgICAgIHBob25lX251bWJlcl9pZDogJ1BIT05FX0lEJywKICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgIGNvbnRhY3RzOiBbCiAgICAgICAgICAgICAgICB7CiAgICAgICAgICAgICAgICAgIHByb2ZpbGU6IHsgbmFtZTogJ0pvYW8gVGVzdGUnIH0sCiAgICAgICAgICAgICAgICAgIHdhX2lkOiAnNTUxMTk4ODg4Nzc3NycsCiAgICAgICAgICAgICAgICB9LAogICAgICAgICAgICAgIF0sCiAgICAgICAgICAgICAgbWVzc2FnZXM6IFtidWlsZE1lc3NhZ2VCeU1vZGUobW9kZSwgdGltZXN0YW1wKV0sCiAgICAgICAgICAgIH0sCiAgICAgICAgICB9LAogICAgICAgIF0sCiAgICAgIH0sCiAgICBdLAogIH0KfQoKZnVuY3Rpb24gam9pblVybChiYXNlVXJsOiBzdHJpbmcsIHBhdGhuYW1lOiBzdHJpbmcpOiBzdHJpbmcgewogIHJldHVybiBgJHtiYXNlVXJsLnJlcGxhY2UoL1wvKyQvLCAnJyl9JHtwYXRobmFtZX1gCn0KCmZ1bmN0aW9uIGJ1aWxkVmVyaWZpY2F0aW9uVXJsKGJhc2VVcmw6IHN0cmluZywgdmVyaWZ5VG9rZW46IHN0cmluZywgY2hhbGxlbmdlOiBzdHJpbmcpOiBzdHJpbmcgewogIGNvbnN0IHVybCA9IG5ldyBVUkwoam9pblVybChiYXNlVXJsLCAnL2FwaS93aGF0c2FwcC93ZWJob29rJykpCiAgdXJsLnNlYXJjaFBhcmFtcy5zZXQoJ2h1Yi5tb2RlJywgJ3N1YnNjcmliZScpCiAgdXJsLnNlYXJjaFBhcmFtcy5zZXQoJ2h1Yi52ZXJpZnlfdG9rZW4nLCB2ZXJpZnlUb2tlbikKICB1cmwuc2VhcmNoUGFyYW1zLnNldCgnaHViLmNoYWxsZW5nZScsIGNoYWxsZW5nZSkKICByZXR1cm4gdXJsLnRvU3RyaW5nKCkKfQoKbG9hZEVudkZpbGUocGF0aC5qb2luKHByb2Nlc3MuY3dkKCksICcuZW52LmxvY2FsJykpCgpjb25zdCBiYXNlVXJsID0gKHByb2Nlc3MuZW52LldFQkhPT0tfQkFTRV9VUkwgPz8gJ2h0dHA6Ly9sb2NhbGhvc3Q6MzAwMCcpLnRyaW0oKQpjb25zdCB2ZXJpZnlUb2tlbiA9IChwcm9jZXNzLmVudi5XSEFUU0FQUF9WRVJJRllfVE9LRU4gPz8gJ2NvZGV4LXRlc3QtdmVyaWZ5LXRva2VuJykudHJpbSgpCmNvbnN0IGFwcFNlY3JldCA9IChwcm9jZXNzLmVudi5XSEFUU0FQUF9BUFBfU0VDUkVUID8/ICcnKS50cmltKCkKY29uc3QgY2hhbGxlbmdlID0gJzEyMycKY29uc3Qgd2ViaG9va1VybCA9IGpvaW5VcmwoYmFzZVVybCwgJy9hcGkvd2hhdHNhcHAvd2ViaG9vaycpCmNvbnN0IHZlcmlmaWNhdGlvblVybCA9IGJ1aWxkVmVyaWZpY2F0aW9uVXJsKGJhc2VVcmwsIHZlcmlmeVRva2VuLCBjaGFsbGVuZ2UpCgp0eXBlIFRlc3RSZXN1bHQgPSB7CiAgbGFiZWw6IHN0cmluZwogIG9rOiBib29sZWFuCiAgc3RhdHVzOiBudW1iZXIKICBib2R5OiBzdHJpbmcKfQoKZnVuY3Rpb24gYnVpbGRTaWduYXR1cmUocmF3Qm9keTogc3RyaW5nKTogc3RyaW5nIHwgbnVsbCB7CiAgaWYgKCFhcHBTZWNyZXQpIHJldHVybiBudWxsCiAgcmV0dXJuIGBzaGEyNTY9JHtjcmVhdGVIbWFjKCdzaGEyNTYnLCBhcHBTZWNyZXQpLnVwZGF0ZShyYXdCb2R5KS5kaWdlc3QoJ2hleCcpfWAKfQoKYXN5bmMgZnVuY3Rpb24gcnVuR2V0VmVyaWZpY2F0aW9uVGVzdCgpOiBQcm9taXNlPFRlc3RSZXN1bHQ+IHsKICBjb25zdCByZXNwb25zZSA9IGF3YWl0IGZldGNoKHZlcmlmaWNhdGlvblVybCkKICBjb25zdCBib2R5ID0gYXdhaXQgcmVzcG9uc2UudGV4dCgpCgogIHJldHVybiB7CiAgICBsYWJlbDogJ0dFVCB2ZXJpZmljYXRpb24nLAogICAgb2s6IHJlc3BvbnNlLnN0YXR1cyA9PT0gMjAwICYmIGJvZHkgPT09IGNoYWxsZW5nZSwKICAgIHN0YXR1czogcmVzcG9uc2Uuc3RhdHVzLAogICAgYm9keSwKICB9Cn0KCmFzeW5jIGZ1bmN0aW9uIHJ1blBvc3RUZXN0KG1vZGU6ICd0ZXh0JyB8ICdpbWFnZScgfCAnc3RhdHVzJyk6IFByb21pc2U8VGVzdFJlc3VsdD4gewogIGNvbnN0IHRpbWVzdGFtcCA9IE1hdGguZmxvb3IoRGF0ZS5ub3coKSAvIDEwMDApLnRvU3RyaW5nKCkKICBjb25zdCByYXdCb2R5ID0gSlNPTi5zdHJpbmdpZnkoYnVpbGRQYXlsb2FkKG1vZGUsIHRpbWVzdGFtcCkpCiAgY29uc3Qgc2lnbmF0dXJlID0gYnVpbGRTaWduYXR1cmUocmF3Qm9keSkKICBjb25zdCBoZWFkZXJzOiBSZWNvcmQ8c3RyaW5nLCBzdHJpbmc+ID0gewogICAgJ2NvbnRlbnQtdHlwZSc6ICdhcHBsaWNhdGlvbi9qc29uJywKICB9CgogIGlmIChzaWduYXR1cmUpIHsKICAgIGhlYWRlcnNbJ3gtaHViLXNpZ25hdHVyZS0yNTYnXSA9IHNpZ25hdHVyZQogIH0KCiAgY29uc3QgcmVzcG9uc2UgPSBhd2FpdCBmZXRjaCh3ZWJob29rVXJsLCB7CiAgICBtZXRob2Q6ICdQT1NUJywKICAgIGhlYWRlcnMsCiAgICBib2R5OiByYXdCb2R5LAogIH0pCgogIGNvbnN0IGJvZHkgPSBhd2FpdCByZXNwb25zZS50ZXh0KCkKCiAgcmV0dXJuIHsKICAgIGxhYmVsOgogICAgICBtb2RlID09PSAndGV4dCcKICAgICAgICA/ICdQT1NUIHRleHQgbWVzc2FnZScKICAgICAgICA6IG1vZGUgPT09ICdpbWFnZScKICAgICAgICAgID8gJ1BPU1QgbWVkaWEgbWVzc2FnZScKICAgICAgICAgIDogJ1BPU1Qgc3RhdHVzIGNhbGxiYWNrJywKICAgIG9rOiByZXNwb25zZS5zdGF0dXMgPT09IDIwMCwKICAgIHN0YXR1czogcmVzcG9uc2Uuc3RhdHVzLAogICAgYm9keSwKICB9Cn0KCmFzeW5jIGZ1bmN0aW9uIG1haW4oKSB7CiAgY29uc29sZS5sb2coJ1doYXRzQXBwIFdlYmhvb2sgVGVzdCcpCiAgY29uc29sZS5sb2coJycpCiAgY29uc29sZS5sb2coYEJhc2UgVVJMOiAke2Jhc2VVcmx9YCkKICBjb25zb2xlLmxvZygnJykKCiAgaWYgKCF2ZXJpZnlUb2tlbikgewogICAgY29uc29sZS53YXJuKCdXSEFUU0FQUF9WRVJJRllfVE9LRU4gbmFvIGVzdGEgZGVmaW5pZG8uIE8gdGVzdGUgZGUgR0VUIHBvZGUgZmFsaGFyLicpCiAgfQoKICBpZiAoIWFwcFNlY3JldCkgewogICAgY29uc29sZS53YXJuKAogICAgICAnV0hBVFNBUFBfQVBQX1NFQ1JFVCBuYW8gZXN0YSBkZWZpbmlkby4gTyBQT1NUIHNvIHNlcmEgYWNlaXRvIHNlbSBITUFDIGVtIGFtYmllbnRlIGRlIGRlc2Vudm9sdmltZW50by4nCiAgICApCiAgfQoKICBjb25zdCByZXN1bHRzID0gWwogICAgYXdhaXQgcnVuR2V0VmVyaWZpY2F0aW9uVGVzdCgpLAogICAgYXdhaXQgcnVuUG9zdFRlc3QoJ3RleHQnKSwKICAgIGF3YWl0IHJ1blBvc3RUZXN0KCdpbWFnZScpLAogICAgYXdhaXQgcnVuUG9zdFRlc3QoJ3N0YXR1cycpLAogIF0KCiAgZm9yIChjb25zdCByZXN1bHQgb2YgcmVzdWx0cykgewogICAgY29uc29sZS5sb2coYCR7cmVzdWx0LmxhYmVsfTogJHtyZXN1bHQub2sgPyAnT0snIDogJ0ZBSUwnfWApCgogICAgaWYgKCFyZXN1bHQub2spIHsKICAgICAgY29uc29sZS5sb2coYCAgc3RhdHVzOiAke3Jlc3VsdC5zdGF0dXN9YCkKICAgICAgY29uc29sZS5sb2coYCAgYm9keTogJHtyZXN1bHQuYm9keX1gKQogICAgfQogIH0KCiAgY29uc3QgaGFzRmFpbHVyZSA9IHJlc3VsdHMuc29tZSgocmVzdWx0KSA9PiAhcmVzdWx0Lm9rKQogIGlmIChoYXNGYWlsdXJlKSB7CiAgICBwcm9jZXNzLmV4aXQoMSkKICB9Cn0KCm1haW4oKS5jYXRjaCgoZXJyb3IpID0+IHsKICBjb25zb2xlLmVycm9yKCdFcnJvIGFvIHRlc3RhciB3ZWJob29rOicsIGVycm9yKQogIHByb2Nlc3MuZXhpdCgxKQp9KQo=
+import { createHmac } from 'node:crypto'
+import { existsSync, readFileSync } from 'node:fs'
+import * as path from 'node:path'
+
+function loadEnvFile(filePath: string) {
+  if (!existsSync(filePath)) {
+    return
+  }
+
+  const content = readFileSync(filePath, 'utf8')
+
+  for (const line of content.split(/\r?\n/)) {
+    const match = line.match(/^([^#=]+)=(.*)$/)
+    if (!match) continue
+
+    const key = match[1].trim()
+    let value = match[2].trim()
+
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1)
+    }
+
+    if (!process.env[key]) {
+      process.env[key] = value
+    }
+  }
+}
+
+function buildMessageByMode(mode: string, timestamp: string) {
+  const messageId = `wamid.test-${mode}-${Date.now()}`
+
+  if (mode === 'image') {
+    return {
+      from: '5511988887777',
+      id: messageId,
+      timestamp,
+      type: 'image',
+      image: {
+        id: 'media-image-id',
+        mime_type: 'image/jpeg',
+        sha256: 'fake-sha',
+        caption: 'Imagem do teste',
+      },
+    }
+  }
+
+  if (mode === 'audio') {
+    return {
+      from: '5511988887777',
+      id: messageId,
+      timestamp,
+      type: 'audio',
+      audio: {
+        id: 'media-audio-id',
+        mime_type: 'audio/ogg',
+        sha256: 'fake-sha',
+      },
+    }
+  }
+
+  if (mode === 'document') {
+    return {
+      from: '5511988887777',
+      id: messageId,
+      timestamp,
+      type: 'document',
+      document: {
+        id: 'media-document-id',
+        mime_type: 'application/pdf',
+        sha256: 'fake-sha',
+        filename: 'contrato-teste.pdf',
+      },
+    }
+  }
+
+  if (mode === 'video') {
+    return {
+      from: '5511988887777',
+      id: messageId,
+      timestamp,
+      type: 'video',
+      video: {
+        id: 'media-video-id',
+        mime_type: 'video/mp4',
+        sha256: 'fake-sha',
+        caption: 'Video do teste',
+      },
+    }
+  }
+
+  if (mode === 'location') {
+    return {
+      from: '5511988887777',
+      id: messageId,
+      timestamp,
+      type: 'location',
+      location: {
+        latitude: -9.6498,
+        longitude: -35.7089,
+        name: 'Maceio',
+        address: 'Alagoas',
+      },
+    }
+  }
+
+  return {
+    from: '5511988887777',
+    id: messageId,
+    timestamp,
+    text: { body: 'Ola, tudo bem?' },
+    type: 'text',
+  }
+}
+
+function buildPayload(mode: string, timestamp: string) {
+  if (mode === 'status') {
+    return {
+      object: 'whatsapp_business_account',
+      entry: [
+        {
+          id: 'WHATSAPP_BUSINESS_ACCOUNT_ID',
+          changes: [
+            {
+              field: 'messages',
+              value: {
+                messaging_product: 'whatsapp',
+                statuses: [
+                  {
+                    id: process.env.WEBHOOK_STATUS_MESSAGE_ID ?? 'wamid.status-test',
+                    status: process.env.WEBHOOK_STATUS_VALUE ?? 'delivered',
+                    timestamp,
+                    recipient_id: '5511988887777',
+                    errors:
+                      (process.env.WEBHOOK_STATUS_VALUE ?? 'delivered') === 'failed'
+                        ? [
+                            {
+                              code: 131026,
+                              title: 'Erro simulado',
+                              message: 'Falha simulada no envio',
+                            },
+                          ]
+                        : undefined,
+                  },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    }
+  }
+
+  return {
+    object: 'whatsapp_business_account',
+    entry: [
+      {
+        id: 'WHATSAPP_BUSINESS_ACCOUNT_ID',
+        changes: [
+          {
+            field: 'messages',
+            value: {
+              messaging_product: 'whatsapp',
+              metadata: {
+                display_phone_number: '5511999999999',
+                phone_number_id: 'PHONE_ID',
+              },
+              contacts: [
+                {
+                  profile: { name: 'Joao Teste' },
+                  wa_id: '5511988887777',
+                },
+              ],
+              messages: [buildMessageByMode(mode, timestamp)],
+            },
+          },
+        ],
+      },
+    ],
+  }
+}
+
+function joinUrl(baseUrl: string, pathname: string): string {
+  return `${baseUrl.replace(/\/+$/, '')}${pathname}`
+}
+
+function buildVerificationUrl(baseUrl: string, verifyToken: string, challenge: string): string {
+  const url = new URL(joinUrl(baseUrl, '/api/whatsapp/webhook'))
+  url.searchParams.set('hub.mode', 'subscribe')
+  url.searchParams.set('hub.verify_token', verifyToken)
+  url.searchParams.set('hub.challenge', challenge)
+  return url.toString()
+}
+
+loadEnvFile(path.join(process.cwd(), '.env.local'))
+
+const baseUrl = (process.env.WEBHOOK_BASE_URL ?? 'http://localhost:3000').trim()
+const verifyToken = (process.env.WHATSAPP_VERIFY_TOKEN ?? 'codex-test-verify-token').trim()
+const appSecret = (process.env.WHATSAPP_APP_SECRET ?? '').trim()
+const challenge = '123'
+const webhookUrl = joinUrl(baseUrl, '/api/whatsapp/webhook')
+const verificationUrl = buildVerificationUrl(baseUrl, verifyToken, challenge)
+
+type TestResult = {
+  label: string
+  ok: boolean
+  status: number
+  body: string
+}
+
+function buildSignature(rawBody: string): string | null {
+  if (!appSecret) return null
+  return `sha256=${createHmac('sha256', appSecret).update(rawBody).digest('hex')}`
+}
+
+async function runGetVerificationTest(): Promise<TestResult> {
+  const response = await fetch(verificationUrl)
+  const body = await response.text()
+
+  return {
+    label: 'GET verification',
+    ok: response.status === 200 && body === challenge,
+    status: response.status,
+    body,
+  }
+}
+
+async function runPostTest(mode: 'text' | 'image' | 'status'): Promise<TestResult> {
+  const timestamp = Math.floor(Date.now() / 1000).toString()
+  const rawBody = JSON.stringify(buildPayload(mode, timestamp))
+  const signature = buildSignature(rawBody)
+  const headers: Record<string, string> = {
+    'content-type': 'application/json',
+  }
+
+  if (signature) {
+    headers['x-hub-signature-256'] = signature
+  }
+
+  const response = await fetch(webhookUrl, {
+    method: 'POST',
+    headers,
+    body: rawBody,
+  })
+
+  const body = await response.text()
+
+  return {
+    label:
+      mode === 'text'
+        ? 'POST text message'
+        : mode === 'image'
+          ? 'POST media message'
+          : 'POST status callback',
+    ok: response.status === 200,
+    status: response.status,
+    body,
+  }
+}
+
+async function main() {
+  console.log('WhatsApp Webhook Test')
+  console.log('')
+  console.log(`Base URL: ${baseUrl}`)
+  console.log('')
+
+  if (!verifyToken) {
+    console.warn('WHATSAPP_VERIFY_TOKEN nao esta definido. O teste de GET pode falhar.')
+  }
+
+  if (!appSecret) {
+    console.warn(
+      'WHATSAPP_APP_SECRET nao esta definido. O POST so sera aceito sem HMAC em ambiente de desenvolvimento.'
+    )
+  }
+
+  const results = [
+    await runGetVerificationTest(),
+    await runPostTest('text'),
+    await runPostTest('image'),
+    await runPostTest('status'),
+  ]
+
+  for (const result of results) {
+    console.log(`${result.label}: ${result.ok ? 'OK' : 'FAIL'}`)
+
+    if (!result.ok) {
+      console.log(`  status: ${result.status}`)
+      console.log(`  body: ${result.body}`)
+    }
+  }
+
+  const hasFailure = results.some((result) => !result.ok)
+  if (hasFailure) {
+    process.exit(1)
+  }
+}
+
+main().catch((error) => {
+  console.error('Erro ao testar webhook:', error)
+  process.exit(1)
+})

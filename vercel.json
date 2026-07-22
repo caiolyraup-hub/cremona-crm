@@ -1,1 +1,8 @@
-ewogICJjcm9ucyI6IFsKICAgIHsKICAgICAgInBhdGgiOiAiL2FwaS9jcm9uL3Byb2Nlc3MtYXV0b21hdGlvbi1xdWV1ZSIsCiAgICAgICJzY2hlZHVsZSI6ICIqICogKiAqICoiCiAgICB9CiAgXQp9Cg==
+{
+  "crons": [
+    {
+      "path": "/api/cron/process-automation-queue",
+      "schedule": "* * * * *"
+    }
+  ]
+}

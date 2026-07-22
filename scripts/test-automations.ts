@@ -1,1 +1,93 @@
-LyoqCiAqIFNtb2tlIGNoZWNrcyBmb3IgdGhlIGF1dG9tYXRpb24gc3ByaW50LgogKgogKiBVc2FnZToKICogICBucG0gcnVuIHRlc3Q6YXV0b21hdGlvbnMgLS0gW1dPUktTUEFDRV9JRF0KICoKICogUmVxdWlyZXMgTkVYVF9QVUJMSUNfU1VQQUJBU0VfVVJMIGFuZCBTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZIGluIC5lbnYubG9jYWwuCiAqLwoKaW1wb3J0IHsgY3JlYXRlQ2xpZW50IH0gZnJvbSAnQHN1cGFiYXNlL3N1cGFiYXNlLWpzJwppbXBvcnQgKiBhcyBkb3RlbnYgZnJvbSAnZG90ZW52JwppbXBvcnQgKiBhcyBwYXRoIGZyb20gJ3BhdGgnCgpkb3RlbnYuY29uZmlnKHsgcGF0aDogcGF0aC5yZXNvbHZlKHByb2Nlc3MuY3dkKCksICcuZW52LmxvY2FsJykgfSkKCmNvbnN0IHN1cGFiYXNlVXJsID0gcHJvY2Vzcy5lbnYuTkVYVF9QVUJMSUNfU1VQQUJBU0VfVVJMCmNvbnN0IHNlcnZpY2VSb2xlS2V5ID0gcHJvY2Vzcy5lbnYuU1VQQUJBU0VfU0VSVklDRV9ST0xFX0tFWQpjb25zdCB3b3Jrc3BhY2VJZCA9IHByb2Nlc3MuYXJndlsyXQoKaWYgKCFzdXBhYmFzZVVybCB8fCAhc2VydmljZVJvbGVLZXkpIHsKICBjb25zb2xlLmVycm9yKCdNaXNzaW5nIE5FWFRfUFVCTElDX1NVUEFCQVNFX1VSTCBvciBTVVBBQkFTRV9TRVJWSUNFX1JPTEVfS0VZIGluIC5lbnYubG9jYWwnKQogIHByb2Nlc3MuZXhpdCgxKQp9CgppZiAoIXdvcmtzcGFjZUlkKSB7CiAgY29uc29sZS5lcnJvcignVXNhZ2U6IG5wbSBydW4gdGVzdDphdXRvbWF0aW9ucyAtLSBbV09SS1NQQUNFX0lEXScpCiAgcHJvY2Vzcy5leGl0KDEpCn0KCmNvbnN0IHN1cGFiYXNlID0gY3JlYXRlQ2xpZW50KHN1cGFiYXNlVXJsLCBzZXJ2aWNlUm9sZUtleSkKCmZ1bmN0aW9uIG9rKG5hbWU6IHN0cmluZykgewogIGNvbnNvbGUubG9nKGBPSyAke25hbWV9YCkKfQoKZnVuY3Rpb24gZmFpbChuYW1lOiBzdHJpbmcsIGV4cGVjdGVkOiBzdHJpbmcsIHJlY2VpdmVkOiB1bmtub3duKSB7CiAgY29uc29sZS5lcnJvcihgRkFMSE9VICR7bmFtZX1gKQogIGNvbnNvbGUuZXJyb3IoYCAgZXNwZXJhZG86ICR7ZXhwZWN0ZWR9YCkKICBjb25zb2xlLmVycm9yKGAgIHJlY2ViaWRvOiAke0pTT04uc3RyaW5naWZ5KHJlY2VpdmVkKX1gKQogIHByb2Nlc3MuZXhpdENvZGUgPSAxCn0KCmFzeW5jIGZ1bmN0aW9uIHJ1bigpIHsKICBjb25zdCB7IGRhdGE6IGF1dG9tYXRpb25zIH0gPSBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KQogICAgLmZyb20oJ2F1dG9tYXRpb25zJykKICAgIC5zZWxlY3QoJ2lkLCB0cmlnZ2VyX3R5cGUsIGFjdGlvbl90eXBlLCBhY3Rpb25fY29uZmlnLCBhY3RpdmUnKQogICAgLmVxKCd3b3Jrc3BhY2VfaWQnLCB3b3Jrc3BhY2VJZCkKICAgIC5lcSgnYWN0aXZlJywgdHJ1ZSkKCiAgaWYgKCFhdXRvbWF0aW9ucz8ubGVuZ3RoKSB7CiAgICBmYWlsKCdhdXRvbWFjb2VzIGF0aXZhcycsICdwZWxvIG1lbm9zIHVtYSBhdXRvbWFjYW8gYXRpdmEgbm8gd29ya3NwYWNlJywgYXV0b21hdGlvbnMpCiAgICByZXR1cm4KICB9CiAgb2soJ2F1dG9tYWNvZXMgYXRpdmFzIGVuY29udHJhZGFzJykKCiAgY29uc3QgY29udGFjdENyZWF0ZWQgPSBhdXRvbWF0aW9ucy5maW5kKChhOiBhbnkpID0+IGEudHJpZ2dlcl90eXBlID09PSAnY29udGFjdF9jcmVhdGVkJykKICBpZiAoIWNvbnRhY3RDcmVhdGVkKSBmYWlsKCdjb250YWN0X2NyZWF0ZWQnLCAnYXV0b21hY2FvIGNvbnRhY3RfY3JlYXRlZCBhdGl2YScsIGF1dG9tYXRpb25zLm1hcCgoYTogYW55KSA9PiBhLnRyaWdnZXJfdHlwZSkpCiAgZWxzZSBvaygnY29udGFjdF9jcmVhdGVkIGNvbmZpZ3VyYWRvJykKCiAgY29uc3Qgc3RhZ2VFbnRlciA9IGF1dG9tYXRpb25zLmZpbmQoKGE6IGFueSkgPT4gYS50cmlnZ2VyX3R5cGUgPT09ICdzdGFnZV9lbnRlcicpCiAgaWYgKCFzdGFnZUVudGVyKSBmYWlsKCdzdGFnZV9lbnRlcicsICdhdXRvbWFjYW8gc3RhZ2VfZW50ZXIgYXRpdmEnLCBhdXRvbWF0aW9ucy5tYXAoKGE6IGFueSkgPT4gYS50cmlnZ2VyX3R5cGUpKQogIGVsc2Ugb2soJ3N0YWdlX2VudGVyIGNvbmZpZ3VyYWRvJykKCiAgY29uc3QgeyBkYXRhOiByZWNlbnRTa2lwcGVkIH0gPSBhd2FpdCAoc3VwYWJhc2UgYXMgYW55KQogICAgLmZyb20oJ2F1dG9tYXRpb25fbG9ncycpCiAgICAuc2VsZWN0KCdpZCwgc3RhdHVzLCBlcnJvcl9tZXNzYWdlJykKICAgIC5lcSgnd29ya3NwYWNlX2lkJywgd29ya3NwYWNlSWQpCiAgICAuZXEoJ3N0YXR1cycsICdza2lwcGVkJykKICAgIC5pbGlrZSgnZXJyb3JfbWVzc2FnZScsICclZHVwbGljYWRhJScpCiAgICAub3JkZXIoJ2V4ZWN1dGVkX2F0JywgeyBhc2NlbmRpbmc6IGZhbHNlIH0pCiAgICAubGltaXQoMSkKCiAgaWYgKCFyZWNlbnRTa2lwcGVkPy5sZW5ndGgpIHsKICAgIGZhaWwoJ2RlZHVwbGljYWNhbycsICd1bSBsb2cgc2tpcHBlZCBkZSBleGVjdWNhbyBkdXBsaWNhZGEgYXBvcyBtb3ZlciBvIG1lc21vIGNvbnRhdG8gZHVhcyB2ZXplcycsIHJlY2VudFNraXBwZWQpCiAgfSBlbHNlIHsKICAgIG9rKCdkZWR1cGxpY2FjYW8gcmVnaXN0cmFkYScpCiAgfQoKICBjb25zdCB0ZXh0QXV0b21hdGlvbiA9IGF1dG9tYXRpb25zLmZpbmQoKGE6IGFueSkgPT4KICAgIGEuYWN0aW9uX3R5cGUgPT09ICdzZW5kX3doYXRzYXBwX3RleHQnICYmIGEuYWN0aW9uX2NvbmZpZz8ubWVzc2FnZT8uaW5jbHVkZXMoJ3t7Y29udGFjdF9uYW1lfX0nKQogICkKICBjb25zdCB0YXNrQXV0b21hdGlvbiA9IGF1dG9tYXRpb25zLmZpbmQoKGE6IGFueSkgPT4KICAgIGEuYWN0aW9uX3R5cGUgPT09ICdjcmVhdGVfdGFzaycgJiYgYS5hY3Rpb25fY29uZmlnPy50aXRsZT8uaW5jbHVkZXMoJ3t7Y29udGFjdF9uYW1lfX0nKQogICkKCiAgaWYgKCF0ZXh0QXV0b21hdGlvbiAmJiAhdGFza0F1dG9tYXRpb24pIHsKICAgIGZhaWwoJ2ludGVycG9sYWNhbycsICd1bWEgYXV0b21hY2FvIGNvbSB7e2NvbnRhY3RfbmFtZX19IGVtIG1lc3NhZ2Ugb3UgdGl0bGUnLCBhdXRvbWF0aW9ucy5tYXAoKGE6IGFueSkgPT4gYS5hY3Rpb25fY29uZmlnKSkKICB9IGVsc2UgewogICAgb2soJ2ludGVycG9sYWNhbyBjb25maWd1cmFkYScpCiAgfQp9Cgp2b2lkIHJ1bigpCg==
+/**
+ * Smoke checks for the automation sprint.
+ *
+ * Usage:
+ *   npm run test:automations -- [WORKSPACE_ID]
+ *
+ * Requires NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in .env.local.
+ */
+
+import { createClient } from '@supabase/supabase-js'
+import * as dotenv from 'dotenv'
+import * as path from 'path'
+
+dotenv.config({ path: path.resolve(process.cwd(), '.env.local') })
+
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
+const workspaceId = process.argv[2]
+
+if (!supabaseUrl || !serviceRoleKey) {
+  console.error('Missing NEXT_PUBLIC_SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY in .env.local')
+  process.exit(1)
+}
+
+if (!workspaceId) {
+  console.error('Usage: npm run test:automations -- [WORKSPACE_ID]')
+  process.exit(1)
+}
+
+const supabase = createClient(supabaseUrl, serviceRoleKey)
+
+function ok(name: string) {
+  console.log(`OK ${name}`)
+}
+
+function fail(name: string, expected: string, received: unknown) {
+  console.error(`FALHOU ${name}`)
+  console.error(`  esperado: ${expected}`)
+  console.error(`  recebido: ${JSON.stringify(received)}`)
+  process.exitCode = 1
+}
+
+async function run() {
+  const { data: automations } = await (supabase as any)
+    .from('automations')
+    .select('id, trigger_type, action_type, action_config, active')
+    .eq('workspace_id', workspaceId)
+    .eq('active', true)
+
+  if (!automations?.length) {
+    fail('automacoes ativas', 'pelo menos uma automacao ativa no workspace', automations)
+    return
+  }
+  ok('automacoes ativas encontradas')
+
+  const contactCreated = automations.find((a: any) => a.trigger_type === 'contact_created')
+  if (!contactCreated) fail('contact_created', 'automacao contact_created ativa', automations.map((a: any) => a.trigger_type))
+  else ok('contact_created configurado')
+
+  const stageEnter = automations.find((a: any) => a.trigger_type === 'stage_enter')
+  if (!stageEnter) fail('stage_enter', 'automacao stage_enter ativa', automations.map((a: any) => a.trigger_type))
+  else ok('stage_enter configurado')
+
+  const { data: recentSkipped } = await (supabase as any)
+    .from('automation_logs')
+    .select('id, status, error_message')
+    .eq('workspace_id', workspaceId)
+    .eq('status', 'skipped')
+    .ilike('error_message', '%duplicada%')
+    .order('executed_at', { ascending: false })
+    .limit(1)
+
+  if (!recentSkipped?.length) {
+    fail('deduplicacao', 'um log skipped de execucao duplicada apos mover o mesmo contato duas vezes', recentSkipped)
+  } else {
+    ok('deduplicacao registrada')
+  }
+
+  const textAutomation = automations.find((a: any) =>
+    a.action_type === 'send_whatsapp_text' && a.action_config?.message?.includes('{{contact_name}}')
+  )
+  const taskAutomation = automations.find((a: any) =>
+    a.action_type === 'create_task' && a.action_config?.title?.includes('{{contact_name}}')
+  )
+
+  if (!textAutomation && !taskAutomation) {
+    fail('interpolacao', 'uma automacao com {{contact_name}} em message ou title', automations.map((a: any) => a.action_config))
+  } else {
+    ok('interpolacao configurada')
+  }
+}
+
+void run()
