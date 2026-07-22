@@ -1,4 +1,4 @@
-import { getMetaErrorMessage } from '@/lib/whatsapp/errors'
+import { getMetaErrorMessage } from './errors'
 
 const META_API_VERSION = 'v18.0'
 

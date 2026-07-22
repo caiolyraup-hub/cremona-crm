@@ -1,5 +1,6 @@
 import assert from 'assert'
 import twilio from 'twilio'
+import { getWhatsAppProviderForWorkspace } from '../src/lib/whatsapp/providers/index.ts'
 import { normalizeTwilioWhatsAppAddress } from '../src/lib/whatsapp/providers/twilio.ts'
 import { mapTwilioStatus, shouldUpdateMessageStatus } from '../src/lib/whatsapp/status.ts'
 
@@ -23,6 +24,61 @@ function validateTwilioWebhookSignature(params: {
 function test(name: string, fn: () => void) {
   fn()
   console.log(`ok - ${name}`)
+}
+
+async function testAsync(name: string, fn: () => Promise<void>) {
+  await fn()
+  console.log(`ok - ${name}`)
+}
+
+type QueryResponse = {
+  data: Record<string, unknown> | null
+  error: { message: string; code?: string } | null
+}
+
+class FakeQuery {
+  private response: QueryResponse
+
+  constructor(response: QueryResponse) {
+    this.response = response
+  }
+
+  eq() {
+    return this
+  }
+
+  maybeSingle() {
+    return Promise.resolve(this.response)
+  }
+}
+
+class FakeSupabase {
+  public selects: string[] = []
+  private responses: QueryResponse[]
+
+  constructor(responses: QueryResponse[]) {
+    this.responses = responses
+  }
+
+  from(table: string) {
+    assert.equal(table, 'workspaces')
+    return {
+      select: (select: string) => {
+        this.selects.push(select)
+        const response = this.responses.shift()
+        if (!response) throw new Error('Unexpected query')
+        return new FakeQuery(response)
+      },
+    }
+  }
+}
+
+function configureTwilioEnv() {
+  process.env.TWILIO_ACCOUNT_SID = 'AC00000000000000000000000000000000'
+  process.env.TWILIO_API_KEY_SID = 'SK00000000000000000000000000000000'
+  process.env.TWILIO_API_KEY_SECRET = 'secret'
+  process.env.TWILIO_AUTH_TOKEN = 'test_token'
+  process.env.TWILIO_STATUS_CALLBACK_URL = 'https://example.com/api/webhooks/twilio/status'
 }
 
 test('template payload shape', () => {
@@ -127,4 +183,99 @@ test('workspace isolation uses To sender, not workspace_id input', () => {
 test('meta provider remains selectable', () => {
   const provider = 'meta_cloud'
   assert.equal(provider, 'meta_cloud')
+})
+
+async function main() {
+  await testAsync('provider resolver uses Twilio without legacy Meta columns', async () => {
+    configureTwilioEnv()
+    const supabase = new FakeSupabase([
+      {
+        data: {
+          id: 'workspace-id',
+          whatsapp_provider: 'twilio',
+          whatsapp_phone: null,
+          whatsapp_token: null,
+          twilio_whatsapp_from: 'whatsapp:+5582936180673',
+          twilio_content_sid_new_lead: null,
+        },
+        error: null,
+      },
+    ])
+
+    const result = await getWhatsAppProviderForWorkspace('workspace-id', supabase as never)
+
+    assert.equal(result.error, undefined)
+    assert.equal(result.provider?.name, 'twilio')
+    assert.equal(result.workspace?.whatsapp_provider, 'twilio')
+    assert.equal(result.workspace?.twilio_whatsapp_from, 'whatsapp:+5582936180673')
+    assert.equal(result.workspace?.whatsapp_phone_number_id, null)
+    assert.equal(
+      supabase.selects.some((select) => select.includes('whatsapp_phone_number_id')),
+      false,
+      'Twilio provider resolution must not select legacy Meta columns'
+    )
+  })
+
+  await testAsync('provider resolver validates Meta fields only for meta_cloud', async () => {
+    const supabase = new FakeSupabase([
+      {
+        data: {
+          id: 'workspace-id',
+          whatsapp_provider: 'meta_cloud',
+          whatsapp_phone: '+5582999999999',
+          whatsapp_token: 'meta-token',
+          twilio_whatsapp_from: null,
+          twilio_content_sid_new_lead: null,
+        },
+        error: null,
+      },
+      {
+        data: {
+          whatsapp_phone_number_id: '123456789',
+          whatsapp_business_account_id: '987654321',
+        },
+        error: null,
+      },
+    ])
+
+    const result = await getWhatsAppProviderForWorkspace('workspace-id', supabase as never)
+
+    assert.equal(result.error, undefined)
+    assert.equal(result.provider?.name, 'meta_cloud')
+    assert.equal(result.workspace?.whatsapp_phone_number_id, '123456789')
+    assert.equal(
+      supabase.selects[1],
+      'whatsapp_phone_number_id, whatsapp_business_account_id'
+    )
+  })
+
+  await testAsync('legacy Meta column error does not affect Twilio workspace', async () => {
+    configureTwilioEnv()
+    const supabase = new FakeSupabase([
+      {
+        data: {
+          id: 'workspace-id',
+          whatsapp_provider: 'twilio',
+          whatsapp_phone: null,
+          whatsapp_token: null,
+          twilio_whatsapp_from: 'whatsapp:+5582936180673',
+          twilio_content_sid_new_lead: null,
+        },
+        error: null,
+      },
+    ])
+
+    const result = await getWhatsAppProviderForWorkspace('workspace-id', supabase as never)
+
+    assert.equal(result.provider?.name, 'twilio')
+    assert.equal(
+      supabase.selects.join(' ').includes('whatsapp_business_account_id'),
+      false
+    )
+  })
+}
+
+main().catch((error) => {
+  console.error(error)
+  process.exit(1)
 })

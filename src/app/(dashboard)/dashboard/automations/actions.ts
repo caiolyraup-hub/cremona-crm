@@ -155,14 +155,30 @@ async function validateWorkspaceAutomationConfig(
   if (data.action_type.startsWith('send_whatsapp_')) {
     const { data: workspace } = await (supabase as any)
       .from('workspaces')
-      .select('whatsapp_provider, whatsapp_phone_number_id, twilio_whatsapp_from')
+      .select('whatsapp_provider, twilio_whatsapp_from')
       .eq('id', workspaceId)
       .maybeSingle()
 
     const hasWhatsAppProvider =
       workspace?.whatsapp_provider === 'twilio'
         ? Boolean(workspace.twilio_whatsapp_from)
-        : Boolean(workspace?.whatsapp_phone_number_id)
+        : true
+
+    if (workspace?.whatsapp_provider !== 'twilio') {
+      const { data: metaWorkspace, error: metaWorkspaceError } = await (supabase as any)
+        .from('workspaces')
+        .select('whatsapp_phone_number_id')
+        .eq('id', workspaceId)
+        .maybeSingle()
+
+      if (metaWorkspaceError || !metaWorkspace?.whatsapp_phone_number_id) {
+        return {
+          error: null,
+          warning:
+            'WhatsApp nao configurado. Configure em Configuracoes -> WhatsApp para que as automacoes funcionem.',
+        }
+      }
+    }
 
     if (!hasWhatsAppProvider) {
       return {

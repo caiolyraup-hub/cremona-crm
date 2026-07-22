@@ -1,9 +1,9 @@
 import {
   sendMetaWhatsAppMediaMessage,
   sendMetaWhatsAppTextMessage,
-} from '@/lib/whatsapp/meta-api'
-import { sendWhatsAppTemplate } from '@/lib/whatsapp/templates'
-import { normalizeWhatsAppPhone } from '@/lib/whatsapp/format'
+} from '../meta-api'
+import { sendWhatsAppTemplate } from '../templates'
+import { normalizeWhatsAppPhone } from '../format'
 import type {
   ResolvedWhatsAppWorkspace,
   SendMediaInput,
