@@ -19,6 +19,14 @@ type TwilioError = {
   message?: string
 }
 
+type TwilioAuthMethod = 'api_key' | 'auth_token'
+
+type TwilioClientFactory = (
+  username: string,
+  password: string,
+  opts?: { accountSid?: string }
+) => ReturnType<typeof twilio>
+
 function getRequiredEnv(key: string): string {
   return process.env[key]?.trim() ?? ''
 }
@@ -85,21 +93,40 @@ export function classifyTwilioError(error: unknown): SendWhatsAppResult {
   return { success: false, retryable: status ? false : true, error: message, errorCode: code }
 }
 
-function getTwilioClient() {
+export function getTwilioClient(factory: TwilioClientFactory = twilio) {
   const accountSid = getRequiredEnv('TWILIO_ACCOUNT_SID')
   const apiKeySid = getRequiredEnv('TWILIO_API_KEY_SID')
   const apiKeySecret = getRequiredEnv('TWILIO_API_KEY_SECRET')
+  const authToken = getRequiredEnv('TWILIO_AUTH_TOKEN')
 
-  if (!accountSid || !apiKeySid || !apiKeySecret) {
+  if (!accountSid) {
     return {
-      error: 'Credenciais Twilio de envio nao configuradas.',
       client: null,
+      error: 'TWILIO_ACCOUNT_SID nao configurado.',
+      authMethod: null,
+    }
+  }
+
+  if (apiKeySid && apiKeySecret) {
+    return {
+      client: factory(apiKeySid, apiKeySecret, { accountSid }),
+      error: null,
+      authMethod: 'api_key' as TwilioAuthMethod,
+    }
+  }
+
+  if (authToken) {
+    return {
+      client: factory(accountSid, authToken),
+      error: null,
+      authMethod: 'auth_token' as TwilioAuthMethod,
     }
   }
 
   return {
-    error: null,
-    client: twilio(apiKeySid, apiKeySecret, { accountSid }),
+    client: null,
+    error: 'Configure TWILIO_API_KEY_SID + TWILIO_API_KEY_SECRET ou TWILIO_AUTH_TOKEN.',
+    authMethod: null,
   }
 }
 
@@ -109,14 +136,14 @@ function requireTwilioConfig(workspace: ResolvedWhatsAppWorkspace) {
   )
   const statusCallback = getRequiredEnv('TWILIO_STATUS_CALLBACK_URL')
   const authToken = getRequiredEnv('TWILIO_AUTH_TOKEN')
-  const { client, error } = getTwilioClient()
+  const { client, error, authMethod } = getTwilioClient()
 
-  if (error || !client) return { error, client: null, sender, statusCallback }
-  if (!authToken) return { error: 'TWILIO_AUTH_TOKEN nao configurado para validacao de webhooks.', client: null, sender, statusCallback }
-  if (!sender) return { error: 'Sender Twilio do workspace nao configurado.', client: null, sender, statusCallback }
-  if (!statusCallback) return { error: 'TWILIO_STATUS_CALLBACK_URL nao configurada.', client: null, sender, statusCallback }
+  if (error || !client) return { error, client: null, sender, statusCallback, authMethod }
+  if (!authToken) return { error: 'TWILIO_AUTH_TOKEN nao configurado para validacao de webhooks.', client: null, sender, statusCallback, authMethod }
+  if (!sender) return { error: 'Sender Twilio nao configurado.', client: null, sender, statusCallback, authMethod }
+  if (!statusCallback) return { error: 'TWILIO_STATUS_CALLBACK_URL nao configurada.', client: null, sender, statusCallback, authMethod }
 
-  return { error: null, client, sender, statusCallback }
+  return { error: null, client, sender, statusCallback, authMethod }
 }
 
 function acceptedResult(message: TwilioMessage): SendWhatsAppResult {

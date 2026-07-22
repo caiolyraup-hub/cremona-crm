@@ -1,7 +1,10 @@
 import assert from 'assert'
 import twilio from 'twilio'
 import { getWhatsAppProviderForWorkspace } from '../src/lib/whatsapp/providers/index.ts'
-import { normalizeTwilioWhatsAppAddress } from '../src/lib/whatsapp/providers/twilio.ts'
+import {
+  getTwilioClient,
+  normalizeTwilioWhatsAppAddress,
+} from '../src/lib/whatsapp/providers/twilio.ts'
 import { mapTwilioStatus, shouldUpdateMessageStatus } from '../src/lib/whatsapp/status.ts'
 
 function parseTwilioForm(body: string): Record<string, string> {
@@ -79,6 +82,31 @@ function configureTwilioEnv() {
   process.env.TWILIO_API_KEY_SECRET = 'secret'
   process.env.TWILIO_AUTH_TOKEN = 'test_token'
   process.env.TWILIO_STATUS_CALLBACK_URL = 'https://example.com/api/webhooks/twilio/status'
+}
+
+function resetTwilioEnv() {
+  delete process.env.TWILIO_ACCOUNT_SID
+  delete process.env.TWILIO_API_KEY_SID
+  delete process.env.TWILIO_API_KEY_SECRET
+  delete process.env.TWILIO_AUTH_TOKEN
+  delete process.env.TWILIO_STATUS_CALLBACK_URL
+}
+
+function createRecordingTwilioFactory() {
+  const calls: Array<{ username: string; password: string; opts?: { accountSid?: string } }> = []
+  const client = {
+    messages: {
+      create: async () => ({ sid: 'SM123', status: 'queued' }),
+    },
+  }
+
+  return {
+    calls,
+    factory: (username: string, password: string, opts?: { accountSid?: string }) => {
+      calls.push({ username, password, opts })
+      return client as ReturnType<typeof twilio>
+    },
+  }
 }
 
 test('template payload shape', () => {
@@ -183,6 +211,84 @@ test('workspace isolation uses To sender, not workspace_id input', () => {
 test('meta provider remains selectable', () => {
   const provider = 'meta_cloud'
   assert.equal(provider, 'meta_cloud')
+})
+
+test('Twilio client uses complete API Key first', () => {
+  resetTwilioEnv()
+  process.env.TWILIO_ACCOUNT_SID = 'AC_account'
+  process.env.TWILIO_API_KEY_SID = 'SK_key'
+  process.env.TWILIO_API_KEY_SECRET = 'api_secret'
+  process.env.TWILIO_AUTH_TOKEN = 'auth_token'
+  const recorder = createRecordingTwilioFactory()
+
+  const result = getTwilioClient(recorder.factory)
+
+  assert.equal(result.error, null)
+  assert.equal(result.authMethod, 'api_key')
+  assert.equal(recorder.calls[0].username, 'SK_key')
+  assert.equal(recorder.calls[0].password, 'api_secret')
+  assert.equal(recorder.calls[0].opts?.accountSid, 'AC_account')
+})
+
+test('Twilio client falls back to Auth Token', () => {
+  resetTwilioEnv()
+  process.env.TWILIO_ACCOUNT_SID = 'AC_account'
+  process.env.TWILIO_AUTH_TOKEN = 'auth_token'
+  const recorder = createRecordingTwilioFactory()
+
+  const result = getTwilioClient(recorder.factory)
+
+  assert.equal(result.error, null)
+  assert.equal(result.authMethod, 'auth_token')
+  assert.equal(recorder.calls[0].username, 'AC_account')
+  assert.equal(recorder.calls[0].password, 'auth_token')
+  assert.equal(recorder.calls[0].opts, undefined)
+  assert.ok(result.client?.messages)
+})
+
+test('Twilio client ignores incomplete API Key and uses Auth Token', () => {
+  resetTwilioEnv()
+  process.env.TWILIO_ACCOUNT_SID = 'AC_account'
+  process.env.TWILIO_API_KEY_SID = 'SK_key'
+  process.env.TWILIO_AUTH_TOKEN = 'auth_token'
+  const recorder = createRecordingTwilioFactory()
+
+  const result = getTwilioClient(recorder.factory)
+
+  assert.equal(result.error, null)
+  assert.equal(result.authMethod, 'auth_token')
+  assert.equal(recorder.calls[0].username, 'AC_account')
+  assert.equal(recorder.calls[0].password, 'auth_token')
+})
+
+test('Twilio client returns sanitized error without usable credentials', () => {
+  resetTwilioEnv()
+  process.env.TWILIO_ACCOUNT_SID = 'AC_account'
+  process.env.TWILIO_API_KEY_SID = 'SK_key'
+  const recorder = createRecordingTwilioFactory()
+
+  const result = getTwilioClient(recorder.factory)
+
+  assert.equal(result.client, null)
+  assert.equal(result.authMethod, null)
+  assert.equal(
+    result.error,
+    'Configure TWILIO_API_KEY_SID + TWILIO_API_KEY_SECRET ou TWILIO_AUTH_TOKEN.'
+  )
+  assert.equal(result.error?.includes('SK_key'), false)
+  assert.equal(recorder.calls.length, 0)
+})
+
+test('Twilio client reports missing Account SID explicitly', () => {
+  resetTwilioEnv()
+  process.env.TWILIO_AUTH_TOKEN = 'auth_token'
+  const recorder = createRecordingTwilioFactory()
+
+  const result = getTwilioClient(recorder.factory)
+
+  assert.equal(result.client, null)
+  assert.equal(result.error, 'TWILIO_ACCOUNT_SID nao configurado.')
+  assert.equal(recorder.calls.length, 0)
 })
 
 async function main() {
