@@ -1,4 +1,6 @@
 import { createClient } from '@supabase/supabase-js'
+import fs from 'fs'
+import path from 'path'
 import { generateLeadSourceKey, hashLeadSourceKey } from '../src/lib/leads/security.ts'
 
 type Args = {
@@ -34,6 +36,25 @@ function parseArgs(argv: string[]): Args {
   }
 
   return args
+}
+
+function loadLocalEnv() {
+  for (const filename of ['.env.local', '.env']) {
+    const fullPath = path.join(process.cwd(), filename)
+    if (!fs.existsSync(fullPath)) continue
+
+    const lines = fs.readFileSync(fullPath, 'utf8').split(/\r?\n/)
+    for (const line of lines) {
+      const trimmed = line.trim()
+      if (!trimmed || trimmed.startsWith('#')) continue
+      const index = trimmed.indexOf('=')
+      if (index <= 0) continue
+
+      const key = trimmed.slice(0, index).trim()
+      const value = trimmed.slice(index + 1).trim().replace(/^["']|["']$/g, '')
+      if (!process.env[key]) process.env[key] = value
+    }
+  }
 }
 
 function requireEnv(key: string): string {
@@ -103,6 +124,8 @@ async function ensureWelcomeAutomation(params: {
 }
 
 async function main() {
+  loadLocalEnv()
+
   const args = parseArgs(process.argv.slice(2))
   if (!args.email) {
     throw new Error('Use --email para localizar o proprietario do workspace beta.')
@@ -221,6 +244,18 @@ async function main() {
 }
 
 main().catch((error) => {
-  console.error(error instanceof Error ? error.message : String(error))
+  if (error instanceof Error) {
+    console.error(error.message)
+  } else if (error && typeof error === 'object') {
+    const safe = error as Record<string, unknown>
+    console.error(JSON.stringify({
+      message: safe.message,
+      status: safe.status,
+      code: safe.code,
+      name: safe.name,
+    }))
+  } else {
+    console.error(String(error))
+  }
   process.exit(1)
 })
