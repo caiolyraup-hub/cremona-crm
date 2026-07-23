@@ -17,6 +17,7 @@ export type WhatsAppSendContext = {
   automationQueueId?: string | null
   eventKey?: string | null
   attempt?: number
+  automationQueueCreatedAt?: string | null
   workspaceId: string
   contactId?: string | null
   automationId?: string | null

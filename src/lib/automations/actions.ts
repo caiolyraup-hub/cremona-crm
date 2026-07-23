@@ -85,6 +85,25 @@ async function fetchLastInboundAt(workspaceId: string, contactId: string): Promi
   return (data as { created_at: string } | null)?.created_at ?? null
 }
 
+function isEnabledFlag(value: string | undefined): boolean {
+  return ['1', 'true', 'yes', 'sim'].includes(String(value ?? '').trim().toLowerCase())
+}
+
+async function shouldSkipBecauseContactReplied(
+  automation: Automation,
+  workspaceId: string,
+  contactId: string,
+  context?: WhatsAppSendContext
+): Promise<boolean> {
+  if (!isEnabledFlag(automation.action_config.skip_if_inbound_since_event)) return false
+  if (!context?.automationQueueCreatedAt) return false
+
+  const lastInboundAt = await fetchLastInboundAt(workspaceId, contactId)
+  if (!lastInboundAt) return false
+
+  return new Date(lastInboundAt).getTime() > new Date(context.automationQueueCreatedAt).getTime()
+}
+
 function buildAutomationDispatchEventKey(
   automation: Automation,
   contact: Contact,
@@ -137,6 +156,10 @@ export async function executeWhatsAppTextAction(
 ): Promise<AutomationActionResult> {
   if (!contact.phone) {
     return { success: false, skipped: true, retryable: false, error: 'Contato sem telefone' }
+  }
+
+  if (await shouldSkipBecauseContactReplied(automation, workspaceId, contact.id, context)) {
+    return { success: false, skipped: true, retryable: false, error: 'Contato ja respondeu ao WhatsApp' }
   }
 
   const phone = normalizeWhatsAppPhone(contact.phone)
@@ -234,6 +257,10 @@ export async function executeWhatsAppTemplateAction(
       retryable: false,
       error: 'Contato sem opt-in para WhatsApp',
     }
+  }
+
+  if (await shouldSkipBecauseContactReplied(automation, workspaceId, contact.id, context)) {
+    return { success: false, skipped: true, retryable: false, error: 'Contato ja respondeu ao WhatsApp' }
   }
 
   if (!contact.phone) {

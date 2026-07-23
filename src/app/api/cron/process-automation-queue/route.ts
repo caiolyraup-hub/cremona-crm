@@ -504,6 +504,7 @@ export async function GET(request: NextRequest) {
         automationQueueId: job.id,
         eventKey: job.event_key,
         attempt: job.attempts,
+        automationQueueCreatedAt: job.created_at,
         workspaceId: job.workspace_id,
         contactId: job.contact_id,
         automationId: job.automation_id,
