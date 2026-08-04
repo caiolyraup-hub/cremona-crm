@@ -45,3 +45,14 @@ export function sanitizeProviderError(value: string | null | undefined): string 
     .replace(/Bearer\s+[^\s]+/gi, 'Bearer ***')
     .slice(0, 500)
 }
+
+export function describeTwilioStatusError(errorCode: string | null | undefined): string | null {
+  const code = sanitizeProviderError(errorCode)
+  if (!code) return null
+
+  const descriptions: Record<string, string> = {
+    '63049': 'Meta nao entregou este template de WhatsApp Marketing para o destinatario.',
+  }
+
+  return descriptions[code] ?? `Twilio retornou erro ${code} no envio do WhatsApp.`
+}

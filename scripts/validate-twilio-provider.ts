@@ -5,7 +5,11 @@ import {
   getTwilioClient,
   normalizeTwilioWhatsAppAddress,
 } from '../src/lib/whatsapp/providers/twilio.ts'
-import { mapTwilioStatus, shouldUpdateMessageStatus } from '../src/lib/whatsapp/status.ts'
+import {
+  describeTwilioStatusError,
+  mapTwilioStatus,
+  shouldUpdateMessageStatus,
+} from '../src/lib/whatsapp/status.ts'
 
 function parseTwilioForm(body: string): Record<string, string> {
   const params = new URLSearchParams(body)
@@ -195,6 +199,13 @@ test('status callback mapping', () => {
   assert.equal(mapTwilioStatus('delivered'), 'delivered')
   assert.equal(mapTwilioStatus('read'), 'read')
   assert.equal(mapTwilioStatus('failed'), 'failed')
+})
+
+test('Twilio WhatsApp marketing delivery block is described', () => {
+  assert.match(
+    describeTwilioStatusError('63049') ?? '',
+    /Marketing/
+  )
 })
 
 test('out of order statuses do not regress', () => {

@@ -4,7 +4,12 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { buildPhoneLookupCandidates, normalizeWhatsAppPhone } from './format'
 import { normalizeTwilioWhatsAppAddress } from './providers'
 import { persistWhatsAppMessage } from './messages'
-import { mapTwilioStatus, sanitizeProviderError, shouldUpdateMessageStatus } from './status'
+import {
+  describeTwilioStatusError,
+  mapTwilioStatus,
+  sanitizeProviderError,
+  shouldUpdateMessageStatus,
+} from './status'
 
 type FormPayload = Record<string, string>
 
@@ -126,7 +131,9 @@ export async function handleTwilioStatusWebhook(payload: FormPayload) {
 
   const nextStatus = mapTwilioStatus(payload.MessageStatus)
   const errorCode = sanitizeProviderError(payload.ErrorCode)
-  const errorMessage = sanitizeProviderError(payload.ErrorMessage || payload.ChannelStatusMessage)
+  const errorMessage =
+    sanitizeProviderError(payload.ErrorMessage || payload.ChannelStatusMessage) ??
+    describeTwilioStatusError(errorCode)
   const supabase = createAdminClient()
 
   const { data: message } = await (supabase as any)
