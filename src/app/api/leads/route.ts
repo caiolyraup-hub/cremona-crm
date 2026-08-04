@@ -15,6 +15,8 @@ import {
   validateOrigin,
   type ValidLeadPayload,
 } from '@/lib/leads/validation'
+import { getWhatsAppProviderForWorkspace } from '@/lib/whatsapp/providers'
+
 
 export const runtime = 'nodejs'
 
@@ -34,6 +36,76 @@ type LeadSubmissionRow = {
   id: string
   contact_id: string | null
   status: string
+}
+
+const NEW_LEAD_NOTIFICATION_TO = '5582993180243'
+
+function stringifyLeadField(value: unknown): string {
+  if (typeof value === 'string') {
+    const text = value.trim()
+    return text || 'Nao informado'
+  }
+
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value)
+  return 'Nao informado'
+}
+
+function getLeadBusinessType(source: string | null): string {
+  const normalized = source?.toLowerCase() ?? ''
+  if (normalized.includes('saloes') || normalized.includes('salao')) return 'salao de beleza'
+  if (normalized.includes('barbearia')) return 'barbearia'
+  return 'negocio'
+}
+
+function shouldNotifyLeadSource(source: string | null): boolean {
+  const normalized = source?.toLowerCase() ?? ''
+  return normalized.includes('lp-qcm-barbearias') || normalized.includes('lp-qcm-saloes')
+}
+
+
+async function sendNewLeadNotification(params: {
+  supabase: any
+  source: LeadSourceRow
+  payload: ValidLeadPayload
+  contactId: string
+}) {
+  const sourceLabel = params.payload.source ?? params.source.slug
+  if (!shouldNotifyLeadSource(sourceLabel)) return
+
+  const { provider, error } = await getWhatsAppProviderForWorkspace(params.source.workspace_id, params.supabase)
+  if (!provider) {
+    console.error('[lead-notification] WhatsApp provider unavailable:', error?.error ?? 'unknown_error')
+    return
+  }
+
+  if (provider.name !== 'twilio') {
+    console.error('[lead-notification] skipped: provider must be Twilio template for business-initiated WhatsApp notification.')
+    return
+  }
+
+  const customFields = params.payload.customFields ?? {}
+  const businessType = getLeadBusinessType(sourceLabel)
+  const result = await provider.sendTemplate({
+    to: NEW_LEAD_NOTIFICATION_TO,
+    contentVariables: {
+      '1': businessType,
+      '2': params.payload.name,
+      '3': params.payload.phone,
+      '4': params.payload.email ?? 'Nao informado',
+      '5': stringifyLeadField(customFields.tamanho_equipe),
+      '6': stringifyLeadField(customFields.ja_tem_assinatura),
+      '7': stringifyLeadField(customFields.faturamento_mensal),
+      '8': sourceLabel,
+    },
+    context: {
+      workspaceId: params.source.workspace_id,
+      contactId: params.contactId,
+    },
+  })
+
+  if (!result.success) {
+    console.error('[lead-notification] failed:', result.error ?? result.errorCode ?? 'unknown_error')
+  }
 }
 
 function corsHeaders(origin: string | null, allowed = false) {
@@ -231,7 +303,7 @@ function leadSubmissionPayload(params: {
 
 export async function OPTIONS(request: Request) {
   const origin = request.headers.get('origin')
-  return new NextResponse('', { status: 204, headers: corsHeaders(origin, Boolean(origin)) })
+  return new NextResponse(null, { status: 204, headers: corsHeaders(origin, Boolean(origin)) })
 }
 
 export async function POST(request: Request) {
@@ -335,9 +407,9 @@ export async function POST(request: Request) {
       whatsappOptInAt: validation.payload.whatsappOptInAt ?? new Date().toISOString(),
       whatsappOptInSource: validation.payload.source ?? source.slug,
       whatsappOptInText: validation.payload.whatsappOptInText,
-      activityContent: validation.payload.whatsappOptIn
+      activityContent: validation.payload.activityContent ?? (validation.payload.whatsappOptIn
         ? 'Lead criado com consentimento para WhatsApp.'
-        : 'Lead criado sem consentimento para WhatsApp.',
+        : 'Lead criado sem consentimento para WhatsApp.'),
     }, supabase)
 
     const finalStatus = contactResult.created ? 'processed' : 'duplicate'
@@ -350,6 +422,17 @@ export async function POST(request: Request) {
       })
       .eq('id', submissionId)
       .eq('workspace_id', source.workspace_id)
+
+    try {
+      await sendNewLeadNotification({
+        supabase,
+        source,
+        payload: validation.payload,
+        contactId: contactResult.contactId,
+      })
+    } catch (error) {
+      console.error('[lead-notification] unexpected error:', error)
+    }
 
     return new NextResponse(JSON.stringify({
       success: true,

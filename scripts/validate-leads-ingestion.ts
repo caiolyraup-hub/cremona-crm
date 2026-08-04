@@ -25,6 +25,7 @@ const validPayload = {
   custom_fields: { interesse: 'whatsapp' },
   external_lead_id: 'external-1',
   source: 'landing_page',
+  activity_content: 'Nota estruturada do lead enviada pela LP.',
   whatsapp_opt_in: true,
   whatsapp_opt_in_text: 'Aceito receber atendimento pelo WhatsApp.',
   utm_source: 'instagram',
@@ -59,6 +60,7 @@ function run() {
   assert.ok(valid.payload, 'payload valido e aceito')
   assert.equal(valid.payload?.email, 'maria@example.com')
   assert.equal(valid.payload?.phone, '+5582999990000')
+  assert.equal(valid.payload?.activityContent, 'Nota estruturada do lead enviada pela LP.')
 
   assert.equal(validateLeadPayload({ ...validPayload, workspace_id: 'x' }).error?.includes('Campo nao permitido'), true)
   assert.equal(validateLeadPayload({ ...validPayload, whatsapp_opt_in: 'true' }).error, 'whatsapp_opt_in deve ser boolean.')

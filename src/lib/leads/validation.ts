@@ -35,6 +35,7 @@ export type ValidLeadPayload = {
   customFields: Record<string, unknown>
   externalLeadId: string | null
   source: string | null
+  activityContent: string | null
   whatsappOptIn: boolean
   whatsappOptInAt: string | null
   whatsappOptInText: string | null
@@ -96,6 +97,7 @@ export function validateLeadPayload(value: unknown): { payload?: ValidLeadPayloa
       customFields: customFields.customFields,
       externalLeadId: normalizeOptionalString(value.external_lead_id, 200),
       source: normalizeOptionalString(value.source, 120),
+      activityContent: normalizeOptionalString(value.activity_content, 2400),
       whatsappOptIn: value.whatsapp_opt_in,
       whatsappOptInAt: whatsappOptInAtRaw,
       whatsappOptInText,

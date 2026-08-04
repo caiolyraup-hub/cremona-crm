@@ -72,7 +72,7 @@ export function usePipeline(workspaceId: string, pipelineId: string): UsePipelin
           .select('id, name, phone, company, tags, pipeline_stage_id, deals(value, status), tasks(completed_at), sales(id)')
           .eq('workspace_id', workspaceId)
           .is('deleted_at', null)
-          .order('created_at', { ascending: false }),
+          .order('updated_at', { ascending: false }),
         supabase
           .from('activities')
           .select('id', { count: 'exact', head: true })

@@ -85,7 +85,7 @@ export function useContacts(workspaceId: string): UseContactsResult {
         .select('*, pipeline_stage:pipeline_stages(id, name, color)', { count: 'exact' })
         .eq('workspace_id', workspaceId)
         .is('deleted_at', null)
-        .order('created_at', { ascending: false })
+        .order('updated_at', { ascending: false })
         .range(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE - 1)
 
       const q = debouncedQuery.trim()
