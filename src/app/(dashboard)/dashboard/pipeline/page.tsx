@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState, useCallback } from 'react'
-import { Settings2 } from 'lucide-react'
+import { Eye, Settings2 } from 'lucide-react'
 import { PageHeader } from '@/components/layout/page-header'
 import { LoadingSpinner } from '@/components/ui/loading-spinner'
 import { KanbanBoard } from '@/components/pipeline/kanban-board'
@@ -51,6 +51,8 @@ export default function PipelinePage() {
     setSearchQuery,
     selectedTags,
     setSelectedTags,
+    showDisqualified,
+    setShowDisqualified,
     allTags,
     isLoading,
     moveContact,
@@ -113,9 +115,25 @@ export default function PipelinePage() {
                 onPipelinesChange={handlePipelinesChange}
               />
             )}
+            <label
+              className={`flex h-10 cursor-pointer select-none items-center gap-2 rounded-md border px-3 text-sm font-semibold shadow-sm transition-colors ${
+                showDisqualified
+                  ? 'border-[#378ADD] bg-blue-50 text-[#1f6fb8]'
+                  : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <input
+                type="checkbox"
+                checked={showDisqualified}
+                onChange={e => setShowDisqualified(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-[#378ADD] focus:ring-[#378ADD]"
+              />
+              <Eye size={15} />
+              <span>Revelar desqualificados</span>
+            </label>
             <button
               onClick={() => setConfigOpen(true)}
-              className="flex items-center gap-2 rounded-md border border-gray-200 px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+              className="flex h-10 items-center gap-2 rounded-md border border-gray-200 px-3 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
             >
               <Settings2 size={15} />
               Configurar etapas

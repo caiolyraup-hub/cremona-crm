@@ -7,6 +7,18 @@ import { moveContactStageAction } from '@/app/(dashboard)/dashboard/pipeline/act
 import type { Tables } from '@/types/database'
 import type { KanbanContact } from '@/types/app'
 
+function normalizeTag(tag: string): string {
+  return tag
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .trim()
+    .toLowerCase()
+}
+
+function hasDisqualifiedTag(contact: KanbanContact): boolean {
+  return contact.tags.some(tag => normalizeTag(tag).startsWith('desqualific'))
+}
+
 export interface PipelineMetrics {
   totalInPipeline: number
   totalDealValue: number
@@ -28,6 +40,8 @@ export interface UsePipelineResult {
   setSearchQuery: (q: string) => void
   selectedTags: string[]
   setSelectedTags: (tags: string[]) => void
+  showDisqualified: boolean
+  setShowDisqualified: (show: boolean) => void
   allTags: string[]
   isLoading: boolean
   moveContact: (contactId: string, newStageId: string | null) => void
@@ -44,6 +58,7 @@ export function usePipeline(workspaceId: string, pipelineId: string): UsePipelin
   const [fetchTrigger, setFetchTrigger] = useState(0)
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedTags, setSelectedTags] = useState<string[]>([])
+  const [showDisqualified, setShowDisqualified] = useState(false)
   const contactsRef = useRef<KanbanContact[]>([])
 
   useEffect(() => {
@@ -143,37 +158,59 @@ export function usePipeline(workspaceId: string, pipelineId: string): UsePipelin
     [contacts]
   )
 
+  const visibleContacts = useMemo(
+    () => showDisqualified ? contacts : contacts.filter(c => !hasDisqualifiedTag(c)),
+    [contacts, showDisqualified]
+  )
+
+  const visibleContactsByStage = useMemo(() => {
+    const groups: Record<string, KanbanContact[]> = {}
+    stages.forEach(s => { groups[s.id] = [] })
+    visibleContacts
+      .filter(c => c.pipeline_stage_id !== null)
+      .forEach(c => {
+        const sid = c.pipeline_stage_id!
+        if (groups[sid]) groups[sid].push(c)
+      })
+    return groups
+  }, [visibleContacts, stages])
+
+  const visibleUnstagedContacts = useMemo(
+    () => visibleContacts.filter(c => c.pipeline_stage_id === null),
+    [visibleContacts]
+  )
+
   const totalByStage = useMemo(
-    () => Object.fromEntries(Object.entries(contactsByStage).map(([id, cs]) => [id, cs.length])),
-    [contactsByStage]
+    () => Object.fromEntries(Object.entries(visibleContactsByStage).map(([id, cs]) => [id, cs.length])),
+    [visibleContactsByStage]
   )
 
   const valueByStage = useMemo(() => {
     const values: Record<string, number> = {}
     stages.forEach(s => { values[s.id] = 0 })
-    contacts
+    visibleContacts
       .filter(c => c.pipeline_stage_id && c.deal_value)
       .forEach(c => {
         values[c.pipeline_stage_id!] = (values[c.pipeline_stage_id!] ?? 0) + c.deal_value!
       })
     return values
-  }, [contacts, stages])
+  }, [visibleContacts, stages])
 
   const metrics = useMemo<PipelineMetrics>(() => {
     const stageIds = new Set(stages.map(s => s.id))
-    const inPipeline = contacts.filter(c => c.pipeline_stage_id !== null && stageIds.has(c.pipeline_stage_id))
+    const inPipeline = visibleContacts.filter(c => c.pipeline_stage_id !== null && stageIds.has(c.pipeline_stage_id))
     return {
       totalInPipeline: inPipeline.length,
       totalDealValue: inPipeline.reduce((sum, c) => sum + (c.deal_value ?? 0), 0),
       weeklyMoves,
     }
-  }, [contacts, stages, weeklyMoves])
+  }, [visibleContacts, stages, weeklyMoves])
 
   const allTags = useMemo(() => {
     const set = new Set<string>()
-    contacts.forEach(c => c.tags.forEach(t => set.add(t)))
+    visibleContacts.forEach(c => c.tags.forEach(t => set.add(t)))
     return Array.from(set).sort()
-  }, [contacts])
+  }, [visibleContacts])
 
   // Apply search + tag filters
   function applyFilters(list: KanbanContact[]): KanbanContact[] {
@@ -192,17 +229,17 @@ export function usePipeline(workspaceId: string, pipelineId: string): UsePipelin
 
   const filteredContactsByStage = useMemo(() => {
     const filtered: Record<string, KanbanContact[]> = {}
-    for (const [sid, cs] of Object.entries(contactsByStage)) {
+    for (const [sid, cs] of Object.entries(visibleContactsByStage)) {
       filtered[sid] = applyFilters(cs)
     }
     return filtered
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [contactsByStage, searchQuery, selectedTags])
+  }, [visibleContactsByStage, searchQuery, selectedTags])
 
   const filteredUnstaged = useMemo(
-    () => applyFilters(unstagedContacts),
+    () => applyFilters(visibleUnstagedContacts),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [unstagedContacts, searchQuery, selectedTags]
+    [visibleUnstagedContacts, searchQuery, selectedTags]
   )
 
   const moveContact = useCallback(
@@ -244,6 +281,8 @@ export function usePipeline(workspaceId: string, pipelineId: string): UsePipelin
     setSearchQuery,
     selectedTags,
     setSelectedTags,
+    showDisqualified,
+    setShowDisqualified,
     allTags,
     isLoading,
     moveContact,
