@@ -498,6 +498,39 @@ export async function GET(request: NextRequest) {
       return
     }
 
+    const { data: luccaQualification, error: luccaLookupError } = await (supabase as any)
+      .from('lucca_qualifications')
+      .select('id')
+      .eq('workspace_id', job.workspace_id)
+      .eq('contact_id', job.contact_id)
+      .eq('status', 'active')
+      .maybeSingle()
+
+    if (luccaLookupError) {
+      const state = await finalizeFailure(
+        supabase,
+        job,
+        workerId,
+        { success: false, retryable: true, error: 'Não foi possível revalidar o estado do Lucca.' },
+        new Date()
+      )
+      if (state === 'rescheduled') summary.rescheduled++
+      if (state === 'failed') summary.failed++
+      return
+    }
+
+    if (luccaQualification?.id) {
+      const state = await finalizeFailure(
+        supabase,
+        job,
+        workerId,
+        { success: false, skipped: true, retryable: false, error: 'Pausada durante qualificação do Lucca.' },
+        new Date()
+      )
+      if (state === 'skipped') summary.skipped++
+      return
+    }
+
     let result: AutomationActionResult
     try {
       const actionContext = {

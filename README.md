@@ -61,6 +61,8 @@ Execute no Supabase SQL Editor, nesta ordem:
 16. `supabase/migrations/016_automation_queue_retries_and_lease.sql`
 17. `supabase/migrations/017_twilio_whatsapp_provider.sql`
 18. `supabase/migrations/018_secure_lead_ingestion.sql`
+19. `supabase/migrations/20261006142427_lucca_whatsapp_qualification.sql`
+20. `supabase/migrations/20261006145430_lucca_whatsapp_fk_indexes.sql`
 
 ## Scripts
 
@@ -76,6 +78,7 @@ npm run test:automation-queue
 npm run test:automation-concurrency
 npm run test:twilio-unit
 npm run test:leads-unit
+npm run test:lucca
 ```
 
 ## Leads externos - entrada server-to-server
@@ -410,6 +413,7 @@ Guias:
 - `docs/whatsapp-troubleshooting.md`
 - `docs/whatsapp-setup.md`
 - `docs/whatsapp-test-report-template.md`
+- `docs/lucca-whatsapp-qualification.md`
 
 ## WhatsApp - configuracao por workspace
 

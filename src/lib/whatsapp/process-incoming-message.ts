@@ -261,6 +261,8 @@ export async function processIncomingMessage({
       contact_id: contactId,
       whatsapp_message_id: message.id,
       direction: 'inbound',
+      sender_type: 'contact',
+      automated_by: null,
       content,
       media_url: null,
       media_type: message.type,

@@ -4,6 +4,8 @@ import { createAdminClient } from '@/lib/supabase/admin'
 import { buildPhoneLookupCandidates, normalizeWhatsAppPhone } from './format'
 import { normalizeTwilioWhatsAppAddress } from './providers'
 import { persistWhatsAppMessage } from './messages'
+import { enqueueLuccaInbound } from './lucca/inbound'
+import { processLuccaQueue } from './lucca/worker'
 import {
   describeTwilioStatusError,
   mapTwilioStatus,
@@ -74,7 +76,7 @@ export async function handleTwilioInboundWebhook(payload: FormPayload) {
   const workspaceId = workspace.id as string
   const normalizedFromDigits = normalizeWhatsAppPhone(from)
   const candidates = buildPhoneLookupCandidates(normalizedFromDigits)
-  const { data: existingContact } = await (supabase as any)
+  const { data: existingContact, error: contactLookupError } = await (supabase as any)
     .from('contacts')
     .select('id')
     .eq('workspace_id', workspaceId)
@@ -82,11 +84,19 @@ export async function handleTwilioInboundWebhook(payload: FormPayload) {
     .in('phone', candidates)
     .limit(1)
     .maybeSingle()
+  if (contactLookupError) {
+    console.error('[twilio-webhook] contact lookup failed', {
+      workspace_id: workspaceId,
+      provider_message_id: messageSid,
+      error: sanitizeProviderError(contactLookupError.message),
+    })
+    return { status: 500, body: '' }
+  }
 
   let contactId = existingContact?.id as string | undefined
   if (!contactId) {
     const profileName = payload.ProfileName?.trim()
-    const { data: createdContact } = await (supabase as any)
+    const { data: createdContact, error: contactCreateError } = await (supabase as any)
       .from('contacts')
       .insert({
         workspace_id: workspaceId,
@@ -96,6 +106,25 @@ export async function handleTwilioInboundWebhook(payload: FormPayload) {
       .select('id')
       .maybeSingle()
     contactId = createdContact?.id as string | undefined
+    if (!contactId && contactCreateError?.code === '23505') {
+      const { data: concurrentContact } = await (supabase as any)
+        .from('contacts')
+        .select('id')
+        .eq('workspace_id', workspaceId)
+        .is('deleted_at', null)
+        .in('phone', candidates)
+        .limit(1)
+        .maybeSingle()
+      contactId = concurrentContact?.id as string | undefined
+    }
+    if (!contactId) {
+      console.error('[twilio-webhook] contact persistence failed', {
+        workspace_id: workspaceId,
+        provider_message_id: messageSid,
+        error: sanitizeProviderError(contactCreateError?.message ?? 'contact_not_created'),
+      })
+      return { status: 500, body: '' }
+    }
   }
 
   const numMedia = Number(payload.NumMedia ?? 0)
@@ -103,9 +132,10 @@ export async function handleTwilioInboundWebhook(payload: FormPayload) {
   const mediaType = mediaTypeFromTwilio(payload.MediaContentType0) ?? (mediaUrl ? 'document' : 'text')
   const body = payload.Body?.trim() || null
 
-  await persistWhatsAppMessage({
+  const receivedAt = new Date().toISOString()
+  const persisted = await persistWhatsAppMessage({
     workspaceId,
-    contactId: contactId ?? null,
+    contactId,
     provider: 'twilio',
     whatsappMessageId: messageSid,
     direction: 'inbound',
@@ -113,10 +143,63 @@ export async function handleTwilioInboundWebhook(payload: FormPayload) {
     mediaUrl,
     mediaType,
     status: 'received',
+    senderType: 'contact',
+    createdAt: receivedAt,
     activityContent: body
       ? `Mensagem recebida via WhatsApp: ${body.slice(0, 100)}`
       : 'Mensagem recebida via WhatsApp.',
   })
+
+  if (persisted.error) {
+    console.error('[twilio-webhook] inbound persistence failed', {
+      workspace_id: workspaceId,
+      provider_message_id: messageSid,
+      error: sanitizeProviderError(persisted.error),
+    })
+    return { status: 500, body: '' }
+  }
+
+  if (!persisted.messageId) {
+    return { status: 200, body: '' }
+  }
+
+  try {
+    const durableReceivedAt = persisted.createdAt ?? receivedAt
+    const queued = await enqueueLuccaInbound({
+      workspaceId,
+      contactId,
+      contactPhone: from,
+      sender,
+      messageId: persisted.messageId,
+      messageSid,
+      messageText: body,
+      mediaType,
+      receivedAt: durableReceivedAt,
+      payload,
+    })
+    if (queued.enqueued) {
+      try {
+        // Processa já nesta invocação para reduzir latência. O cron continua sendo
+        // a recuperação durável caso a função termine ou algum provedor falhe.
+        await processLuccaQueue({ qualificationId: queued.qualificationId })
+      } catch (error) {
+        console.error('[twilio-webhook] Lucca immediate processing failed; durable job retained', {
+          workspace_id: workspaceId,
+          contact_id: contactId,
+          provider_message_id: messageSid,
+          error: sanitizeProviderError(error instanceof Error ? error.message : String(error)),
+        })
+      }
+    }
+  } catch (error) {
+    console.error('[twilio-webhook] Lucca durable enqueue failed', {
+      workspace_id: workspaceId,
+      contact_id: contactId,
+      provider_message_id: messageSid,
+      error: sanitizeProviderError(error instanceof Error ? error.message : String(error)),
+    })
+    return { status: 500, body: '' }
+  }
 
   return { status: 200, body: '' }
 }
@@ -144,6 +227,56 @@ export async function handleTwilioStatusWebhook(payload: FormPayload) {
     .maybeSingle()
 
   if (!message?.id) {
+    const { data: dispatch } = await (supabase as any)
+      .from('whatsapp_dispatches')
+      .select('id, workspace_id, contact_id, event_key')
+      .eq('provider', 'twilio')
+      .eq('provider_message_id', messageSid)
+      .maybeSingle()
+
+    if (!dispatch?.id) return { status: 200, body: '' }
+
+    await (supabase as any).from('whatsapp_message_events').insert({
+      workspace_id: dispatch.workspace_id,
+      message_id: null,
+      provider: 'twilio',
+      provider_message_id: messageSid,
+      status: payload.MessageStatus ?? nextStatus,
+      error_code: errorCode,
+      error_message: errorMessage,
+    })
+
+    if (String(dispatch.event_key).startsWith('lucca:notification:')) {
+      const notificationStatus = nextStatus === 'failed'
+        ? 'failed'
+        : nextStatus === 'read'
+          ? 'read'
+          : nextStatus === 'delivered'
+            ? 'delivered'
+            : 'sent'
+      const rank: Record<string, number> = {
+        pending: 0, accepted: 1, sent: 2, delivered: 3, read: 4, failed: 5,
+      }
+      const { data: qualification } = await (supabase as any)
+        .from('lucca_qualifications')
+        .select('id, notification_status')
+        .eq('workspace_id', dispatch.workspace_id)
+        .eq('notification_message_sid', messageSid)
+        .maybeSingle()
+      if (
+        qualification?.id &&
+        (notificationStatus === 'failed' ||
+          (rank[notificationStatus] ?? 0) >= (rank[qualification.notification_status] ?? 0))
+      ) {
+        await (supabase as any)
+          .from('lucca_qualifications')
+          .update({
+            notification_status: notificationStatus,
+            notification_error: notificationStatus === 'failed' ? errorMessage : null,
+          })
+          .eq('id', qualification.id)
+      }
+    }
     return { status: 200, body: '' }
   }
 

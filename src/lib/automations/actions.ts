@@ -202,6 +202,8 @@ export async function executeWhatsAppTextAction(
     mediaUrl: null,
     mediaType: 'text',
     status: 'sent',
+    senderType: 'automation',
+    automatedBy: 'automation_engine',
     createdAt,
     activityContent: `Automacao enviou mensagem via WhatsApp: ${summarizeWhatsAppContent(message)}`,
   })
@@ -347,6 +349,8 @@ export async function executeWhatsAppTemplateAction(
     mediaUrl: null,
     mediaType: 'text',
     status: 'sent',
+    senderType: 'automation',
+    automatedBy: 'automation_engine',
     createdAt,
     activityContent: `Automacao enviou template "${templateRow?.display_name ?? contentSid ?? 'Twilio'}" via WhatsApp`,
   })
@@ -434,6 +438,8 @@ export async function executeWhatsAppMediaAction(
     mediaUrl,
     mediaType,
     status: 'sent',
+    senderType: 'automation',
+    automatedBy: 'automation_engine',
     createdAt,
     activityContent: `Automacao enviou midia via WhatsApp: ${summarizeWhatsAppContent(content)}`,
   })

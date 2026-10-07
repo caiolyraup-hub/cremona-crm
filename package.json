@@ -24,7 +24,8 @@
     "check:stripe-env": "node --experimental-strip-types scripts/check-stripe-env.ts",
     "pre-deploy": "node --experimental-strip-types scripts/pre-deploy-check.ts",
     "seed:demo": "node --experimental-strip-types scripts/seed-demo-account.ts",
-    "seed:templates": "node --experimental-strip-types scripts/seed-default-templates.ts"
+    "seed:templates": "node --experimental-strip-types scripts/seed-default-templates.ts",
+    "test:lucca": "npx tsx scripts/validate-lucca-whatsapp.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.4.1",
@@ -44,6 +45,7 @@
     "lucide-react": "^1.8.0",
     "next": "14.2.35",
     "next-themes": "^0.4.6",
+    "openai": "7.28.0",
     "papaparse": "^5.5.3",
     "react": "^18",
     "react-dom": "^18",

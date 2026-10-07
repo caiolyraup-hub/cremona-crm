@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState, useTransition } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { format, isToday, isYesterday } from 'date-fns'
@@ -13,7 +13,9 @@ import { useConversation } from '@/hooks/use-inbox'
 import { getWhatsAppWindowStatus } from '@/lib/whatsapp/conversation-window'
 import {
   markConversationAsReadAction,
+  resumeLuccaAction,
   sendWhatsAppMessageAction,
+  takeOverLuccaAction,
 } from '@/app/(dashboard)/dashboard/inbox/actions'
 import { ContactAvatar } from '@/components/ui/contact-avatar'
 import { ConversationEmptyState } from '@/components/inbox/conversation-empty-state'
@@ -56,6 +58,52 @@ type PendingMedia = {
   mediaType: OutboundMediaType
   filename: string
   previewUrl?: string
+}
+
+type LuccaQualification = Pick<
+  Tables<'lucca_qualifications'>,
+  | 'id'
+  | 'status'
+  | 'current_step'
+  | 'city'
+  | 'digital_experience'
+  | 'team_size_text'
+  | 'summary'
+  | 'origin'
+  | 'origin_evidence'
+  | 'notification_status'
+  | 'pause_reason'
+  | 'response_sla_breached'
+>
+
+const LUCCA_STATUS_LABELS: Record<string, string> = {
+  active: 'Lucca atendendo',
+  qualified: 'Qualificação concluída',
+  awaiting_human: 'Aguardando atendimento humano',
+  human_owned: 'Atendimento humano',
+  opted_out: 'Mensagens automáticas interrompidas',
+  paused: 'Lucca pausado',
+  failed: 'Falha na automação',
+}
+
+function formatLuccaOrigin(qualification: LuccaQualification): string {
+  const origin = qualification.origin && typeof qualification.origin === 'object'
+    ? qualification.origin as Record<string, unknown>
+    : {}
+  if (qualification.origin_evidence === 'twilio_referral') {
+    const referral = origin.referral && typeof origin.referral === 'object'
+      ? origin.referral as Record<string, unknown>
+      : {}
+    return [referral.headline, referral.source_id ? `anúncio ${referral.source_id}` : null]
+      .filter((value): value is string => typeof value === 'string' && value.length > 0)
+      .join(' — ') || 'Anúncio Click to WhatsApp'
+  }
+  if (qualification.origin_evidence === 'lead_submission') {
+    return [origin.utm_source, origin.utm_campaign, origin.utm_content]
+      .filter((value): value is string => typeof value === 'string' && value.length > 0)
+      .join(' / ') || 'Cadastro ou formulário vinculado'
+  }
+  return 'Não identificada'
 }
 
 function getDateLabel(date: string): string {
@@ -166,9 +214,11 @@ export function ConversationView({
 }: ConversationViewProps) {
   const { messages, isLoading, error, refetch } = useConversation(workspaceId, contactId)
   const [contact, setContact] = useState<ContactDetails>(null)
+  const [qualification, setQualification] = useState<LuccaQualification | null>(null)
   const [isContactLoading, setIsContactLoading] = useState(false)
   const [draft, setDraft] = useState('')
   const [isSending, startSending] = useTransition()
+  const [isUpdatingLucca, startUpdatingLucca] = useTransition()
   const [isTemplateModalOpen, setIsTemplateModalOpen] = useState(false)
   const [pendingMedia, setPendingMedia] = useState<PendingMedia | null>(null)
   const [isMediaModalOpen, setIsMediaModalOpen] = useState(false)
@@ -188,6 +238,34 @@ export function ConversationView({
 
     return `${contactId}:${latestUnread.id}:${unreadInboundMessages.length}`
   }, [contactId, unreadInboundMessages])
+
+  const fetchQualification = useCallback(async () => {
+    if (!workspaceId || !contactId) {
+      setQualification(null)
+      return
+    }
+    const { data } = await supabase
+      .from('lucca_qualifications')
+      .select('id, status, current_step, city, digital_experience, team_size_text, summary, origin, origin_evidence, notification_status, pause_reason, response_sla_breached')
+      .eq('workspace_id', workspaceId)
+      .eq('contact_id', contactId)
+      .maybeSingle()
+    setQualification((data as LuccaQualification | null) ?? null)
+  }, [contactId, supabase, workspaceId])
+
+  useEffect(() => {
+    void fetchQualification()
+    if (!workspaceId || !contactId) return
+    const channel = supabase
+      .channel(`lucca-qualification-${workspaceId}-${contactId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'lucca_qualifications', filter: `workspace_id=eq.${workspaceId}` },
+        () => void fetchQualification()
+      )
+      .subscribe()
+    return () => { void channel.unsubscribe() }
+  }, [contactId, fetchQualification, supabase, workspaceId])
 
   useEffect(() => {
     if (!workspaceId || !contactId) {
@@ -312,6 +390,19 @@ export function ConversationView({
     })
   }
 
+  function handleLuccaControl(action: 'takeover' | 'resume') {
+    if (!contactId) return
+    startUpdatingLucca(async () => {
+      const result = action === 'takeover'
+        ? await takeOverLuccaAction(workspaceId, contactId)
+        : await resumeLuccaAction(workspaceId, contactId)
+      if (result.error) toast.error(result.error)
+      else toast.success(action === 'takeover' ? 'Atendimento assumido. Lucca foi pausado.' : 'Lucca retomado.')
+      await fetchQualification()
+      router.refresh()
+    })
+  }
+
   function handleMediaUploaded(media: PendingMedia & { file?: File }) {
     setPendingMedia({
       url: media.url,
@@ -398,6 +489,47 @@ export function ConversationView({
           {contact?.email ? <span>E-mail: {contact.email}</span> : null}
         </div>
       </div>
+
+      {qualification ? (
+        <div className="border-b border-gray-200 bg-white px-4 py-3">
+          <div className="rounded-xl border border-blue-100 bg-blue-50 px-3 py-3 text-blue-950">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <p className="text-sm font-semibold">{LUCCA_STATUS_LABELS[qualification.status] ?? qualification.status}</p>
+                <p className="mt-0.5 text-xs text-blue-800">
+                  Etapa {qualification.current_step}/4 · Aviso ao Caio: {qualification.notification_status}
+                  {qualification.response_sla_breached ? ' · SLA de recepção excedido' : ''}
+                </p>
+              </div>
+              {qualification.status === 'active' ? (
+                <button
+                  type="button"
+                  disabled={isUpdatingLucca}
+                  onClick={() => handleLuccaControl('takeover')}
+                  className="rounded-lg bg-blue-700 px-3 py-2 text-xs font-semibold text-white disabled:opacity-50"
+                >
+                  Assumir atendimento
+                </button>
+              ) : ['awaiting_human', 'human_owned', 'paused'].includes(qualification.status) ? (
+                <button
+                  type="button"
+                  disabled={isUpdatingLucca}
+                  onClick={() => handleLuccaControl('resume')}
+                  className="rounded-lg border border-blue-200 bg-white px-3 py-2 text-xs font-semibold text-blue-800 disabled:opacity-50"
+                >
+                  Retomar Lucca
+                </button>
+              ) : null}
+            </div>
+            {qualification.summary ? (
+              <p className="mt-2 whitespace-pre-line text-xs leading-5 text-blue-900">{qualification.summary}</p>
+            ) : (
+              <p className="mt-2 text-xs text-blue-800">A qualificação ainda está em andamento.</p>
+            )}
+            <p className="mt-1 text-xs text-blue-800">Origem: {formatLuccaOrigin(qualification)}</p>
+          </div>
+        </div>
+      ) : null}
 
       <div className="border-b border-gray-200 bg-white px-4 py-3">
         <div

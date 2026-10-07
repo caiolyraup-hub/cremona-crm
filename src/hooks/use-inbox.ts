@@ -102,7 +102,7 @@ export function useInbox(workspaceId: string): UseInboxResult {
 
     const { data: messagesRaw, error: messagesError } = await supabaseRef.current
       .from('messages')
-      .select('id, workspace_id, contact_id, whatsapp_message_id, direction, content, media_url, media_type, status, created_at')
+      .select('id, workspace_id, contact_id, whatsapp_message_id, provider, direction, sender_type, automated_by, content, media_url, media_type, status, created_at')
       .eq('workspace_id', workspaceId)
       .not('contact_id', 'is', null)
       .order('created_at', { ascending: false })
@@ -215,7 +215,7 @@ export function useConversation(
 
     const { data, error: fetchError } = await supabaseRef.current
       .from('messages')
-      .select('id, workspace_id, contact_id, whatsapp_message_id, direction, content, media_url, media_type, status, created_at')
+      .select('id, workspace_id, contact_id, whatsapp_message_id, provider, direction, sender_type, automated_by, content, media_url, media_type, status, created_at')
       .eq('workspace_id', workspaceId)
       .eq('contact_id', contactId)
       .order('created_at', { ascending: true })

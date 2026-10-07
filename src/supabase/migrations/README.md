@@ -36,6 +36,10 @@ Execute no Supabase SQL Editor, nesta ordem:
     Provider WhatsApp por workspace, dispatch idempotente Twilio e eventos de status
 18. 018_secure_lead_ingestion.sql
     lead_sources, lead_submissions, rate limit persistente e consentimento WhatsApp em contacts
+19. 20261006142427_lucca_whatsapp_qualification.sql
+    Estado, fila duravel, rastreamento, RLS e autoria de mensagens da qualificacao noturna
+20. 20261006145430_lucca_whatsapp_fk_indexes.sql
+    Indices dos relacionamentos usados pela fila e pelo estado do Lucca
 
 ## Como verificar se todas foram aplicadas
 
@@ -62,5 +66,7 @@ Tabelas esperadas apos todas as migrations:
 - lead_sources
 - lead_submissions
 - lead_rate_limit_events
+- lucca_qualifications
+- lucca_jobs
 - workspace_members
 - workspaces

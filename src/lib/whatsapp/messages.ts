@@ -13,10 +13,12 @@ export async function persistWhatsAppMessage(params: {
   mediaUrl?: string | null
   mediaType?: string | null
   status: string
+  senderType?: 'contact' | 'human' | 'automation' | 'system' | 'unknown'
+  automatedBy?: string | null
   userId?: string | null
   activityContent?: string | null
   createdAt?: string
-}): Promise<{ messageId: string | null; created: boolean; error?: string }> {
+}): Promise<{ messageId: string | null; created: boolean; createdAt?: string; error?: string }> {
   const supabase = createAdminClient()
   const createdAt = params.createdAt ?? new Date().toISOString()
   const payload = {
@@ -29,24 +31,31 @@ export async function persistWhatsAppMessage(params: {
     media_url: params.mediaUrl ?? null,
     media_type: params.mediaType ?? 'text',
     status: params.status,
+    sender_type:
+      params.senderType ?? (params.direction === 'inbound' ? 'contact' : 'unknown'),
+    automated_by: params.automatedBy ?? null,
     created_at: createdAt,
   }
 
   const { data, error } = await (supabase as any)
     .from('messages')
     .insert(payload)
-    .select('id')
+    .select('id, created_at')
     .maybeSingle()
 
   if (error) {
     if (error.code === '23505' && params.whatsappMessageId) {
       const { data: existing } = await (supabase as any)
         .from('messages')
-        .select('id')
+        .select('id, created_at')
         .eq('whatsapp_message_id', params.whatsappMessageId)
         .maybeSingle()
 
-      return { messageId: existing?.id ?? null, created: false }
+      return {
+        messageId: existing?.id ?? null,
+        created: false,
+        createdAt: existing?.created_at ?? undefined,
+      }
     }
 
     return { messageId: null, created: false, error: error.message }
@@ -68,5 +77,5 @@ export async function persistWhatsAppMessage(params: {
     })
   }
 
-  return { messageId, created: true }
+  return { messageId, created: true, createdAt: (data as { created_at?: string } | null)?.created_at ?? createdAt }
 }

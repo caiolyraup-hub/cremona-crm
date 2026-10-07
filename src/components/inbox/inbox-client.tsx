@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { AlertCircle } from 'lucide-react'
 import { AnimatePresence } from 'framer-motion'
 import { useInbox } from '@/hooks/use-inbox'
@@ -19,6 +20,7 @@ function getPanelSessionKey(contactId: string) {
 
 export function InboxClient({ canSendMessages }: InboxClientProps) {
   const workspace = useWorkspace()
+  const searchParams = useSearchParams()
   const {
     conversations,
     isLoading,
@@ -29,6 +31,13 @@ export function InboxClient({ canSendMessages }: InboxClientProps) {
   } = useInbox(workspace.id)
   const [showConversationOnMobile, setShowConversationOnMobile] = useState(false)
   const [isPanelOpen, setIsPanelOpen] = useState(false)
+
+  useEffect(() => {
+    const linkedContactId = searchParams.get('contact')
+    if (!linkedContactId || !conversations.some((item) => item.contactId === linkedContactId)) return
+    selectConversation(linkedContactId)
+    setShowConversationOnMobile(true)
+  }, [conversations, searchParams, selectConversation])
 
   useEffect(() => {
     if (!selectedContactId) {

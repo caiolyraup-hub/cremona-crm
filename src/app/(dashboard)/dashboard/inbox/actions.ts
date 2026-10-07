@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 
+import crypto from 'crypto'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { createAdminClient } from '@/lib/supabase/admin'
 import { getWhatsAppProviderForWorkspace } from '@/lib/whatsapp/providers'
 import { normalizeWhatsAppPhone, summarizeWhatsAppContent } from '@/lib/whatsapp/format'
 import { getLastInboundMessageAt } from '@/lib/whatsapp/queries'
@@ -15,6 +17,8 @@ import {
 } from '@/lib/whatsapp/dispatches'
 import { persistWhatsAppMessage } from '@/lib/whatsapp/messages'
 import type { Tables } from '@/types/database'
+import { getLuccaConfig } from '@/lib/whatsapp/lucca/config'
+import { isWithinLuccaWindow } from '@/lib/whatsapp/lucca/time'
 
 type ActionPayload = { error: string | null }
 
@@ -54,6 +58,121 @@ async function getContactPhone(
     .maybeSingle()
 
   return contact as Pick<Tables<'contacts'>, 'id' | 'phone' | 'name' | 'company' | 'email'> | null
+}
+
+async function pauseLuccaForHuman(workspaceId: string, contactId: string, userId: string) {
+  const admin = createAdminClient() as any
+  const now = new Date().toISOString()
+  const { data } = await admin
+    .from('lucca_qualifications')
+    .update({
+      status: 'human_owned',
+      paused_at: now,
+      pause_reason: 'human_message_sent',
+      human_taken_over_at: now,
+      human_taken_over_by: userId,
+    })
+    .eq('workspace_id', workspaceId)
+    .eq('contact_id', contactId)
+    .in('status', ['active', 'awaiting_human', 'paused'])
+    .select('id')
+    .maybeSingle()
+
+  if (data?.id) {
+    await Promise.all([
+      admin.from('lucca_jobs').update({
+        status: 'cancelled',
+        processed_at: now,
+        last_error: 'Atendimento assumido por humano.',
+      }).eq('qualification_id', data.id).eq('job_type', 'conversation').eq('status', 'pending'),
+      admin.from('activities').insert({
+        workspace_id: workspaceId,
+        contact_id: contactId,
+        user_id: userId,
+        type: 'whatsapp',
+        content: 'Atendimento do Lucca pausado por intervenção humana.',
+        created_at: now,
+      }),
+    ])
+  }
+}
+
+export async function takeOverLuccaAction(
+  workspaceId: string,
+  contactId: string
+): Promise<ActionPayload> {
+  const access = await requireInboxAccess(workspaceId)
+  if (access.error) return { error: access.error }
+  await pauseLuccaForHuman(workspaceId, contactId, access.userId)
+  revalidatePath('/dashboard/inbox')
+  return { error: null }
+}
+
+export async function resumeLuccaAction(
+  workspaceId: string,
+  contactId: string
+): Promise<ActionPayload> {
+  const access = await requireInboxAccess(workspaceId)
+  if (access.error) return { error: access.error }
+  const config = getLuccaConfig()
+  if (!config.enabled || config.workspaceId !== workspaceId) {
+    return { error: 'O Lucca está desativado para este workspace.' }
+  }
+  if (!isWithinLuccaWindow(new Date(), config)) {
+    return { error: 'A retomada do Lucca só pode ocorrer entre 18h e 8h.' }
+  }
+
+  const admin = createAdminClient() as any
+  const now = new Date().toISOString()
+  const { data: qualification, error } = await admin
+    .from('lucca_qualifications')
+    .update({
+      status: 'active',
+      paused_at: null,
+      pause_reason: null,
+      resumed_at: now,
+      resumed_by: access.userId,
+    })
+    .eq('workspace_id', workspaceId)
+    .eq('contact_id', contactId)
+    .in('status', ['awaiting_human', 'human_owned', 'paused'])
+    .select('id')
+    .maybeSingle()
+  if (error || !qualification?.id) {
+    return { error: 'Não foi possível retomar o Lucca nesta conversa.' }
+  }
+
+  const { data: lastInbound } = await admin
+    .from('messages')
+    .select('id, whatsapp_message_id')
+    .eq('workspace_id', workspaceId)
+    .eq('contact_id', contactId)
+    .eq('direction', 'inbound')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (lastInbound?.id) {
+    await admin.from('lucca_jobs').insert({
+      workspace_id: workspaceId,
+      contact_id: contactId,
+      qualification_id: qualification.id,
+      message_id: lastInbound.id,
+      job_type: 'conversation',
+      event_key: `lucca:resume:${qualification.id}:${crypto.randomUUID()}`,
+      status: 'pending',
+      max_attempts: config.maxAttempts,
+    })
+  }
+  await admin.from('activities').insert({
+    workspace_id: workspaceId,
+    contact_id: contactId,
+    user_id: access.userId,
+    type: 'whatsapp',
+    content: 'Lucca retomado explicitamente por um usuário autorizado.',
+    created_at: now,
+  })
+  revalidatePath('/dashboard/inbox')
+  return { error: null }
 }
 
 export async function markConversationAsReadAction(
@@ -112,6 +231,7 @@ export async function sendWhatsAppMessageAction(
 
   const resolved = await getWhatsAppProviderForWorkspace(workspaceId)
   if (!resolved.provider) return { error: resolved.error?.error ?? 'Configure o WhatsApp antes de enviar mensagens.' }
+  await pauseLuccaForHuman(workspaceId, contactId, access.userId)
 
   const eventKey = buildManualDispatchEventKey({ workspaceId, contactId, operation: 'text' })
   const result = await sendWithDispatch({
@@ -139,6 +259,7 @@ export async function sendWhatsAppMessageAction(
     mediaUrl: null,
     mediaType: 'text',
     status: 'sent',
+    senderType: 'human',
     userId: access.userId,
     createdAt,
     activityContent: `Mensagem enviada via WhatsApp: ${summarizeWhatsAppContent(content)}`,
@@ -159,7 +280,6 @@ export async function sendTemplateMessageAction(
 ): Promise<ActionPayload> {
   const access = await requireInboxAccess(workspaceId)
   if (access.error) return { error: access.error }
-
   const { data: templateRow } = await (access.supabase as any)
     .from('whatsapp_templates')
     .select('*')
@@ -179,6 +299,7 @@ export async function sendTemplateMessageAction(
 
   const resolved = await getWhatsAppProviderForWorkspace(workspaceId)
   if (!resolved.provider) return { error: resolved.error?.error ?? 'Configure o WhatsApp antes de enviar templates.' }
+  await pauseLuccaForHuman(workspaceId, contactId, access.userId)
 
   const contactVarMap: Record<string, string> = {
     contact_name: contact.name,
@@ -238,6 +359,7 @@ export async function sendTemplateMessageAction(
     mediaUrl: null,
     mediaType: 'text',
     status: 'sent',
+    senderType: 'human',
     userId: access.userId,
     createdAt,
     activityContent: `Template enviado: ${templateRow.display_name}`,
@@ -258,7 +380,6 @@ export async function sendMediaMessageAction(params: {
 }): Promise<ActionPayload> {
   const access = await requireInboxAccess(params.workspaceId)
   if (access.error) return { error: access.error }
-
   const contact = await getContactPhone(access.supabase, params.workspaceId, params.contactId)
   if (!contact?.phone) return { error: 'Este contato nao possui telefone cadastrado.' }
 
@@ -267,6 +388,7 @@ export async function sendMediaMessageAction(params: {
 
   const resolved = await getWhatsAppProviderForWorkspace(params.workspaceId)
   if (!resolved.provider) return { error: resolved.error?.error ?? 'Configure o WhatsApp antes de enviar midia.' }
+  await pauseLuccaForHuman(params.workspaceId, params.contactId, access.userId)
 
   const eventKey = buildManualDispatchEventKey({
     workspaceId: params.workspaceId,
@@ -303,6 +425,7 @@ export async function sendMediaMessageAction(params: {
     mediaUrl: params.mediaUrl,
     mediaType: params.mediaType,
     status: 'sent',
+    senderType: 'human',
     userId: access.userId,
     createdAt,
     activityContent: `Midia enviada via WhatsApp: ${summarizeWhatsAppContent(content)}`,

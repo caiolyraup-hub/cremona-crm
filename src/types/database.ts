@@ -504,6 +504,8 @@ export interface Database {
           whatsapp_message_id: string | null
           provider: 'meta_cloud' | 'twilio'
           direction: string
+          sender_type: 'contact' | 'human' | 'automation' | 'system' | 'unknown'
+          automated_by: string | null
           content: string | null
           media_url: string | null
           media_type: string | null
@@ -517,6 +519,8 @@ export interface Database {
           whatsapp_message_id?: string | null
           provider?: 'meta_cloud' | 'twilio'
           direction: string
+          sender_type?: 'contact' | 'human' | 'automation' | 'system' | 'unknown'
+          automated_by?: string | null
           content?: string | null
           media_url?: string | null
           media_type?: string | null
@@ -530,6 +534,8 @@ export interface Database {
           whatsapp_message_id?: string | null
           provider?: 'meta_cloud' | 'twilio'
           direction?: string
+          sender_type?: 'contact' | 'human' | 'automation' | 'system' | 'unknown'
+          automated_by?: string | null
           content?: string | null
           media_url?: string | null
           media_type?: string | null
@@ -838,6 +844,86 @@ export interface Database {
           occurred_at?: string
           created_at?: string
         }
+      }
+      lucca_qualifications: {
+        Row: {
+          id: string
+          workspace_id: string
+          contact_id: string
+          first_message_id: string | null
+          last_processed_message_id: string | null
+          status: 'active' | 'qualified' | 'awaiting_human' | 'human_owned' | 'opted_out' | 'paused' | 'failed'
+          current_step: number
+          first_message_text: string | null
+          initial_received_at: string
+          reception_sent_at: string | null
+          completed_at: string | null
+          paused_at: string | null
+          pause_reason: string | null
+          human_taken_over_at: string | null
+          human_taken_over_by: string | null
+          resumed_at: string | null
+          resumed_by: string | null
+          city: string | null
+          digital_experience: string | null
+          team_size_text: string | null
+          team_size_number: number | null
+          business_type: string | null
+          raw_responses: Array<Record<string, unknown>>
+          summary: string | null
+          origin: Record<string, unknown>
+          origin_evidence: 'twilio_referral' | 'lead_submission' | 'unidentified'
+          attribution_submission_id: string | null
+          notification_status: 'pending' | 'accepted' | 'sent' | 'delivered' | 'read' | 'failed' | 'skipped'
+          notification_message_sid: string | null
+          notification_error: string | null
+          notified_at: string | null
+          last_inbound_at: string | null
+          last_outbound_at: string | null
+          openai_model: string | null
+          openai_response_id: string | null
+          response_sla_ms: number | null
+          response_sla_breached: boolean
+          version: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: Partial<Database['public']['Tables']['lucca_qualifications']['Row']> & {
+          workspace_id: string
+          contact_id: string
+          initial_received_at: string
+        }
+        Update: Partial<Database['public']['Tables']['lucca_qualifications']['Row']>
+      }
+      lucca_jobs: {
+        Row: {
+          id: string
+          workspace_id: string
+          contact_id: string
+          qualification_id: string
+          message_id: string | null
+          job_type: 'conversation' | 'notification'
+          event_key: string
+          status: 'pending' | 'processing' | 'done' | 'failed' | 'cancelled'
+          scheduled_for: string
+          attempts: number
+          max_attempts: number
+          locked_at: string | null
+          locked_by: string | null
+          last_attempt_at: string | null
+          last_error: string | null
+          output: Record<string, unknown>
+          created_at: string
+          processed_at: string | null
+        }
+        Insert: Partial<Database['public']['Tables']['lucca_jobs']['Row']> & {
+          workspace_id: string
+          contact_id: string
+          qualification_id: string
+          job_type: 'conversation' | 'notification'
+          event_key: string
+        }
+        Update: Partial<Database['public']['Tables']['lucca_jobs']['Row']>
       }
     }
     Views: {

@@ -98,6 +98,15 @@ export function MessageBubble({ message }: MessageBubbleProps) {
   const timeLabel = format(new Date(message.created_at), 'HH:mm')
   const statusMeta = resolveStatusLabel(message.status)
   const content = message.content?.trim() ?? ''
+  const senderLabel = isInbound
+    ? 'Lead'
+    : message.sender_type === 'automation' && message.automated_by === 'lucca'
+      ? 'Lucca'
+      : message.sender_type === 'automation'
+        ? 'Automação'
+        : message.sender_type === 'human'
+          ? 'Atendente'
+          : 'Enviado'
 
   const isImage = message.media_type === 'image'
   const hasRealImage = isImage && Boolean(message.media_url)
@@ -292,6 +301,7 @@ export function MessageBubble({ message }: MessageBubbleProps) {
               isInbound ? 'text-gray-400' : 'justify-end text-blue-100',
             ].join(' ')}
           >
+            <span>{senderLabel}</span>
             <span>{timeLabel}</span>
             {!isInbound && statusMeta ? (
               <span className={statusMeta.tone}>{statusMeta.label}</span>
