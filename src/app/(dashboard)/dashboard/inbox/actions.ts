@@ -119,7 +119,7 @@ export async function resumeLuccaAction(
     return { error: 'O Lucca está desativado para este workspace.' }
   }
   if (!isWithinLuccaWindow(new Date(), config)) {
-    return { error: 'A retomada do Lucca só pode ocorrer entre 18h e 8h.' }
+    return { error: 'A retomada do Lucca está fora do horário configurado.' }
   }
 
   const admin = createAdminClient() as any

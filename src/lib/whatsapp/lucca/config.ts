@@ -21,6 +21,7 @@ export function getLuccaConfig() {
     enabled: enabled(process.env.LUCCA_WHATSAPP_ENABLED),
     workspaceId: process.env.LUCCA_WORKSPACE_ID?.trim() ?? '',
     whatsappFrom: normalizeTwilioWhatsAppAddress(process.env.LUCCA_WHATSAPP_FROM),
+    alwaysOn: enabled(process.env.LUCCA_ALWAYS_ON),
     timeZone: process.env.LUCCA_TIME_ZONE?.trim() || DEFAULT_LUCCA_TIME_ZONE,
     startHour: boundedInteger(process.env.LUCCA_START_HOUR, DEFAULT_LUCCA_START_HOUR, 0, 23),
     endHour: boundedInteger(process.env.LUCCA_END_HOUR, DEFAULT_LUCCA_END_HOUR, 0, 23),

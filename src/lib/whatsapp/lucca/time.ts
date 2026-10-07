@@ -18,11 +18,13 @@ export function getHourInTimeZone(date: Date, timeZone = DEFAULT_LUCCA_TIME_ZONE
 export function isWithinLuccaWindow(
   date: Date,
   options: {
+    alwaysOn?: boolean
     timeZone?: string
     startHour?: number
     endHour?: number
   } = {}
 ): boolean {
+  if (options.alwaysOn) return true
   const hour = getHourInTimeZone(date, options.timeZone)
   const startHour = options.startHour ?? DEFAULT_LUCCA_START_HOUR
   const endHour = options.endHour ?? DEFAULT_LUCCA_END_HOUR

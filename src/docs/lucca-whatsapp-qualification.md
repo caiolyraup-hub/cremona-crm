@@ -22,11 +22,11 @@ O valor das variáveis Secret da Vercel não é exibido pela listagem. Por isso,
 1. A Twilio chama `POST /api/webhooks/twilio/whatsapp`.
 2. O webhook valida `X-Twilio-Signature` com o SDK oficial e confere `AccountSid`.
 3. A mensagem é persistida com idempotência por `MessageSid`.
-4. Para uma primeira conversa elegível entre 18h (inclusive) e 8h (exclusive), no fuso `America/Sao_Paulo`, o sistema cria `lucca_qualifications` e jobs duráveis em `lucca_jobs`.
+4. Para uma primeira conversa elegível, o sistema cria `lucca_qualifications` e jobs duráveis em `lucca_jobs`. Em produção, `LUCCA_ALWAYS_ON=true` mantém esse atendimento ativo 24 horas por dia, todos os dias.
 5. Depois da gravação durável, o webhook tenta processar a recepção/conversa e a notificação ao Caio imediatamente. O cron `/api/cron/process-lucca-queue` recupera o trabalho a cada minuto se a invocação terminar ou algum provedor falhar.
 6. A OpenAI interpreta o texto e devolve JSON estruturado. O código, e não o modelo, decide elegibilidade, horário, estado, próxima pergunta, destinatário e autorização de envio.
 7. Todo envio passa por `whatsapp_dispatches`, evitando duplicidade após retries. Timeout com resultado incerto vira `delivery_unknown` e não é reenviado automaticamente.
-8. Às 8h, qualificações ativas passam para `awaiting_human` e os jobs pendentes são cancelados.
+8. Quando `LUCCA_ALWAYS_ON=false`, o horário configurado continua sendo respeitado e, ao encerrar a janela, qualificações ativas passam para `awaiting_human`. Com o modo 24/7 ativo, essa pausa por horário não ocorre.
 
 O worker processa no máximo dois jobs por execução por padrão. A tentativa imediata cobre os dois trabalhos independentes criados para um lead; o cron a cada minuto é o fallback. A recepção tem meta operacional inferior a dois minutos. `response_sla_ms` mede recebimento no Cremona até aceite da requisição pela Twilio; entrega e leitura são medidas separadamente pelos status callbacks.
 
@@ -52,6 +52,7 @@ Todas as variáveis abaixo são exclusivamente server-side, exceto a URL públic
 LUCCA_WHATSAPP_ENABLED=false
 LUCCA_WORKSPACE_ID=7ca55bf5-5726-4d2a-9d70-419f5fb1b864
 LUCCA_WHATSAPP_FROM=whatsapp:+5582936180673
+LUCCA_ALWAYS_ON=true
 LUCCA_TIME_ZONE=America/Sao_Paulo
 LUCCA_START_HOUR=18
 LUCCA_END_HOUR=8

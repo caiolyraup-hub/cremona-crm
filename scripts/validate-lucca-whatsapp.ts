@@ -34,6 +34,15 @@ assert.equal(active('2026-10-07T04:59:00'), true)
 assert.equal(active('2026-10-07T05:00:00'), true)
 assert.equal(active('2026-10-07T07:59:00'), true)
 assert.equal(active('2026-10-07T08:00:00'), false)
+const alwaysActive = (local: string) => isWithinLuccaWindow(at(local), {
+  alwaysOn: true,
+  timeZone: zone,
+  startHour: 18,
+  endHour: 8,
+})
+assert.equal(alwaysActive('2026-10-06T17:59:00'), true)
+assert.equal(alwaysActive('2026-10-07T08:00:00'), true)
+assert.equal(alwaysActive('2026-10-07T12:00:00'), true)
 assert.equal(getGreeting(at('2026-10-07T05:00:00'), zone), 'Bom dia')
 assert.equal(getGreeting(at('2026-10-06T12:00:00'), zone), 'Boa tarde')
 assert.equal(getGreeting(at('2026-10-06T18:00:00'), zone), 'Boa noite')
