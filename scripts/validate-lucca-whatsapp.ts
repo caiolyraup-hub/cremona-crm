@@ -21,7 +21,11 @@ import {
   type LuccaInterpretation,
   type QualificationState,
 } from '../src/lib/whatsapp/lucca/state'
-import { parseLuccaInterpretation, validateLuccaReply } from '../src/lib/whatsapp/lucca/openai'
+import {
+  buildLuccaInstructions,
+  parseLuccaInterpretation,
+  validateLuccaReply,
+} from '../src/lib/whatsapp/lucca/openai'
 
 const zone = 'America/Sao_Paulo'
 const at = (local: string) => new Date(`${local}-03:00`)
@@ -81,6 +85,15 @@ assert.equal(validateLuccaReply({
   reply: 'Sou um assistente virtual da QCM. De qual cidade você fala?',
   expectedAction: 'city', inboundText: 'Você é uma IA?', isFirstReply: false, maxCharacters: 900,
 }), true)
+
+const conversationalInstructions = buildLuccaInstructions({
+  ...getLuccaConfig(),
+  approvedQcmInfo: 'A QCM atua com marketing digital e estratégia de marketing.',
+})
+assert.match(conversationalInstructions, /Conduza uma conversa, não um formulário/)
+assert.match(conversationalInstructions, /Responda primeiro ao que o lead disse ou perguntou/)
+assert.match(conversationalInstructions, /não repita saudação/)
+assert.match(conversationalInstructions, /marketing digital e estratégia de marketing/)
 
 const empty: QualificationState = {
   city: null,
@@ -186,6 +199,8 @@ assert.match(webhook, /\.update\(\{ deleted_at: null \}\)/)
 assert.match(worker, /OpenAI indisponível; usando contingência/)
 assert.match(worker, /isWithinLuccaWindow\(new Date\(\), config\)/)
 assert.match(worker, /senderType: 'automation'/)
+assert.match(worker, /recentConversation/)
+assert.match(worker, /\.lt\('created_at', messages\[0\]\.created_at\)/)
 assert.match(worker, /LUCCA_NOTIFICATION_CONTENT_SID/)
 assert.match(worker, /contact\.workspace_id !== job\.workspace_id/)
 assert.match(worker, /\.eq\('job_type', 'conversation'\)\.eq\('status', 'pending'\)/)

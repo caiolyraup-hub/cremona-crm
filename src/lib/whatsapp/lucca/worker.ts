@@ -385,6 +385,31 @@ async function processConversation(supabase: any, job: Job) {
     .join('\n')
     .slice(0, config.maxInputCharacters)
   const hasUnsupportedMedia = messages.some((message: any) => message.media_type !== 'text')
+  const { data: recentConversationRows, error: recentConversationError } = await supabase
+    .from('messages')
+    .select('direction, content, sender_type, created_at')
+    .eq('workspace_id', job.workspace_id)
+    .eq('contact_id', job.contact_id)
+    .lt('created_at', messages[0].created_at)
+    .not('content', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(8)
+  if (recentConversationError) {
+    return {
+      success: false,
+      retryable: true,
+      error: `Falha ao carregar contexto recente: ${recentConversationError.message}`,
+    }
+  }
+  const recentConversation = (recentConversationRows ?? [])
+    .slice()
+    .reverse()
+    .map((message: any) => ({
+      direction: message.direction === 'inbound' ? 'inbound' as const : 'outbound' as const,
+      senderType: String(message.sender_type ?? 'unknown'),
+      text: String(message.content ?? '').trim(),
+    }))
+    .filter((message: { text: string }) => message.text.length > 0)
   const current: QualificationState = {
     city: qualification.city,
     digital_experience: qualification.digital_experience,
@@ -440,6 +465,7 @@ async function processConversation(supabase: any, job: Job) {
         greeting: getGreeting(new Date(), config.timeZone),
         firstName,
         treatment,
+        recentConversation,
         config,
       })
       interpretation = result.interpretation

@@ -53,7 +53,13 @@ const RESPONSE_SCHEMA = {
   },
 } as const
 
-function buildInstructions(config: LuccaConfig) {
+export type LuccaConversationTurn = {
+  direction: 'inbound' | 'outbound'
+  senderType: string
+  text: string
+}
+
+export function buildLuccaInstructions(config: LuccaConfig) {
   return `Você interpreta uma mensagem de lead e redige uma resposta curta de WhatsApp para Lucca, da QCM.
 
 Regras invioláveis:
@@ -75,7 +81,18 @@ Regras invioláveis:
 - Para team_size pergunte quantas pessoas há na equipe; adapte "loja" apenas se business_type estiver claro.
 - Para complete agradeça e diga que Caio continuará com o contexto, sem prometer horário.
 - Para handoff transfira sem insistir. Para stop confirme que não enviará outras mensagens automáticas.
-- Quando não for a primeira resposta, reconheça brevemente o que foi dito antes da próxima pergunta.
+- Conduza uma conversa, não um formulário. Responda primeiro ao que o lead disse ou perguntou; depois faça a próxima pergunta pendente, quando houver.
+- Use o histórico recente para manter continuidade, sem repetir informações que o lead já forneceu e sem resumir toda a conversa a cada turno.
+- Quando não for a primeira resposta, não repita saudação, apresentação, nome do lead ou agradecimento por rotina.
+- Reaja de forma específica e útil ao conteúdo. Evite respostas mecânicas como "Legal, obrigado por contar" quando puder fazer uma observação breve ligada ao que foi dito.
+- Se o lead fizer uma pergunta e houver informação aprovada suficiente, responda de modo direto e natural antes de seguir. Se houver apenas informação parcial, diga o que é conhecido e registre somente o restante para Caio.
+- Não transforme toda pergunta em encaminhamento para Caio. Use question_for_caio apenas quando a resposta depender de informação comercial não aprovada.
+- Normalmente escreva de duas a quatro frases curtas, com no máximo uma pergunta por mensagem. Uma resposta pode ser mais curta quando isso soar natural.
+- Exemplos de ritmo, sem copiar literalmente:
+  Lead: "Ainda não. O que você me indica?"
+  Lucca: responda brevemente com o que é seguro dizer, explique que a indicação depende do cenário e conecte isso à próxima pergunta pendente.
+  Lead: "Somos 30, quatro em vendas. O que vocês oferecem?"
+  Lucca: reconheça a estrutura informada, explique os serviços aprovados da QCM e encerre deixando o contexto com Caio.
 - A resposta deve ter no máximo ${config.maxOutputCharacters} caracteres.`
 }
 
@@ -166,6 +183,7 @@ export async function interpretWithOpenAI(params: {
   greeting: string
   firstName: string | null
   treatment: 'male' | 'female' | 'neutral'
+  recentConversation?: LuccaConversationTurn[]
   config?: LuccaConfig
 }) {
   const config = params.config ?? getLuccaConfig()
@@ -181,20 +199,26 @@ export async function interpretWithOpenAI(params: {
     DADOS_NAO_CONFIAVEIS: {
       inbound_message: params.inboundText.slice(0, config.maxInputCharacters),
       contact_first_name: params.firstName,
+      recent_conversation: (params.recentConversation ?? []).slice(-8).map((turn) => ({
+        direction: turn.direction,
+        sender_type: turn.senderType,
+        text: turn.text.slice(0, 500),
+      })),
     },
     existing_qualification: params.existing,
     pending_before_turn: params.expectedNextAction,
     first_reply: params.isFirstReply,
-    required_greeting: params.greeting,
+    required_greeting: params.isFirstReply ? params.greeting : null,
     confirmed_treatment: params.treatment,
   })
 
   const response = await client.responses.create({
     model: config.openAiModel,
-    instructions: buildInstructions(config),
+    instructions: buildLuccaInstructions(config),
     input,
     max_output_tokens: config.openAiMaxOutputTokens,
     store: false,
+    reasoning: { effort: 'medium' },
     safety_identifier: crypto.createHash('sha256').update(params.contactId).digest('hex'),
     text: {
       format: {

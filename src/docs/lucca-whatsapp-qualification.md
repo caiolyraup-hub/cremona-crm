@@ -30,6 +30,16 @@ O valor das variáveis Secret da Vercel não é exibido pela listagem. Por isso,
 
 O worker processa no máximo dois jobs por execução por padrão. A tentativa imediata cobre os dois trabalhos independentes criados para um lead; o cron a cada minuto é o fallback. A recepção tem meta operacional inferior a dois minutos. `response_sla_ms` mede recebimento no Cremona até aceite da requisição pela Twilio; entrega e leitura são medidas separadamente pelos status callbacks.
 
+## Conversa contextual
+
+Em cada turno, o Lucca recebe as três informações estruturadas já coletadas e até oito mensagens recentes anteriores ao lote atual. Esse histórico é limitado, tratado como dado não confiável e usado apenas para dar continuidade à conversa.
+
+O prompt orienta o modelo a responder primeiro ao que o lead disse ou perguntou e, depois, fazer a próxima pergunta pendente. Saudação, apresentação e nome do lead ficam restritos à recepção, salvo quando a repetição fizer sentido no contexto. O Lucca evita agradecimentos automáticos e reações genéricas em todos os turnos.
+
+`LUCCA_APPROVED_QCM_INFO` define o que ele pode explicar sobre a QCM. Quando a informação for suficiente, o Lucca responde diretamente; quando for parcial, responde a parte conhecida e registra somente o restante para Caio. O modelo nunca ganha autoridade para oferecer preços, prazos, garantias, descontos, agenda ou escopo não aprovado.
+
+A resposta continua usando JSON Schema estrito. O texto natural, os dados extraídos e a próxima etapa permanecem separados, e o código valida a etapa antes de autorizar o envio.
+
 ## Dados e rastreamento
 
 `lucca_qualifications` guarda estado, três respostas, textos originais, resumo, horários, pausa/transferência, SLA, estado da notificação e evidência de origem.
