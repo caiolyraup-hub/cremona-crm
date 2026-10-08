@@ -113,25 +113,35 @@ async function cancelCompetingAutomations(supabase: any, workspaceId: string, co
   if (error) throw new Error(`lucca_competing_automation_cancel_failed:${error.message}`)
 }
 
-async function isNewCommercialConversation(params: {
+const RECENT_HUMAN_INTERVENTION_HOURS = 24
+
+async function hasRecentHumanIntervention(params: {
   supabase: any
   workspaceId: string
   contactId: string
   currentMessageId: string
+  receivedAt: string
 }) {
-  const { data: prior } = await params.supabase
+  const receivedAt = new Date(params.receivedAt)
+  const cutoff = new Date(
+    receivedAt.getTime() - RECENT_HUMAN_INTERVENTION_HOURS * 60 * 60 * 1_000
+  ).toISOString()
+  const { data: recentHumanMessage, error } = await params.supabase
     .from('messages')
-    .select('id, direction, sender_type')
+    .select('id')
     .eq('workspace_id', params.workspaceId)
     .eq('contact_id', params.contactId)
     .neq('id', params.currentMessageId)
+    .eq('direction', 'outbound')
+    .eq('sender_type', 'human')
+    .gte('created_at', cutoff)
+    .lte('created_at', params.receivedAt)
     .order('created_at', { ascending: false })
-    .limit(25)
+    .limit(1)
+    .maybeSingle()
 
-  return !(prior ?? []).some((message: { direction: string; sender_type: string }) =>
-    message.direction === 'inbound' ||
-    (message.direction === 'outbound' && ['human', 'unknown'].includes(message.sender_type))
-  )
+  if (error) throw new Error(`lucca_human_intervention_lookup_failed:${error.message}`)
+  return Boolean(recentHumanMessage?.id)
 }
 
 async function enqueueConversationJob(params: {
@@ -213,13 +223,14 @@ export async function enqueueLuccaInbound(input: EnqueueInput) {
   }
 
   if (!withinWindow) return { enqueued: false, reason: 'outside_operating_window' }
-  if (!await isNewCommercialConversation({
+  if (await hasRecentHumanIntervention({
     supabase,
     workspaceId: input.workspaceId,
     contactId: input.contactId,
     currentMessageId: input.messageId,
+    receivedAt: input.receivedAt,
   })) {
-    return { enqueued: false, reason: 'existing_conversation' }
+    return { enqueued: false, reason: 'recent_human_intervention' }
   }
 
   const attribution = await resolveAttribution({

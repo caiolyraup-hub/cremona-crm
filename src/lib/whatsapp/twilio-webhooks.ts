@@ -95,6 +95,45 @@ export async function handleTwilioInboundWebhook(payload: FormPayload) {
 
   let contactId = existingContact?.id as string | undefined
   if (!contactId) {
+    const { data: archivedContact, error: archivedLookupError } = await (supabase as any)
+      .from('contacts')
+      .select('id')
+      .eq('workspace_id', workspaceId)
+      .not('deleted_at', 'is', null)
+      .in('phone', candidates)
+      .order('deleted_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (archivedLookupError) {
+      console.error('[twilio-webhook] archived contact lookup failed', {
+        workspace_id: workspaceId,
+        provider_message_id: messageSid,
+        error: sanitizeProviderError(archivedLookupError.message),
+      })
+      return { status: 500, body: '' }
+    }
+
+    if (archivedContact?.id) {
+      const { data: restoredContact, error: restoreError } = await (supabase as any)
+        .from('contacts')
+        .update({ deleted_at: null })
+        .eq('workspace_id', workspaceId)
+        .eq('id', archivedContact.id)
+        .select('id')
+        .maybeSingle()
+      if (restoreError) {
+        console.error('[twilio-webhook] archived contact restore failed', {
+          workspace_id: workspaceId,
+          provider_message_id: messageSid,
+          error: sanitizeProviderError(restoreError.message),
+        })
+        return { status: 500, body: '' }
+      }
+      contactId = restoredContact?.id as string | undefined
+    }
+  }
+
+  if (!contactId) {
     const profileName = payload.ProfileName?.trim()
     const { data: createdContact, error: contactCreateError } = await (supabase as any)
       .from('contacts')
