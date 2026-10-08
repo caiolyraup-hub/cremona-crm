@@ -39,6 +39,8 @@ function cityQuestionFor(treatment: ConfirmedTreatment) {
   return 'De qual cidade você fala?'
 }
 
+const QUALIFICATION_REASON = 'Vou fazer algumas perguntas para entender o momento atual da sua empresa e pensar no melhor plano de escala de vendas para o seu negócio.'
+
 export function buildReception(params: {
   date: Date
   timeZone: string
@@ -50,7 +52,7 @@ export function buildReception(params: {
   const treatment = params.treatment ?? 'neutral'
   const addressedGreeting = name ? `${greeting}, ${name}!` : `${greeting}!`
   const introduction = treatment === 'neutral' ? 'Aqui é o Lucca.' : 'Aqui é o Lucca, da QCM.'
-  return `${addressedGreeting} Tudo bem por aí? ${welcomeFor(treatment)} ${introduction} ${cityQuestionFor(treatment)}`
+  return `${addressedGreeting} Tudo bem por aí? ${welcomeFor(treatment)} ${introduction} ${QUALIFICATION_REASON} ${cityQuestionFor(treatment)}`
 }
 
 export function buildInitialFallbackReply(params: {
@@ -72,7 +74,7 @@ export function buildInitialFallbackReply(params: {
     firstName: name,
     businessType: params.businessType,
   })
-  return `${addressedGreeting} Tudo bem por aí? ${welcomeFor(treatment)} ${introduction} ${next}`
+  return `${addressedGreeting} Tudo bem por aí? ${welcomeFor(treatment)} ${introduction} ${QUALIFICATION_REASON} ${next}`
 }
 
 export function buildFallbackReply(params: {
@@ -90,7 +92,7 @@ export function buildFallbackReply(params: {
       return `Que bom${addressed}! Já teve alguma experiência contratando uma empresa para cuidar do seu digital?`
     case 'team_size': {
       const establishment = sanitizeBusinessType(params.businessType)
-      return `Entendi. Obrigado por me contar. Quantas pessoas tem na sua equipe ${establishment ? `d${articleFor(establishment)} ${establishment}` : 'da loja'} hoje?`
+      return `Entendi${addressed}. Obrigado por me contar. Quantas pessoas tem na sua equipe ${establishment ? `d${articleFor(establishment)} ${establishment}` : 'da loja'} hoje?`
     }
     case 'complete':
       return `Perfeito${addressed}! Obrigado por me contar. Já deixei tudo organizado para o Caio continuar seu atendimento com esse contexto.`

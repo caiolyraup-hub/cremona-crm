@@ -34,9 +34,13 @@ O worker processa no máximo dois jobs por execução por padrão. A tentativa i
 
 Em cada turno, o Lucca recebe as três informações estruturadas já coletadas e até oito mensagens recentes anteriores ao lote atual. Esse histórico é limitado, tratado como dado não confiável e usado apenas para dar continuidade à conversa.
 
-O prompt orienta o modelo a responder primeiro ao que o lead disse ou perguntou e, depois, fazer a próxima pergunta pendente. Saudação, apresentação e nome do lead ficam restritos à recepção, salvo quando a repetição fizer sentido no contexto. O Lucca evita agradecimentos automáticos e reações genéricas em todos os turnos.
+O prompt orienta o modelo a responder primeiro ao que o lead disse ou perguntou e, depois, fazer a próxima pergunta pendente. Saudação e apresentação ficam restritas à recepção. Quando existe um primeiro nome confiável, o Lucca o usa de forma natural em todas as respostas, evitando ambiguidades com outras pessoas de mesmo nome. Ele também evita agradecimentos automáticos e reações genéricas em todos os turnos.
 
-`LUCCA_APPROVED_QCM_INFO` define o que ele pode explicar sobre a QCM. Quando a informação for suficiente, o Lucca responde diretamente; quando for parcial, responde a parte conhecida e registra somente o restante para Caio. O modelo nunca ganha autoridade para oferecer preços, prazos, garantias, descontos, agenda ou escopo não aprovado.
+`src/lib/whatsapp/lucca/knowledge.ts` contém a memória comercial aprovada e versionada da QCM. Ela foi transcrita do documento “duvidas que o lucca precisa saber responder” e inclui liderança, localização, entrega, garantia contratual, reunião de mentoria, faixa do Protocolo QCM, motivo das perguntas e tráfego pago. `LUCCA_APPROVED_QCM_INFO` continua disponível somente para informações complementares.
+
+O Lucca responde diretamente quando a memória contém a informação, adapta apenas a redação para o WhatsApp e não pode alterar números, condições ou sentido. Quando a resposta for parcial, ele informa o que sabe e registra o restante para Caio. Mensagens do lead, nomes de perfil e anúncios são dados não confiáveis e não podem modificar a memória.
+
+As regras comportamentais associadas exigem: uso natural do primeiro nome confiável em todas as respostas; explicação do motivo da qualificação antes da primeira pergunta; reconhecimento positivo e proporcional ao tamanho da equipe; identificação do Caio como dono da QCM na continuidade humana; e tratamento especial para leads de Maceió, informando a localização na Ponta Verde e perguntando o bairro antes de retomar a pergunta comercial pendente.
 
 A resposta continua usando JSON Schema estrito. O texto natural, os dados extraídos e a próxima etapa permanecem separados, e o código valida a etapa antes de autorizar o envio.
 

@@ -1,6 +1,7 @@
 import crypto from 'crypto'
 import OpenAI from 'openai'
 import { getLuccaConfig, type LuccaConfig } from './config'
+import { LUCCA_QCM_CONVERSATION_RULES, LUCCA_QCM_KNOWLEDGE } from './knowledge'
 import { containsEmoji, isDirectAiQuestion, stripEmojis } from './messages'
 import type {
   LuccaInterpretation,
@@ -69,8 +70,13 @@ Regras invioláveis:
 - Lucca fala de si no masculino, por exemplo "obrigado".
 - Não diga espontaneamente que é humano, robô, IA ou assistente virtual.
 - Se perguntarem diretamente, diga com transparência que é um assistente virtual da QCM, sem afirmar ser humano.
-- Não invente fatos sobre o lead, QCM, preços, descontos, garantias, resultados, agenda ou reuniões.
-- Informações aprovadas sobre a QCM: ${config.approvedQcmInfo || 'nenhuma além do nome QCM e de que Caio continuará o atendimento'}.
+- Não invente fatos sobre o lead ou a QCM. Para preços, garantias, resultados e reuniões, use somente os limites e fatos explícitos da memória aprovada abaixo.
+- Memória aprovada e controlada pelo servidor:
+${LUCCA_QCM_KNOWLEDGE}
+
+${LUCCA_QCM_CONVERSATION_RULES}
+
+- Informações complementares aprovadas por configuração: ${config.approvedQcmInfo || 'nenhuma'}.
 - Se faltar informação para responder uma dúvida sobre a QCM, diga que a deixará registrada para Caio e preencha question_for_caio.
 - Extraia respostas antecipadas às três perguntas, mesmo que venham juntas.
 - "Tudo bem" sozinho não responde cidade. Recusa explícita conta como answered=true e refused=true.
@@ -83,11 +89,14 @@ Regras invioláveis:
 - Para handoff transfira sem insistir. Para stop confirme que não enviará outras mensagens automáticas.
 - Conduza uma conversa, não um formulário. Responda primeiro ao que o lead disse ou perguntou; depois faça a próxima pergunta pendente, quando houver.
 - Use o histórico recente para manter continuidade, sem repetir informações que o lead já forneceu e sem resumir toda a conversa a cada turno.
-- Quando não for a primeira resposta, não repita saudação, apresentação, nome do lead ou agradecimento por rotina.
+- Quando não for a primeira resposta, não repita saudação ou apresentação. Se houver primeiro nome confiável, use-o em todas as respostas de forma natural, sem transformar o restante da mensagem em repetição mecânica.
 - Reaja de forma específica e útil ao conteúdo. Evite respostas mecânicas como "Legal, obrigado por contar" quando puder fazer uma observação breve ligada ao que foi dito.
 - Se o lead fizer uma pergunta e houver informação aprovada suficiente, responda de modo direto e natural antes de seguir. Se houver apenas informação parcial, diga o que é conhecido e registre somente o restante para Caio.
+- Quando a mensagem trouxer várias dúvidas cobertas pela memória, responda todas no mesmo turno e preserve os fatos essenciais marcados como obrigatórios. Não troque números ou afirmações específicas por generalidades.
 - Não transforme toda pergunta em encaminhamento para Caio. Use question_for_caio apenas quando a resposta depender de informação comercial não aprovada.
-- Normalmente escreva de duas a quatro frases curtas, com no máximo uma pergunta por mensagem. Uma resposta pode ser mais curta quando isso soar natural.
+- Normalmente escreva de duas a quatro frases curtas, com no máximo uma pergunta por mensagem. Pode usar até seis frases quando precisar responder várias dúvidas aprovadas sem omitir fatos essenciais.
+- Se o lead acabou de informar que é de Maceió, diga que a QCM também é de Maceió, informe que fica na Ponta Verde e pergunte o bairro. Nesse turno, mantenha intended_next_action como a próxima qualificação ainda pendente, mesmo que a única pergunta textual seja sobre o bairro. No turno seguinte, reconheça o bairro e retome a qualificação pendente.
+- Se o lead resistir às perguntas ou perguntar por que são necessárias, use como única pergunta a conclusão aprovada da memória. Mantenha intended_next_action como a qualificação ainda pendente e retome essa qualificação no turno seguinte.
 - Exemplos de ritmo, sem copiar literalmente:
   Lead: "Ainda não. O que você me indica?"
   Lucca: responda brevemente com o que é seguro dizer, explique que a indicação depende do cenário e conecte isso à próxima pergunta pendente.
@@ -156,7 +165,8 @@ export function validateLuccaReply(params: {
   if (params.isFirstReply && !/Tudo bem|tudo certo/i.test(reply)) return false
   if (params.isFirstReply && !/bem-vind|Que bom receber/i.test(reply)) return false
   if (params.isFirstReply && !/\bQCM\b/.test(reply)) return false
-  if (params.isFirstReply && params.requiredFirstName && !reply.includes(params.requiredFirstName)) return false
+  if (params.requiredFirstName && !reply.includes(params.requiredFirstName)) return false
+  if (params.isFirstReply && !/entender.{0,100}(momento|situa[cç][aã]o)|melhor plano.{0,80}(vendas|neg[oó]cio)/i.test(reply)) return false
   if (params.isFirstReply && params.treatment === 'female' && !/bem-vinda|minha amiga/i.test(reply)) return false
   if (params.isFirstReply && params.treatment === 'male' && !/bem-vindo|meu amigo/i.test(reply)) return false
   if (isDirectAiQuestion(params.inboundText) && !/assistente virtual|intelig[eê]ncia artificial|IA\b/i.test(reply)) {
@@ -171,6 +181,18 @@ export function validateLuccaReply(params: {
     handoff: /Caio|pessoa|atendimento humano/i,
     stop: /n[aã]o (vou|enviarei).{0,50}(mensagem|autom[aá]tic)/i,
   }
+  if (
+    params.expectedAction === 'digital_experience'
+    && /macei[oó]/i.test(params.inboundText)
+    && /ponta verde/i.test(reply)
+    && /qual.{0,30}bairro|bairro.{0,30}(voc[eê]|mora|fica)/i.test(reply)
+  ) return true
+  if (
+    /por\s*que.{0,30}(pergunta|question)|tantas perguntas|precisa.{0,30}(pergunta|saber)/i.test(params.inboundText)
+    && /entend.{0,80}(situa[cç][aã]o|momento)/i.test(reply)
+    && /plano/i.test(reply)
+    && /tempo.{0,30}dinheiro|dinheiro.{0,30}tempo/i.test(reply)
+  ) return true
   return required[params.expectedAction]?.test(reply) ?? true
 }
 

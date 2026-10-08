@@ -26,6 +26,7 @@ import {
   parseLuccaInterpretation,
   validateLuccaReply,
 } from '../src/lib/whatsapp/lucca/openai'
+import { LUCCA_QCM_KNOWLEDGE } from '../src/lib/whatsapp/lucca/knowledge'
 
 const zone = 'America/Sao_Paulo'
 const at = (local: string) => new Date(`${local}-03:00`)
@@ -67,6 +68,7 @@ assert.match(receptions[0], /bem-vindo/)
 assert.match(receptions[1], /bem-vinda/)
 assert.match(receptions[2], /Que bom receber você/)
 assert.doesNotMatch(receptions[3], /undefined|null/)
+for (const message of receptions) assert.match(message, /entender o momento atual/i)
 for (const message of receptions) assert.equal(containsEmoji(message), false)
 
 const allFallbacks = ['city', 'digital_experience', 'team_size', 'complete', 'handoff', 'stop', 'clarify'] as const
@@ -85,6 +87,21 @@ assert.equal(validateLuccaReply({
   reply: 'Sou um assistente virtual da QCM. De qual cidade você fala?',
   expectedAction: 'city', inboundText: 'Você é uma IA?', isFirstReply: false, maxCharacters: 900,
 }), true)
+assert.equal(validateLuccaReply({
+  reply: 'Caio, nós também somos de Maceió e ficamos na Ponta Verde. Você é de qual bairro?',
+  expectedAction: 'digital_experience', inboundText: 'Sou de Maceió', isFirstReply: false,
+  maxCharacters: 900, requiredFirstName: 'Caio',
+}), true)
+assert.equal(validateLuccaReply({
+  reply: 'Nós também somos de Maceió e ficamos na Ponta Verde. Você é de qual bairro?',
+  expectedAction: 'digital_experience', inboundText: 'Sou de Maceió', isFirstReply: false,
+  maxCharacters: 900, requiredFirstName: 'Caio',
+}), false)
+assert.equal(validateLuccaReply({
+  reply: 'Caio, é para entender sua situação e montar o melhor plano. Você prefere isso ou um plano raso que faça perder tempo e dinheiro?',
+  expectedAction: 'city', inboundText: 'Por que tantas perguntas?', isFirstReply: false,
+  maxCharacters: 900, requiredFirstName: 'Caio',
+}), true)
 
 const conversationalInstructions = buildLuccaInstructions({
   ...getLuccaConfig(),
@@ -94,6 +111,16 @@ assert.match(conversationalInstructions, /Conduza uma conversa, não um formulá
 assert.match(conversationalInstructions, /Responda primeiro ao que o lead disse ou perguntou/)
 assert.match(conversationalInstructions, /não repita saudação/)
 assert.match(conversationalInstructions, /marketing digital e estratégia de marketing/)
+assert.match(conversationalInstructions, /Caio é o dono e diretor comercial/)
+assert.match(conversationalInstructions, /Ponta Verde/)
+assert.match(conversationalInstructions, /mais de 150 empresas/)
+assert.match(conversationalInstructions, /R\$ 2\.000 a R\$ 4\.000 por mês/)
+assert.match(conversationalInstructions, /tráfego pago/)
+assert.match(conversationalInstructions, /vendedores de elite/)
+assert.match(conversationalInstructions, /chame a pessoa pelo nome em todas as respostas/)
+assert.match(conversationalInstructions, /reconhecimento positivo e específico/)
+assert.match(conversationalInstructions, /evite construções ambíguas/)
+assert.equal(containsEmoji(LUCCA_QCM_KNOWLEDGE), false)
 
 const empty: QualificationState = {
   city: null,
